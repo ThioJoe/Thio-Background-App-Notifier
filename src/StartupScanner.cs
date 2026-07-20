@@ -26,6 +26,20 @@ namespace New_Startup_App_Notifier
         public StartupItemType Type { get; set; } // "Service" or "ScheduledTask"
     }
 
+    public class StartupService
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+
+        // Constructor
+        public StartupService(string rawNameString, string path)
+        {
+            Name = Utils.ResolveIndirectString(rawNameString);
+            Path = path;
+        }
+
+    }
+
     public class StartupTask
     {
         private IRegisteredTask _taskObj;
@@ -162,9 +176,9 @@ namespace New_Startup_App_Notifier
 
     public class StartupScanner
     {
-        public static List<StartupItem> GetStartupServices()
+        public static List<StartupService> GetStartupServices()
         {
-            var items = new List<StartupItem>();
+            var items = new List<StartupService>();
             string registryPath = @"SYSTEM\CurrentControlSet\Services";
 
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
@@ -186,12 +200,7 @@ namespace New_Startup_App_Notifier
                                 string displayName = serviceKey.GetValue("DisplayName") as string ?? subKeyName;
                                 string imagePath = serviceKey.GetValue("ImagePath") as string ?? string.Empty;
 
-                                items.Add(new StartupItem
-                                {
-                                    Name = displayName,
-                                    Path = imagePath,
-                                    Type = StartupItemType.Service
-                                });
+                                items.Add(new StartupService(rawNameString: displayName, path:imagePath));
                             }
                         }
                     }

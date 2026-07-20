@@ -25,16 +25,17 @@ namespace New_Startup_App_Notifier
         public void SimpleListStartupItems()
         {
             // Fetch startup tasks and services
-            List<StartupItem> startupServices = StartupScanner.GetStartupServices();
+            List<StartupService> startupServices = StartupScanner.GetStartupServices();
             List<StartupTask> startupScheduledTasks = StartupScanner.GetStartupScheduledTasks();
 
             // Generate text list
             string displayString = string.Empty;
 
             displayString += "========= SERVICES =========\n\n";
-            foreach (StartupItem item in startupServices)
+            foreach (StartupService item in startupServices)
             {
-                displayString += $"{item.Name} - {item.Path}{Environment.NewLine}";
+                displayString += $"{item.Name}:\n";
+                displayString += $"\t{item.Path}" + "\n\n";
             }
 
             displayString += "\n\n========= SCHEDULED TASKS =========\n\n";

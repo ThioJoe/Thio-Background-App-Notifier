@@ -28,13 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.richTextBoxTemporaryDevOutput = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
+            // 
+            // richTextBoxTemporaryDevOutput
+            // 
+            this.richTextBoxTemporaryDevOutput.Location = new System.Drawing.Point(12, 132);
+            this.richTextBoxTemporaryDevOutput.Name = "richTextBoxTemporaryDevOutput";
+            this.richTextBoxTemporaryDevOutput.Size = new System.Drawing.Size(966, 508);
+            this.richTextBoxTemporaryDevOutput.TabIndex = 0;
+            this.richTextBoxTemporaryDevOutput.Text = "";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(990, 662);
+            this.Controls.Add(this.richTextBoxTemporaryDevOutput);
             this.Name = "MainForm";
             this.Text = "Sneaky Startup App Notifier";
             this.ResumeLayout(false);
@@ -42,6 +52,8 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.RichTextBox richTextBoxTemporaryDevOutput;
     }
 }
 

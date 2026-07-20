@@ -10,6 +10,7 @@ using System.Xml.Linq;
 
 // Add using for TaskScheduler
 using TaskScheduler;
+using System.Linq;
 
 namespace New_Startup_App_Notifier
 {
@@ -24,18 +25,37 @@ namespace New_Startup_App_Notifier
         public string Name { get; set; }
         public string Path { get; set; }
         public StartupItemType Type { get; set; } // "Service" or "ScheduledTask"
+
+        public StartupItem(string name, string path, StartupItemType type)
+        {
+            Name = name;
+            Path = path;
+            Type = type;
+        }
     }
 
     public class StartupService
     {
-        public string Name { get; set; }
-        public string Path { get; set; }
+        enum ServiceStartType: int
+        {
+            Boot = 0,   // Only for device Drivers
+            System = 1, // Only for device drivers
+            Automatic = 2, // Also includes delayed start
+            Manual = 3,
+            Disabled = 4
+        }
+
+        public string Name { get; init; }
+        public string ExecPath { get; init; }
+        public string RegPath { get; init; }
+        public int StartupType { get; init; }
 
         // Constructor
-        public StartupService(string rawNameString, string path)
+        public StartupService(string rawNameString, string path, string regPath)
         {
             Name = Utils.ResolveIndirectString(rawNameString);
-            Path = path;
+            ExecPath = path;
+            RegPath = regPath;
         }
 
     }
@@ -199,8 +219,15 @@ namespace New_Startup_App_Notifier
                             {
                                 string displayName = serviceKey.GetValue("DisplayName") as string ?? subKeyName;
                                 string imagePath = serviceKey.GetValue("ImagePath") as string ?? string.Empty;
+                                string regPath = $@"HKEY_LOCAL_MACHINE\{registryPath}\{subKeyName}";
 
-                                items.Add(new StartupService(rawNameString: displayName, path:imagePath));
+                                items.Add(new StartupService
+                                    (
+                                        rawNameString: displayName, 
+                                        path:imagePath,
+                                        regPath: regPath
+                                    )
+                                );
                             }
                         }
                     }
@@ -208,6 +235,58 @@ namespace New_Startup_App_Notifier
             }
             return items;
         }
+
+        // Unused - Can't easily get exe path
+        //public static List<StartupService> GetStartupServices2()
+        //{
+        //    List<StartupService> startupServices = [];
+        //    ServiceController[] ctl = ServiceController.GetServices();
+
+        //    foreach (ServiceController service in ctl)
+        //    {
+        //        try
+        //        {
+        //            string displayName = service.DisplayName;
+        //            string serviceName = service.ServiceName;
+        //            string startMode = service.StartType.ToString();
+
+        //            if (service.StartType == ServiceStartMode.Automatic)
+        //            {
+        //                // Maybe not feasible because it doesn't expose the actual path
+        //                //startupServices.Add(new StartupService(rawNameString: displayName, path: pathName));
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            // Handle any exceptions that may occur while accessing service properties
+        //            Debug.WriteLine($"Error accessing service {service.ServiceName}: {ex.Message}");
+        //        }
+        //    }
+
+        //    return startupServices;
+        //}
+
+        //// Unused: Uses WMI
+        //public static List<StartupService> GetStartupServices3()
+        //{
+        //    List<StartupService> startupServices = [];
+
+        //    ServiceController[] servicesList = ServiceController.GetServices();
+
+        //    string query = "SELECT Name, DisplayName, PathName FROM Win32_Service WHERE StartMode = 'Auto'";
+        //    using (ManagementObjectSearcher searcher2 = new ManagementObjectSearcher(query))
+        //    {
+        //        foreach (ManagementObject obj in searcher2.Get())
+        //        {
+        //            string name = obj["DisplayName"] as string ?? obj["Name"] as string ?? string.Empty;
+        //            string path = obj["PathName"] as string ?? string.Empty;
+
+        //            startupServices.Add(new StartupService(name, path));
+        //        }
+        //    }
+
+        //    return startupServices;
+        //}
 
         public static List<StartupTask> GetStartupScheduledTasks()
         {

@@ -35,7 +35,7 @@ namespace New_Startup_App_Notifier
             foreach (StartupService item in startupServices)
             {
                 displayString += $"{item.Name}:\n";
-                displayString += $"\t{item.Path}" + "\n\n";
+                displayString += $"\tPath: {item.ExecPath}" + "\n\n";
             }
 
             displayString += "\n\n========= SCHEDULED TASKS =========\n\n";

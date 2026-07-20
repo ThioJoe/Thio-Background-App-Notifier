@@ -16,5 +16,43 @@ namespace New_Startup_App_Notifier
         {
             InitializeComponent();
         }
-    }
-}
+
+        /// <summary>
+        /// Fetches startup tasks and services and shows them in the dev text box control
+        /// </summary>
+        public void SimpleListStartupItems()
+        {
+            // Fetch startup tasks and services
+            List<StartupItem> startupServices = StartupScanner.GetStartupServices();
+            List<StartupTask> startupScheduledTasks = StartupScanner.GetStartupScheduledTasks();
+
+            // Generate text list
+            string displayString = string.Empty;
+
+            displayString += "========= SERVICES =========\n\n";
+            foreach (StartupItem item in startupServices)
+            {
+                displayString += $"{item.Name} - {item.Path}{Environment.NewLine}";
+            }
+
+            displayString += "\n\n========= SCHEDULED TASKS =========\n\n";
+            foreach (StartupTask item in startupScheduledTasks)
+            {
+                displayString += $"{item.Name} - {item.TaskPath}{Environment.NewLine}";
+            }
+
+            // Clear the text box before adding new items
+            richTextBoxDevOutput.Clear();
+
+            // Display startup items in the text box
+            richTextBoxDevOutput.Text = displayString;
+        }
+
+        private void buttonDevTest_Click(object sender, EventArgs e)
+        {
+            SimpleListStartupItems();
+        }
+
+    } // End of MainForm Class
+
+} // End of Namespace

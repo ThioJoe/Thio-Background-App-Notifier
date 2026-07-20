@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+#nullable enable
+
 namespace New_Startup_App_Notifier
 {
     public partial class MainForm : Form
@@ -38,7 +40,10 @@ namespace New_Startup_App_Notifier
             displayString += "\n\n========= SCHEDULED TASKS =========\n\n";
             foreach (StartupTask item in startupScheduledTasks)
             {
-                displayString += $"{item.Name} - {item.TaskPath}{Environment.NewLine}";
+                string currTaskPaths = "\n\t" + string.Join("\n\t", item.ExecActionPathsWithArgs);
+
+                displayString += $"{item.Name}:";
+                displayString += currTaskPaths + "\n\n";
             }
 
             // Clear the text box before adding new items

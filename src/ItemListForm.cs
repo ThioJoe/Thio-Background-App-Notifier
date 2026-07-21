@@ -12,6 +12,9 @@ namespace New_Startup_App_Notifier;
 /// </summary>
 public partial class ItemListForm : Form
 {
+    // colFirstDetected is the 4th column (index 3); sort it chronologically.
+    private readonly ListViewColumnSorter _sorter = new ListViewColumnSorter { DateColumnIndex = 3 };
+
     public ItemListForm(string title, IEnumerable<IStartupItem> items)
     {
         InitializeComponent();
@@ -20,7 +23,26 @@ public partial class ItemListForm : Form
         labelTitle.Text = title;
 
         UiHelpers.AttachCopyContextMenu(listView);
+        listView.ListViewItemSorter = _sorter;
+        listView.ColumnClick += listView_ColumnClick;
+
         Populate(items);
+    }
+
+    private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
+    {
+        if (e.Column == _sorter.SortColumn)
+        {
+            // Same column clicked again: flip the direction.
+            _sorter.Order = _sorter.Order == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+        }
+        else
+        {
+            _sorter.SortColumn = e.Column;
+            _sorter.Order = SortOrder.Ascending;
+        }
+
+        listView.Sort();
     }
 
     private void Populate(IEnumerable<IStartupItem> items)

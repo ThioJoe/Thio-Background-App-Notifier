@@ -64,6 +64,7 @@
     <Compile Include="ItemListForm.Designer.cs">
       <DependentUpon>ItemListForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ListViewColumnSorter.cs" />
     <Compile Include="Includes\SystemTray.cs" />
     <Compile Include="Includes\TrayContextMenu.cs" />
     <Compile Include="MainForm.cs">

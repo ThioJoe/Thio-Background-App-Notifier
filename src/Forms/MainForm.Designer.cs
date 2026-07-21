@@ -69,7 +69,7 @@ namespace Thio_Background_App_Notifier
             this.labelAppTitle.Name = "labelAppTitle";
             this.labelAppTitle.Size = new System.Drawing.Size(629, 55);
             this.labelAppTitle.TabIndex = 20;
-            this.labelAppTitle.Text = MyStrings.AppName;
+            this.labelAppTitle.Text = "Thio\'s Background App Notifier";
             // 
             // labelAppSubtitle
             // 
@@ -142,9 +142,9 @@ namespace Thio_Background_App_Notifier
             // 
             this.buttonDevView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDevView.Enabled = false;
-            this.buttonDevView.Location = new System.Drawing.Point(1387, 818);
+            this.buttonDevView.Location = new System.Drawing.Point(860, 53);
             this.buttonDevView.Name = "buttonDevView";
-            this.buttonDevView.Size = new System.Drawing.Size(150, 34);
+            this.buttonDevView.Size = new System.Drawing.Size(173, 56);
             this.buttonDevView.TabIndex = 7;
             this.buttonDevView.Text = "Dev Window";
             this.buttonDevView.UseVisualStyleBackColor = true;
@@ -199,7 +199,7 @@ namespace Thio_Background_App_Notifier
             // 
             this.labelStatusDetail.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelStatusDetail.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.labelStatusDetail.Location = new System.Drawing.Point(18, 48);
+            this.labelStatusDetail.Location = new System.Drawing.Point(18, 49);
             this.labelStatusDetail.Name = "labelStatusDetail";
             this.labelStatusDetail.Size = new System.Drawing.Size(681, 24);
             this.labelStatusDetail.TabIndex = 1;
@@ -209,7 +209,7 @@ namespace Thio_Background_App_Notifier
             this.labelStatusValue.Font = new System.Drawing.Font("Segoe UI", 13.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelStatusValue.Location = new System.Drawing.Point(15, 8);
             this.labelStatusValue.Name = "labelStatusValue";
-            this.labelStatusValue.Size = new System.Drawing.Size(707, 32);
+            this.labelStatusValue.Size = new System.Drawing.Size(684, 32);
             this.labelStatusValue.TabIndex = 0;
             // 
             // panelWinNotify
@@ -375,7 +375,7 @@ namespace Thio_Background_App_Notifier
             this.Controls.Add(this.buttonDevView);
             this.MinimumSize = new System.Drawing.Size(1300, 560);
             this.Name = "MainForm";
-            this.Text = MyStrings.AppName;
+            this.Text = "Thio\'s Background App Notifier";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.panelStatus.ResumeLayout(false);
             this.panelWinNotify.ResumeLayout(false);

@@ -44,6 +44,8 @@ namespace Thio_Background_App_Notifier
 
             #if DEBUG
                 _devViewForm = new DevViewForm();
+                buttonDevView.Visible = true;
+                buttonDevView.Enabled = true;
             #endif
         }
 

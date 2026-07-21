@@ -1,0 +1,21 @@
+Command:
+	wix build ThioBackgroundAppNotifier_Installer.wxs -d ProductVersion="1.0.0.0" -arch x64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext
+
+Check wix version
+	wix --version
+
+Install specific extension versions via:
+	wix extension add -g WixToolset.UI.wixext/6.0.0
+	wix extension add -g WixToolset.Util.wixext/6.0.0
+
+
+Install extensions in general via:
+	wix extension add -g WixToolset.UI.wixext
+	wix extension add -g WixToolset.Util.wixext
+
+GUIDS used by the MSI Installer and DLL
+	- If using an AI to work on the WXS file, make sure it doesn't make a mistake when writing these
+
+	- Used only by MSI Installer:
+		UpgradeCode GUID: 		c0de4349-0f65-45b6-a53d-ee0c1b1c8de0
+		x64 Component GUID:		4b47810d-b002-4ffa-bf28-01c24d70ba8f

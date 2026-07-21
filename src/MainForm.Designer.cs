@@ -36,7 +36,7 @@ namespace New_Startup_App_Notifier
             this.checkBoxRunAtStartup = new System.Windows.Forms.CheckBox();
             this.buttonRescan = new System.Windows.Forms.Button();
             this.buttonOpenLogFolder = new System.Windows.Forms.Button();
-            this.listViewItems = new System.Windows.Forms.ListView();
+            this.listViewItems = new New_Startup_App_Notifier.BufferedListView();
             this.colNew = new System.Windows.Forms.ColumnHeader();
             this.colType = new System.Windows.Forms.ColumnHeader();
             this.colName = new System.Windows.Forms.ColumnHeader();
@@ -226,7 +226,7 @@ namespace New_Startup_App_Notifier
         private System.Windows.Forms.CheckBox checkBoxRunAtStartup;
         private System.Windows.Forms.Button buttonRescan;
         private System.Windows.Forms.Button buttonOpenLogFolder;
-        private System.Windows.Forms.ListView listViewItems;
+        private New_Startup_App_Notifier.BufferedListView listViewItems;
         private System.Windows.Forms.ColumnHeader colNew;
         private System.Windows.Forms.ColumnHeader colType;
         private System.Windows.Forms.ColumnHeader colName;

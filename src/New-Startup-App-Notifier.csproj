@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppOptions.cs" />
+    <Compile Include="BufferedListView.cs" />
     <Compile Include="DetectionStore.cs" />
     <Compile Include="DevViewForm.cs">
       <SubType>Form</SubType>

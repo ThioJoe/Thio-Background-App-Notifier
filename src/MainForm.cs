@@ -28,7 +28,8 @@ namespace New_Startup_App_Notifier
 
             // ---- System tray (left as-is from the existing implementation for now) ----
             TrayContextMenu trayContextMenu = new TrayContextMenu(
-                exitAppMenuOption: true
+                exitAppMenuOption: true,
+                updateURL: "https://github.com/ThioJoe/New-Startup-App-Notifier/releases"
             );
             trayContextMenu.AddCustomMenuItem( text: "Open Log Folder", action: OpenLogFolder );
 

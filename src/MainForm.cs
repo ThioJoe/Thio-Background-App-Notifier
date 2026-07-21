@@ -51,6 +51,7 @@ namespace New_Startup_App_Notifier
         {
             UiHelpers.AttachCopyContextMenu(listViewItems);
             RefreshStartupCheckbox();
+            RefreshWindowsNotificationState();
             DisplayResult(_result);
 
             #if DEBUG
@@ -292,6 +293,61 @@ namespace New_Startup_App_Notifier
 
                 // Put the checkbox back to whatever the real on-disk state is.
                 RefreshStartupCheckbox();
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Windows' own "regular startup app" notification
+        // ---------------------------------------------------------------------
+
+        private bool? _winNotifyEnabled;
+
+        private void RefreshWindowsNotificationState()
+        {
+            _winNotifyEnabled = WindowsStartupNotification.IsEnabled();
+
+            string status;
+            if (_winNotifyEnabled == true)
+                status = "Windows startup-app notifications are currently: On";
+            else if (_winNotifyEnabled == false)
+                status = "Windows startup-app notifications are currently: Off";
+            else
+                status = "Windows startup-app notifications: couldn't detect the current setting.";
+
+            labelWinNotify.Text =
+                "This app only covers startup services and scheduled tasks. For regular startup apps, "
+                + "Windows can notify you itself.\r\n"
+                + status;
+
+            buttonWinNotify.Text = _winNotifyEnabled == false
+                ? "Turn On Windows Notifications"
+                : "Open Notification Settings";
+        }
+
+        private void buttonWinNotify_Click(object sender, EventArgs e)
+        {
+            // If we know it's off, offer to turn it on directly; otherwise just open Settings.
+            if (_winNotifyEnabled == false)
+            {
+                if (WindowsStartupNotification.Enable(out string error))
+                {
+                    RefreshWindowsNotificationState();
+                    MessageBox.Show(this,
+                        "Windows startup-app notifications have been turned on.",
+                        "Sneaky Startup App Notifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(this,
+                        "Couldn't change the setting automatically:\r\n" + error
+                        + "\r\n\r\nOpening Windows notification settings instead.",
+                        "Sneaky Startup App Notifier", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    WindowsStartupNotification.OpenSettings();
+                }
+            }
+            else
+            {
+                WindowsStartupNotification.OpenSettings();
             }
         }
 

@@ -82,6 +82,7 @@
     <Compile Include="StartupShortcut.cs" />
     <Compile Include="UiHelpers.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="WindowsStartupNotification.cs" />
     <EmbeddedResource Include="DevViewForm.resx">
       <DependentUpon>DevViewForm.cs</DependentUpon>
     </EmbeddedResource>

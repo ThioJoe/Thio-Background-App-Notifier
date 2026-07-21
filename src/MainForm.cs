@@ -254,11 +254,6 @@ namespace New_Startup_App_Notifier
             }
         }
 
-        private void buttonOpenLogFolder_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void listViewItems_DoubleClick(object sender, EventArgs e)
         {
             if (listViewItems.SelectedItems.Count == 0)
@@ -304,54 +299,36 @@ namespace New_Startup_App_Notifier
         // Windows' own "regular startup app" notification
         // ---------------------------------------------------------------------
 
-        private bool? _winNotifyEnabled;
-
+        // Shows the current Windows "Startup app notifications" setting as a prominent colored label.
+        // The details / actions live in a dedicated info form (buttonWinNotify).
         private void RefreshWindowsNotificationState()
         {
-            _winNotifyEnabled = WindowsStartupNotification.IsEnabled();
+            bool? enabled = WindowsStartupNotification.IsEnabled();
 
-            string status;
-            if (_winNotifyEnabled == true)
-                status = "Windows startup-app notifications are currently: On";
-            else if (_winNotifyEnabled == false)
-                status = "Windows startup-app notifications are currently: Off";
+            if (enabled == true)
+            {
+                labelWinNotify.Text = "Currently ON";
+                labelWinNotify.ForeColor = Color.FromArgb(0, 128, 0);
+            }
+            else if (enabled == false)
+            {
+                labelWinNotify.Text = "Currently OFF";
+                labelWinNotify.ForeColor = Color.FromArgb(192, 0, 0);
+            }
             else
-                status = "Windows startup-app notifications: couldn't detect the current setting.";
-
-            labelWinNotify.Text =
-                "This app covers startup services and scheduled tasks.\r\n"
-                + status;
-
-            buttonWinNotify.Text = _winNotifyEnabled == false
-                ? "Turn On Windows Notifications"
-                : "Open Notification Settings";
+            {
+                labelWinNotify.Text = "Status unknown";
+                labelWinNotify.ForeColor = SystemColors.GrayText;
+            }
         }
 
         private void buttonWinNotify_Click(object sender, EventArgs e)
         {
-            // If we know it's off, offer to turn it on directly; otherwise just open Settings.
-            if (_winNotifyEnabled == false)
-            {
-                if (WindowsStartupNotification.Enable(out string error))
-                {
-                    RefreshWindowsNotificationState();
-                    MessageBox.Show(this,
-                        "Windows startup-app notifications have been turned on.",
-                        AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show(this,
-                        "Couldn't change the setting automatically:\r\n" + error
-                        + "\r\n\r\nOpening Windows notification settings instead.",
-                        AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    WindowsStartupNotification.OpenSettings();
-                }
-            }
-            else
-            {
-                WindowsStartupNotification.OpenSettings();
-            }
+            using (var form = new WindowsNotifyInfoForm())
+                form.ShowDialog(this);
+
+            // The setting may have changed in the info form; reflect it.
+            RefreshWindowsNotificationState();
         }
 
         private void buttonDevView_Click(object sender, EventArgs e)

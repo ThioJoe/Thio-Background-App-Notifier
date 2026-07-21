@@ -37,6 +37,7 @@ namespace New_Startup_App_Notifier
             this.buttonRescan = new System.Windows.Forms.Button();
             this.labelPlaceholder = new System.Windows.Forms.Label();
             this.labelMainListTitle = new System.Windows.Forms.Label();
+            this.labelWinNotifyCaption = new System.Windows.Forms.Label();
             this.labelWinNotify = new System.Windows.Forms.Label();
             this.buttonWinNotify = new System.Windows.Forms.Button();
             this.listViewItems = new New_Startup_App_Notifier.BufferedListView();
@@ -149,23 +150,34 @@ namespace New_Startup_App_Notifier
             this.labelMainListTitle.Size = new System.Drawing.Size(548, 29);
             this.labelMainListTitle.TabIndex = 10;
             this.labelMainListTitle.Text = "Latest New Startup Tasks && Background Services:\r\n";
-            // 
+            //
+            // labelWinNotifyCaption
+            //
+            this.labelWinNotifyCaption.AutoSize = true;
+            this.labelWinNotifyCaption.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelWinNotifyCaption.Location = new System.Drawing.Point(24, 126);
+            this.labelWinNotifyCaption.Name = "labelWinNotifyCaption";
+            this.labelWinNotifyCaption.Size = new System.Drawing.Size(600, 20);
+            this.labelWinNotifyCaption.TabIndex = 13;
+            this.labelWinNotifyCaption.Text = "Windows can alert you about new regular startup apps (which this app doesn\'t track):";
+            //
             // labelWinNotify
-            // 
-            this.labelWinNotify.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelWinNotify.Location = new System.Drawing.Point(24, 126);
+            //
+            this.labelWinNotify.AutoSize = true;
+            this.labelWinNotify.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.labelWinNotify.Location = new System.Drawing.Point(22, 152);
             this.labelWinNotify.Name = "labelWinNotify";
-            this.labelWinNotify.Size = new System.Drawing.Size(760, 74);
+            this.labelWinNotify.Size = new System.Drawing.Size(140, 28);
             this.labelWinNotify.TabIndex = 11;
-            this.labelWinNotify.Text = "This app only covers startup services and scheduled tasks.";
-            // 
+            this.labelWinNotify.Text = "Checking…";
+            //
             // buttonWinNotify
-            // 
-            this.buttonWinNotify.Location = new System.Drawing.Point(729, 144);
+            //
+            this.buttonWinNotify.Location = new System.Drawing.Point(729, 138);
             this.buttonWinNotify.Name = "buttonWinNotify";
-            this.buttonWinNotify.Size = new System.Drawing.Size(195, 65);
+            this.buttonWinNotify.Size = new System.Drawing.Size(195, 52);
             this.buttonWinNotify.TabIndex = 12;
-            this.buttonWinNotify.Text = "Windows\r\nNotification Settings";
+            this.buttonWinNotify.Text = "More Info…";
             this.buttonWinNotify.UseVisualStyleBackColor = true;
             this.buttonWinNotify.Click += new System.EventHandler(this.buttonWinNotify_Click);
             // 
@@ -235,6 +247,7 @@ namespace New_Startup_App_Notifier
             this.ClientSize = new System.Drawing.Size(1561, 662);
             this.Controls.Add(this.buttonWinNotify);
             this.Controls.Add(this.labelWinNotify);
+            this.Controls.Add(this.labelWinNotifyCaption);
             this.Controls.Add(this.labelMainListTitle);
             this.Controls.Add(this.labelPlaceholder);
             this.Controls.Add(this.listViewItems);
@@ -274,6 +287,7 @@ namespace New_Startup_App_Notifier
         private System.Windows.Forms.ColumnHeader colPath;
         private System.Windows.Forms.Label labelMainListTitle;
         private System.Windows.Forms.Label labelWinNotify;
+        private System.Windows.Forms.Label labelWinNotifyCaption;
         private System.Windows.Forms.Button buttonWinNotify;
     }
 }

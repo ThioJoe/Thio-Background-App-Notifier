@@ -26,6 +26,12 @@ namespace New_Startup_App_Notifier
         [DataMember(Order = 4)] public string Detail { get; set; } = string.Empty; // start type / triggers
         [DataMember(Order = 5)] public string FirstDetectedUtc { get; set; } = string.Empty; // ISO-8601 (round-trip)
         [DataMember(Order = 6)] public string LastSeenUtc { get; set; } = string.Empty;      // ISO-8601 (round-trip)
+
+        /// <summary>The quiet-mode popup has already alerted the user about this item; don't alert again.</summary>
+        [DataMember(Order = 7)] public bool Alerted { get; set; }
+
+        /// <summary>The user has actually viewed this item in the main window.</summary>
+        [DataMember(Order = 8)] public bool SeenInWindow { get; set; }
     }
 
     /// <summary>
@@ -34,14 +40,18 @@ namespace New_Startup_App_Notifier
     [DataContract]
     public class DetectionStoreData
     {
-        [DataMember(Order = 0)] public int SchemaVersion { get; set; } = 1;
+        [DataMember(Order = 0)] public int SchemaVersion { get; set; } = 2;
         [DataMember(Order = 1)] public string? FirstRunUtc { get; set; }
         [DataMember(Order = 2)] public string? LastRunUtc { get; set; }
         [DataMember(Order = 3)] public List<KnownStartupItem> Items { get; set; } = new List<KnownStartupItem>();
     }
 
     /// <summary>
-    /// The outcome of a single scan: the live items, plus which of them are new since the last run.
+    /// The outcome of a single scan. Tracks two independent notions of "new":
+    ///  - <see cref="UnalertedItems"/>: things the quiet-mode popup hasn't told the user about yet.
+    ///  - <see cref="UnseenItems"/>: things the user hasn't yet viewed in the main window.
+    /// These are separate so we can stop nagging (once alerted) while still showing something in the
+    /// window until the user actually looks at it.
     /// </summary>
     public class ScanResult
     {
@@ -55,17 +65,40 @@ namespace New_Startup_App_Notifier
         public List<IStartupItem> Services { get; set; } = new List<IStartupItem>();
         public List<IStartupItem> Tasks { get; set; } = new List<IStartupItem>();
 
-        /// <summary>Items detected for the first time on this run (always empty on the first/baseline run).</summary>
-        public List<IStartupItem> NewItems { get; set; } = new List<IStartupItem>();
+        /// <summary>
+        /// Items the quiet-mode popup hasn't alerted the user about yet. Drives whether (and about what)
+        /// the startup popup appears. Empty on the first/baseline run.
+        /// </summary>
+        public List<IStartupItem> UnalertedItems { get; set; } = new List<IStartupItem>();
 
         /// <summary>
-        /// Items detected at any point after the first-run baseline (i.e. everything that has appeared
-        /// since tracking began, not the baseline itself). Empty on the first run. This is what the
-        /// main window lists so the baseline doesn't look like it needs attention.
+        /// Items the user hasn't yet viewed in the main window (i.e. new since the last time they
+        /// looked). This is what the main window lists. Empty on the first/baseline run.
         /// </summary>
-        public List<IStartupItem> ItemsSinceBaseline { get; set; } = new List<IStartupItem>();
+        public List<IStartupItem> UnseenItems { get; set; } = new List<IStartupItem>();
 
-        public bool HasNewItems => NewItems.Count > 0;
+        public bool HasUnalertedItems => UnalertedItems.Count > 0;
+        public bool HasUnseenItems => UnseenItems.Count > 0;
+
+        // The store this result came from, so it can be persisted once the results are actually shown.
+        internal DetectionStore? Store { get; set; }
+
+        /// <summary>
+        /// Records that the user has now viewed the window: marks the shown items as both seen and
+        /// alerted, and saves. Call this when the main window is displayed.
+        /// </summary>
+        public void CommitSeen() => Store?.MarkSeenAndAlerted(UnseenItems);
+
+        /// <summary>
+        /// Records that the quiet popup alerted the user (even if they declined to open the window):
+        /// marks the alerted items so they won't be alerted again, and saves.
+        /// </summary>
+        public void CommitAlerted() => Store?.MarkAlerted(UnalertedItems);
+
+        /// <summary>
+        /// Saves run bookkeeping only (no new items to mark). Used on the silent quiet path.
+        /// </summary>
+        public void CommitBookkeeping() => Store?.Save();
     }
 
     /// <summary>
@@ -76,12 +109,20 @@ namespace New_Startup_App_Notifier
     {
         private readonly DetectionStoreData _data;
         private readonly bool _existedBefore;
+        private readonly Dictionary<string, KnownStartupItem> _byKey;
 
         private DetectionStore(DetectionStoreData data, bool existedBefore)
         {
             _data = data;
             _existedBefore = existedBefore;
             _data.Items ??= new List<KnownStartupItem>();
+
+            _byKey = new Dictionary<string, KnownStartupItem>(StringComparer.OrdinalIgnoreCase);
+            foreach (KnownStartupItem known in _data.Items)
+            {
+                if (!string.IsNullOrEmpty(known.IdentityKey))
+                    _byKey[known.IdentityKey] = known;
+            }
         }
 
         // ---- Locations ----
@@ -96,27 +137,18 @@ namespace New_Startup_App_Notifier
         // ---- Public entry point ----
 
         /// <summary>
-        /// Performs a full scan (services + scheduled tasks), compares it to the saved log,
-        /// records any newly-seen items with a first-detection timestamp, saves the log, and
-        /// returns the result for display.
+        /// Performs a full scan (services + scheduled tasks) and compares it to the saved log.
+        /// This mutates the in-memory store but does NOT write to disk; the caller persists via one of
+        /// the ScanResult.Commit* methods once the results are actually surfaced to the user.
         /// </summary>
         public static ScanResult PerformScan()
         {
-            // 1. Live scan.
             var liveItems = new List<IStartupItem>();
             liveItems.AddRange(StartupScanner.GetStartupServices());
             liveItems.AddRange(StartupScanner.GetStartupScheduledTasks());
 
-            // 2. Load the previous log (or an empty baseline on first run / if the file is unreadable).
             DetectionStore store = Load();
-
-            // 3. Compare + timestamp.
-            ScanResult result = store.Apply(liveItems, DateTime.UtcNow);
-
-            // 4. Persist.
-            store.Save();
-
-            return result;
+            return store.Apply(liveItems, DateTime.UtcNow);
         }
 
         // ---- Load / Save ----
@@ -170,6 +202,31 @@ namespace New_Startup_App_Notifier
             }
         }
 
+        // ---- Marking (used by ScanResult.Commit* once results are shown) ----
+
+        internal void MarkSeenAndAlerted(IEnumerable<IStartupItem> items)
+        {
+            foreach (IStartupItem item in items)
+            {
+                if (_byKey.TryGetValue(item.IdentityKey, out KnownStartupItem? record))
+                {
+                    record.SeenInWindow = true;
+                    record.Alerted = true; // Seeing it in the window means we never need to alert about it.
+                }
+            }
+            Save();
+        }
+
+        internal void MarkAlerted(IEnumerable<IStartupItem> items)
+        {
+            foreach (IStartupItem item in items)
+            {
+                if (_byKey.TryGetValue(item.IdentityKey, out KnownStartupItem? record))
+                    record.Alerted = true;
+            }
+            Save();
+        }
+
         // ---- Comparison ----
 
         private ScanResult Apply(List<IStartupItem> liveItems, DateTime nowUtc)
@@ -178,26 +235,15 @@ namespace New_Startup_App_Notifier
             DateTime nowLocal = nowUtc.ToLocalTime();
             bool isFirstRun = !_existedBefore;
 
-            var byKey = new Dictionary<string, KnownStartupItem>(StringComparer.OrdinalIgnoreCase);
-            foreach (KnownStartupItem known in _data.Items)
-            {
-                if (!string.IsNullOrEmpty(known.IdentityKey))
-                    byKey[known.IdentityKey] = known;
-            }
-
-            // The first-run timestamp identifies baseline items: everything recorded on the first run
-            // shares this exact value, so anything with a different FirstDetectedUtc appeared later.
-            string? baselineStamp = _data.FirstRunUtc;
-
-            var newItems = new List<IStartupItem>();
-            var itemsSinceBaseline = new List<IStartupItem>();
+            var unalertedItems = new List<IStartupItem>();
+            var unseenItems = new List<IStartupItem>();
 
             foreach (IStartupItem item in liveItems)
             {
                 string key = item.IdentityKey;
                 KnownStartupItem record;
 
-                if (byKey.TryGetValue(key, out KnownStartupItem? existing))
+                if (_byKey.TryGetValue(key, out KnownStartupItem? existing))
                 {
                     // Seen on a previous run -> keep its original first-detection time, refresh the rest.
                     existing.LastSeenUtc = isoNow;
@@ -222,24 +268,35 @@ namespace New_Startup_App_Notifier
                         FirstDetectedUtc = isoNow,
                         LastSeenUtc = isoNow
                     };
+
+                    if (isFirstRun)
+                    {
+                        // Everything present on the first run is the baseline: treat it as already
+                        // known so it neither pops up nor fills the "new" list.
+                        record.Alerted = true;
+                        record.SeenInWindow = true;
+                    }
+
                     _data.Items.Add(record);
-                    byKey[key] = record;
+                    _byKey[key] = record;
 
                     item.FirstDetectionTime = nowLocal;
-
-                    // On the very first run everything is "new", which isn't useful to flag, so we only
-                    // treat items as new once a baseline already exists.
-                    item.IsFirstDetection = !isFirstRun;
-                    if (!isFirstRun)
-                        newItems.Add(item);
+                    item.IsFirstDetection = !isFirstRun; // Highlight genuinely-new items in the UI.
                 }
 
-                // Anything not part of the first-run baseline is "since baseline" and stays listed on
-                // the main window (whether it was added this run or a previous one).
-                bool isBaseline = isFirstRun || record.FirstDetectedUtc == baselineStamp;
-                if (!isBaseline)
-                    itemsSinceBaseline.Add(item);
+                // Classify against the two independent "new" notions.
+                if (!record.Alerted)
+                    unalertedItems.Add(item);
+                if (!record.SeenInWindow)
+                    unseenItems.Add(item);
             }
+
+            // Forget items that are no longer present. If a startup item is deleted (or disabled so it
+            // no longer shows up) and later comes back, this ensures it's reported as new again rather
+            // than remembered as already-known.
+            var liveKeys = new HashSet<string>(
+                liveItems.Select(i => i.IdentityKey), StringComparer.OrdinalIgnoreCase);
+            _data.Items.RemoveAll(r => !liveKeys.Contains(r.IdentityKey));
 
             DateTime? previousRunLocal = TryFromIso(_data.LastRunUtc);
 
@@ -255,8 +312,9 @@ namespace New_Startup_App_Notifier
                 AllItems = liveItems,
                 Services = liveItems.Where(i => i.Type == StartupItemType.Service).ToList(),
                 Tasks = liveItems.Where(i => i.Type == StartupItemType.ScheduledTask).ToList(),
-                NewItems = newItems,
-                ItemsSinceBaseline = itemsSinceBaseline
+                UnalertedItems = unalertedItems,
+                UnseenItems = unseenItems,
+                Store = this
             };
         }
 

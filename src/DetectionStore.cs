@@ -47,11 +47,12 @@ namespace Thio_Background_App_Notifier
     }
 
     /// <summary>
-    /// The outcome of a single scan. Tracks two independent notions of "new":
+    /// The outcome of a single scan. Distinguishes what's brand-new on this scan from the running
+    /// history of everything that has appeared since the baseline:
     ///  - <see cref="UnalertedItems"/>: things the quiet-mode popup hasn't told the user about yet.
-    ///  - <see cref="UnseenItems"/>: things the user hasn't yet viewed in the main window.
-    /// These are separate so we can stop nagging (once alerted) while still showing something in the
-    /// window until the user actually looks at it.
+    ///  - <see cref="NewItems"/>: things detected for the very first time on this scan (highlighted).
+    ///  - <see cref="ItemsSinceBaseline"/>: everything that has appeared since the first-run baseline,
+    ///    whether this scan or an earlier one. This is the persistent history the main window lists.
     /// </summary>
     public class ScanResult
     {
@@ -72,22 +73,31 @@ namespace Thio_Background_App_Notifier
         public List<IStartupItem> UnalertedItems { get; set; } = new List<IStartupItem>();
 
         /// <summary>
-        /// Items the user hasn't yet viewed in the main window (i.e. new since the last time they
-        /// looked). This is what the main window lists. Empty on the first/baseline run.
+        /// Items detected for the first time on this scan (always empty on the first/baseline run).
+        /// These are the ones highlighted as "NEW" in the list and counted in the status headline.
         /// </summary>
-        public List<IStartupItem> UnseenItems { get; set; } = new List<IStartupItem>();
+        public List<IStartupItem> NewItems { get; set; } = new List<IStartupItem>();
+
+        /// <summary>
+        /// Every currently-present item that appeared after the first-run baseline — added this scan
+        /// or on a previous one. This is the running history the main window lists, so already-seen
+        /// items stay listed across rescans instead of disappearing once viewed. Empty on the first run.
+        /// </summary>
+        public List<IStartupItem> ItemsSinceBaseline { get; set; } = new List<IStartupItem>();
 
         public bool HasUnalertedItems => UnalertedItems.Count > 0;
-        public bool HasUnseenItems => UnseenItems.Count > 0;
+        public bool HasNewItems => NewItems.Count > 0;
 
         // The store this result came from, so it can be persisted once the results are actually shown.
         internal DetectionStore? Store { get; set; }
 
         /// <summary>
-        /// Records that the user has now viewed the window: marks the shown items as both seen and
-        /// alerted, and saves. Call this when the main window is displayed.
+        /// Records that the user has now seen the main window: marks the listed history items as
+        /// alerted (so the quiet popup won't re-nag about anything already shown) and saves — which
+        /// also persists newly-detected items so they remain in the history on later scans.
+        /// Call this when the main window is displayed.
         /// </summary>
-        public void CommitSeen() => Store?.MarkSeenAndAlerted(UnseenItems);
+        public void CommitShown() => Store?.MarkAlerted(ItemsSinceBaseline);
 
         /// <summary>
         /// Records that the quiet popup alerted the user (even if they declined to open the window):
@@ -202,19 +212,6 @@ namespace Thio_Background_App_Notifier
 
         // ---- Marking (used by ScanResult.Commit* once results are shown) ----
 
-        internal void MarkSeenAndAlerted(IEnumerable<IStartupItem> items)
-        {
-            foreach (IStartupItem item in items)
-            {
-                if (_byKey.TryGetValue(item.IdentityKey, out KnownStartupItem? record))
-                {
-                    record.SeenInWindow = true;
-                    record.Alerted = true; // Seeing it in the window means we never need to alert about it.
-                }
-            }
-            Save();
-        }
-
         internal void MarkAlerted(IEnumerable<IStartupItem> items)
         {
             foreach (IStartupItem item in items)
@@ -233,8 +230,14 @@ namespace Thio_Background_App_Notifier
             DateTime nowLocal = nowUtc.ToLocalTime();
             bool isFirstRun = !_existedBefore;
 
+            // Everything recorded on the first run shares this exact first-detection stamp, so it marks
+            // the baseline: any record with a different FirstDetectedUtc appeared later. Captured before
+            // FirstRunUtc is (re)assigned below.
+            string? baselineStamp = _data.FirstRunUtc;
+
             var unalertedItems = new List<IStartupItem>();
-            var unseenItems = new List<IStartupItem>();
+            var newItems = new List<IStartupItem>();
+            var itemsSinceBaseline = new List<IStartupItem>();
 
             foreach (IStartupItem item in liveItems)
             {
@@ -280,13 +283,21 @@ namespace Thio_Background_App_Notifier
 
                     item.FirstDetectionTime = nowLocal;
                     item.IsFirstDetection = !isFirstRun; // Highlight genuinely-new items in the UI.
+
+                    // Detected for the first time on this scan (never on the baseline run).
+                    if (!isFirstRun)
+                        newItems.Add(item);
                 }
 
-                // Classify against the two independent "new" notions.
+                // The quiet popup only cares about items it hasn't alerted about yet.
                 if (!record.Alerted)
                     unalertedItems.Add(item);
-                if (!record.SeenInWindow)
-                    unseenItems.Add(item);
+
+                // Anything not part of the first-run baseline belongs in the running history and stays
+                // listed on the main window, whether it was added this scan or an earlier one.
+                bool isBaseline = isFirstRun || record.FirstDetectedUtc == baselineStamp;
+                if (!isBaseline)
+                    itemsSinceBaseline.Add(item);
             }
 
             // Forget items that are no longer present. If a startup item is deleted (or disabled so it
@@ -311,7 +322,8 @@ namespace Thio_Background_App_Notifier
                 Services = liveItems.Where(i => i.Type == StartupItemType.Service).ToList(),
                 Tasks = liveItems.Where(i => i.Type == StartupItemType.ScheduledTask).ToList(),
                 UnalertedItems = unalertedItems,
-                UnseenItems = unseenItems,
+                NewItems = newItems,
+                ItemsSinceBaseline = itemsSinceBaseline,
                 Store = this
             };
         }

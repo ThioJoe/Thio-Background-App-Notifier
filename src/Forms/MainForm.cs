@@ -54,8 +54,9 @@ namespace Thio_Background_App_Notifier
             RefreshWindowsNotificationState();
             DisplayResult(_result);
 
-            // The window is now shown, so record what was detected (marks the shown items seen + alerted).
-            _result.CommitSeen();
+            // The window is now shown, so persist the scan (and mark the listed items alerted so the
+            // quiet popup won't re-nag about anything already shown here).
+            _result.CommitShown();
 
         }
 
@@ -90,9 +91,9 @@ namespace Thio_Background_App_Notifier
                 labelStatusDetail.Text =
                     "From now on you'll be told which startup items are new.   " + backgroundNote;
             }
-            else if (result.HasUnseenItems)
+            else if (result.HasNewItems)
             {
-                labelStatusValue.Text = $"{result.UnseenItems.Count} new startup item(s) since you last checked.";
+                labelStatusValue.Text = $"{result.NewItems.Count} new startup item(s) since you last checked.";
                 labelStatusValue.ForeColor = Color.FromArgb(176, 0, 0);
                 labelStatusDetail.Text = "New items are highlighted below.   " + lastChecked;
             }
@@ -106,9 +107,11 @@ namespace Thio_Background_App_Notifier
 
         private void PopulateList(ScanResult result)
         {
-            // The main list only shows items the user hasn't viewed here yet (new since they last
-            // checked), so the baseline / already-seen items don't look like they need attention.
-            var items = result.UnseenItems;
+            // The main list is a running history of everything that has appeared since the baseline
+            // (so items stay listed across rescans, not just until viewed). The baseline itself is
+            // excluded so a fresh install doesn't look like a wall of things needing attention, and
+            // the items detected on this scan are highlighted below.
+            var items = result.ItemsSinceBaseline;
 
             listViewItems.BeginUpdate();
             try
@@ -170,7 +173,7 @@ namespace Thio_Background_App_Notifier
             {
                 string lead = result.IsFirstRun
                     ? "No new startup apps yet — this first run just recorded what's already set to run."
-                    : "No new startup apps found since you last checked.";
+                    : "No new startup apps have appeared since the baseline was recorded.";
 
                 labelPlaceholder.Text = lead + "\r\n\r\n"
                     + "Use “All Startup Services” or “All Startup Tasks” above to see everything currently set to run.";
@@ -245,7 +248,7 @@ namespace Thio_Background_App_Notifier
             {
                 DisplayResult(DetectionStore.PerformScan());
                 // The window is already open, so record the results immediately.
-                _result.CommitSeen();
+                _result.CommitShown();
             }
             finally
             {

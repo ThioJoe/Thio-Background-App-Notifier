@@ -120,12 +120,13 @@ namespace New_Startup_App_Notifier
 
                 foreach (IStartupItem item in ordered)
                 {
+                    // Columns: New, First Detected, Type, Name, Starts, Source, Path
                     var row = new ListViewItem(item.IsFirstDetection ? "NEW" : string.Empty);
+                    row.SubItems.Add(UiHelpers.FormatDetected(item.FirstDetectionTime));
                     row.SubItems.Add(UiHelpers.GetTypeLabel(item));
                     row.SubItems.Add(item.Name);
                     row.SubItems.Add(UiHelpers.GetDetail(item));
                     row.SubItems.Add(UiHelpers.GetSourceHint(item));
-                    row.SubItems.Add(item.FirstDetectionTime.ToString("g"));
                     row.SubItems.Add(item.Path);
                     row.Tag = item;
 

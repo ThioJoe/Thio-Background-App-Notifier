@@ -114,6 +114,13 @@ internal static class UiHelpers
     }
 
     /// <summary>
+    /// Formats a first-detection timestamp with a wider gap between the date and the time so the
+    /// two read apart cleanly.
+    /// </summary>
+    public static string FormatDetected(DateTime when)
+        => when.ToShortDateString() + "     " + when.ToShortTimeString();
+
+    /// <summary>
     /// Attaches a right-click "Copy" context menu (and Ctrl+C support) that copies the selected
     /// rows to the clipboard as tab-separated text. Reusable across every list in the app.
     /// </summary>

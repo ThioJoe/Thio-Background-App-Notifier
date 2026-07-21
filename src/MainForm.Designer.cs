@@ -141,11 +141,11 @@ namespace New_Startup_App_Notifier
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewItems.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colNew,
+            this.colFirstDetected,
             this.colType,
             this.colName,
             this.colStarts,
             this.colSource,
-            this.colFirstDetected,
             this.colPath});
             this.listViewItems.FullRowSelect = true;
             this.listViewItems.GridLines = true;
@@ -186,7 +186,7 @@ namespace New_Startup_App_Notifier
             // colFirstDetected
             //
             this.colFirstDetected.Text = "First Detected";
-            this.colFirstDetected.Width = 190;
+            this.colFirstDetected.Width = 210;
             //
             // colPath
             //

@@ -78,18 +78,23 @@ namespace Thio_Background_App_Notifier
                         mainInstruction: headline,
                         content: body,
                         verificationText: "Remind me again at next startup",
-                        icon: ModernTaskDialog.TaskDialogIcon.Information);
+                        icon: ModernTaskDialog.TaskDialogIcon.Information
+                    );
 
                 bool open = vr.ButtonId == ModernTaskDialog.Template.ButtonIds.Yes;
                 return (open, vr.VerificationChecked);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                #if DEBUG
+                MessageBox.Show($"Exception trying to show modern task dialog: {ex.Message}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                #endif
                 // Fall back to a standard message box if the task dialog can't be shown
                 // (e.g. missing common-controls v6 manifest). No verification checkbox here.
                 bool open = MessageBox.Show(headline + "\r\n\r\n" + body, AppName,
                     MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
                 return (open, false);
+                
             }
         }
     }

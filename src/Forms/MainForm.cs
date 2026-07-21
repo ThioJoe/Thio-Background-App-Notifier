@@ -77,19 +77,15 @@ namespace Thio_Background_App_Notifier
             // card), independent of whatever the status message happens to say.
             labelTrackedCount.Text = result.AllItems.Count.ToString();
 
-            const string backgroundNote =
-                "This app doesn't run in the background — it only checks when you open it.";
-
             string lastChecked = result.PreviousRunTimeLocal.HasValue
                 ? "Last checked " + result.PreviousRunTimeLocal.Value.ToString("g") + "."
                 : "This is the first time it has run.";
 
             if (result.IsFirstRun)
             {
-                labelStatusValue.Text = $"First run — saved a baseline of {result.AllItems.Count} startup item(s).";
+                labelStatusValue.Text = $"First run — saved a baseline of startup items.";
                 labelStatusValue.ForeColor = SystemColors.ControlText;
-                labelStatusDetail.Text =
-                    "From now on you'll be told which startup items are new.   " + backgroundNote;
+                labelStatusDetail.Text = "From now on you'll be told which startup items are new.";
             }
             else if (result.HasNewItems)
             {
@@ -101,7 +97,7 @@ namespace Thio_Background_App_Notifier
             {
                 labelStatusValue.Text = "No new startup items since you last checked.";
                 labelStatusValue.ForeColor = Color.FromArgb(0, 120, 0);
-                labelStatusDetail.Text = lastChecked + "   " + backgroundNote;
+                labelStatusDetail.Text = lastChecked;
             }
         }
 
@@ -343,16 +339,12 @@ namespace Thio_Background_App_Notifier
             const string repoUrl = "https://github.com/ThioJoe/New-Startup-App-Notifier";
 
             string tips =
-                "Watches for new programs, services, and scheduled tasks that are set to run at "
-                + "startup, and points out anything that appeared since you last checked.\r\n\r\n"
+                "Watches for new background services and scheduled tasks that are set to run at startup, and points out anything that appeared since you last checked.\r\n\r\n"
                 + "Tips:\r\n"
-                + "•  It doesn't run in the background — open it (or tick “Re-check when Windows "
-                + "starts”) to scan.\r\n"
-                + "•  Use “All Startup Services” / “All Startup Tasks” to browse everything "
-                + "currently set to run.\r\n"
-                + "•  New items are highlighted; double-click any row for full details, or right-click "
-                + "to copy.\r\n"
-                + "•  Keep Windows' own “Startup App Notifications” turned On so Windows alerts you too.\r\n\r\n"
+                + "•  It doesn't run in the background - open it to scan (or choose to run once each startup).\r\n"
+                + "•  Use “All Startup Services” / “All Startup Tasks” to browse everything currently set to run.\r\n"
+                + "•  New items are highlighted. Double-click any row for full details.\r\n"
+                + "•  Keep Windows' own \"Startup App Notifications\" turned On so Windows alerts you about \"regular\" startup apps.\r\n\r\n"
                 + "Created by ThioJoe";
 
             try

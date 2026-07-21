@@ -4,23 +4,29 @@ using System.Windows.Forms;
 
 namespace Thio_Background_App_Notifier;
 
+#nullable enable
+
 /// <summary>
 /// Explains Windows' built-in "Startup app notifications" feature (which covers the "regular"
 /// startup apps this tool doesn't track) and lets the user turn it on or open its settings page.
 /// </summary>
 public partial class WindowsNotifyInfoForm : Form
 {
+    private readonly Color _defaultButtonBackColor;
     public WindowsNotifyInfoForm()
     {
         InitializeComponent();
 
+        _defaultButtonBackColor = buttonEnable.BackColor;
+
         labelBody.Text =
-            $"{AppName} watches for new startup services and scheduled tasks — the sneaky startup "
-            + "items that are easy to miss.\r\n\r\n"
+            $"This tool watches for new startup services and scheduled tasks because they're easy to miss.\r\n\r\n"
             + "It does not track \"regular\" startup apps: programs that add themselves to your Startup "
             + "folder or the Run registry keys. Windows can notify you about those itself.\r\n\r\n"
             + "This is controlled by a built-in Windows setting:\r\n"
-            + "        Settings  ▸  System  ▸  Notifications  ▸  Startup app notifications\r\n\r\n"
+            + "  Settings  ▸  System  ▸  Notifications  ▸ " +
+            "\n  Notifications from apps and other senders ▸ \"Startup app notifications\"" +
+            "\n\n"
             + "When it's on, Windows shows a notification whenever a new app is set to run at startup. "
             + "Turning it on complements this app, so you're covered for both kinds of startup items.";
 
@@ -36,18 +42,21 @@ public partial class WindowsNotifyInfoForm : Form
             labelStatus.Text = "On";
             labelStatus.ForeColor = Color.FromArgb(0, 128, 0);
             buttonEnable.Enabled = false;
+            buttonEnable.BackColor = _defaultButtonBackColor;
         }
         else if (enabled == false)
         {
             labelStatus.Text = "Off";
             labelStatus.ForeColor = Color.FromArgb(192, 0, 0);
             buttonEnable.Enabled = true;
+            buttonEnable.BackColor = Color.FromArgb(50, 0, 128, 0);
         }
         else
         {
             labelStatus.Text = "Unknown (couldn't read the setting)";
             labelStatus.ForeColor = SystemColors.GrayText;
             buttonEnable.Enabled = true;
+            buttonEnable.BackColor = _defaultButtonBackColor;
         }
     }
 
@@ -73,8 +82,4 @@ public partial class WindowsNotifyInfoForm : Form
         WindowsStartupNotification.OpenSettings();
     }
 
-    private void buttonClose_Click(object sender, EventArgs e)
-    {
-        this.Close();
-    }
 }

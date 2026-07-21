@@ -63,6 +63,7 @@
     <Compile Include="DevViewForm.Designer.cs">
       <DependentUpon>DevViewForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Globals.cs" />
     <Compile Include="Includes\ModernTaskDialog.cs" />
     <Compile Include="ItemListForm.cs">
       <SubType>Form</SubType>

@@ -128,9 +128,7 @@ namespace New_Startup_App_Notifier
         // ---- Locations ----
 
         public static string StoreDirectory =>
-            Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "Sneaky Startup App Notifier");
+            Path.Combine( Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppName);
 
         public static string StorePath => Path.Combine(StoreDirectory, "detections.json");
 

@@ -68,13 +68,13 @@ namespace New_Startup_App_Notifier
             string body = string.Join("\r\n", names);
             if (count > maxNames)
                 body += "\r\n… and " + (count - maxNames) + " more";
-            body += "\r\n\r\nOpen Sneaky Startup App Notifier to review?";
+            body += $"\r\n\r\nOpen {AppName} to review?";
 
             try
             {
                 ModernTaskDialog.Template.VerificationResult vr =
                     ModernTaskDialog.Template.ShowYesNoWithVerification(
-                        title: "Sneaky Startup App Notifier",
+                        title: AppName,
                         mainInstruction: headline,
                         content: body,
                         verificationText: "Remind me again at next startup",
@@ -87,7 +87,7 @@ namespace New_Startup_App_Notifier
             {
                 // Fall back to a standard message box if the task dialog can't be shown
                 // (e.g. missing common-controls v6 manifest). No verification checkbox here.
-                bool open = MessageBox.Show(headline + "\r\n\r\n" + body, "Sneaky Startup App Notifier",
+                bool open = MessageBox.Show(headline + "\r\n\r\n" + body, AppName,
                     MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
                 return (open, false);
             }

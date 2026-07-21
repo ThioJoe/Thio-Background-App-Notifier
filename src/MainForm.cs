@@ -35,7 +35,7 @@ namespace New_Startup_App_Notifier
                 trayContextMenu,
                 iconHandle: null,
                 useExeIcon: true,
-                tooltipText: "Sneaky Startup App Notifier",
+                tooltipText: AppName,
                 restoreAction: null,
                 hwndInput: this.Handle
             );
@@ -256,7 +256,7 @@ namespace New_Startup_App_Notifier
             catch (Exception ex)
             {
                 MessageBox.Show(this, "Couldn't open the log folder:\r\n" + ex.Message,
-                    "Sneaky Startup App Notifier", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -294,7 +294,7 @@ namespace New_Startup_App_Notifier
             {
                 MessageBox.Show(this,
                     (wantEnabled ? "Couldn't add the startup shortcut:\r\n" : "Couldn't remove the startup shortcut:\r\n") + error,
-                    "Sneaky Startup App Notifier", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                 // Put the checkbox back to whatever the real on-disk state is.
                 RefreshStartupCheckbox();
@@ -339,14 +339,14 @@ namespace New_Startup_App_Notifier
                     RefreshWindowsNotificationState();
                     MessageBox.Show(this,
                         "Windows startup-app notifications have been turned on.",
-                        "Sneaky Startup App Notifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
                     MessageBox.Show(this,
                         "Couldn't change the setting automatically:\r\n" + error
                         + "\r\n\r\nOpening Windows notification settings instead.",
-                        "Sneaky Startup App Notifier", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     WindowsStartupNotification.OpenSettings();
                 }
             }

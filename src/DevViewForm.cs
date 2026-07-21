@@ -61,7 +61,7 @@ public partial class DevViewForm : Form
     {
         ModernTaskDialog.Template.VerificationResult vr =
                     ModernTaskDialog.Template.ShowYesNoWithVerification(
-                        title: "Sneaky Startup App Notifier",
+                        title: AppName,
                         mainInstruction: "Main Instruction Headline",
                         content: "Body Content",
                         verificationText: "Remind me again at next startup",

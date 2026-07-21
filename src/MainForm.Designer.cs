@@ -259,7 +259,7 @@ namespace New_Startup_App_Notifier
             this.Controls.Add(this.buttonDevView);
             this.MinimumSize = new System.Drawing.Size(900, 500);
             this.Name = "MainForm";
-            this.Text = "Sneaky Startup App Notifier";
+            this.Text = MyStrings.AppName;
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

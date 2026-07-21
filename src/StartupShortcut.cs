@@ -16,7 +16,7 @@ namespace New_Startup_App_Notifier;
 /// </summary>
 internal static class StartupShortcut
 {
-    private const string ShortcutFileName = "Sneaky Startup App Notifier.lnk";
+    private const string ShortcutFileName = $"{AppName}.lnk";
 
     /// <summary>Argument the startup shortcut passes so the launch is quiet.</summary>
     public const string QuietArgument = "-quiet";

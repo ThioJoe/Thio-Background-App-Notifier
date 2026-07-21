@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.buttonDevView = new System.Windows.Forms.Button();
+            this.buttonAllStartupServices = new System.Windows.Forms.Button();
+            this.buttonAllStartupTasks = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonDevView
@@ -43,11 +45,31 @@
             this.buttonDevView.Visible = false;
             this.buttonDevView.Click += new System.EventHandler(this.buttonDevView_Click);
             // 
+            // buttonAllStartupServices
+            // 
+            this.buttonAllStartupServices.Location = new System.Drawing.Point(1081, 36);
+            this.buttonAllStartupServices.Name = "buttonAllStartupServices";
+            this.buttonAllStartupServices.Size = new System.Drawing.Size(208, 48);
+            this.buttonAllStartupServices.TabIndex = 1;
+            this.buttonAllStartupServices.Text = "All Startup Services";
+            this.buttonAllStartupServices.UseVisualStyleBackColor = true;
+            // 
+            // buttonAllStartupTasks
+            // 
+            this.buttonAllStartupTasks.Location = new System.Drawing.Point(1081, 126);
+            this.buttonAllStartupTasks.Name = "buttonAllStartupTasks";
+            this.buttonAllStartupTasks.Size = new System.Drawing.Size(208, 48);
+            this.buttonAllStartupTasks.TabIndex = 2;
+            this.buttonAllStartupTasks.Text = "All Startup Tasks";
+            this.buttonAllStartupTasks.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1561, 662);
+            this.Controls.Add(this.buttonAllStartupTasks);
+            this.Controls.Add(this.buttonAllStartupServices);
             this.Controls.Add(this.buttonDevView);
             this.Name = "MainForm";
             this.Text = "Sneaky Startup App Notifier";
@@ -59,6 +81,8 @@
         #endregion
 
         private System.Windows.Forms.Button buttonDevView;
+        private System.Windows.Forms.Button buttonAllStartupServices;
+        private System.Windows.Forms.Button buttonAllStartupTasks;
     }
 }
 

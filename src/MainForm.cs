@@ -26,8 +26,6 @@ namespace New_Startup_App_Notifier
             #endif
         }
 
-        
-
         private void buttonDevView_Click(object sender, EventArgs e)
         {
             // Open the DevViewForm window

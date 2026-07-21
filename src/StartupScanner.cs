@@ -20,21 +20,20 @@ namespace New_Startup_App_Notifier
         ScheduledTask
     }
 
-    public class StartupItem
+    public interface IStartupItem
     {
-        public string Name { get; set; }
-        public string Path { get; set; }
-        public StartupItemType Type { get; set; } // "Service" or "ScheduledTask"
+        string Name { get; }
+        string Path { get; }
+        StartupItemType Type { get; } // "Service" or "ScheduledTask"
 
-        public StartupItem(string name, string path, StartupItemType type)
-        {
-            Name = name;
-            Path = path;
-            Type = type;
-        }
+        /// <summary>
+        /// The current run is the first time this startup item is detected.
+        /// </summary>
+        bool IsFirstDetection { get; set; }
+        DateTime FirstDetectionTime { get; set; }
     }
 
-    public class StartupService
+    public class StartupService : IStartupItem
     {
         enum ServiceStartType: int
         {
@@ -49,6 +48,13 @@ namespace New_Startup_App_Notifier
         public string ExecPath { get; init; }
         public string RegPath { get; init; }
         public int StartupType { get; init; }
+        public StartupItemType Type { get; } = StartupItemType.Service;
+
+        public bool IsFirstDetection { get; set; }
+        public DateTime FirstDetectionTime { get; set; }
+
+        // Explicit interface implementation - maps to the existing ExecPath property
+        string IStartupItem.Path => ExecPath;
 
         // Constructor
         public StartupService(string rawNameString, string path, string regPath)
@@ -60,7 +66,7 @@ namespace New_Startup_App_Notifier
 
     }
 
-    public class StartupTask
+    public class StartupTask : IStartupItem
     {
         private IRegisteredTask _taskObj;
         private XDocument? _XmlObj;
@@ -68,6 +74,12 @@ namespace New_Startup_App_Notifier
         public string Name { get; set; }
         public string TaskSchedulerPath { get; set; }
         public string TaskXml { get; init; } = string.Empty;
+        public StartupItemType Type { get; } = StartupItemType.ScheduledTask;
+        public bool IsFirstDetection { get; set; }
+        public DateTime FirstDetectionTime { get; set; }
+
+        // Explicit interface implementation - joins the exec action paths (with args) used to start the task
+        string IStartupItem.Path => string.Join("; ", ExecActionPathsWithArgs);
         public List<_TASK_TRIGGER_TYPE2> StartupTaskTypes { get; init; }
         public ITriggerCollection Triggers { get; init; }
         public List<IExecAction2> ExecActions { get; init; }

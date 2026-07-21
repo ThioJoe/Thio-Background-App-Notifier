@@ -294,58 +294,6 @@ namespace New_Startup_App_Notifier
             return items;
         }
 
-        // Unused - Can't easily get exe path
-        //public static List<StartupService> GetStartupServices2()
-        //{
-        //    List<StartupService> startupServices = [];
-        //    ServiceController[] ctl = ServiceController.GetServices();
-
-        //    foreach (ServiceController service in ctl)
-        //    {
-        //        try
-        //        {
-        //            string displayName = service.DisplayName;
-        //            string serviceName = service.ServiceName;
-        //            string startMode = service.StartType.ToString();
-
-        //            if (service.StartType == ServiceStartMode.Automatic)
-        //            {
-        //                // Maybe not feasible because it doesn't expose the actual path
-        //                //startupServices.Add(new StartupService(rawNameString: displayName, path: pathName));
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            // Handle any exceptions that may occur while accessing service properties
-        //            Debug.WriteLine($"Error accessing service {service.ServiceName}: {ex.Message}");
-        //        }
-        //    }
-
-        //    return startupServices;
-        //}
-
-        //// Unused: Uses WMI
-        //public static List<StartupService> GetStartupServices3()
-        //{
-        //    List<StartupService> startupServices = [];
-
-        //    ServiceController[] servicesList = ServiceController.GetServices();
-
-        //    string query = "SELECT Name, DisplayName, PathName FROM Win32_Service WHERE StartMode = 'Auto'";
-        //    using (ManagementObjectSearcher searcher2 = new ManagementObjectSearcher(query))
-        //    {
-        //        foreach (ManagementObject obj in searcher2.Get())
-        //        {
-        //            string name = obj["DisplayName"] as string ?? obj["Name"] as string ?? string.Empty;
-        //            string path = obj["PathName"] as string ?? string.Empty;
-
-        //            startupServices.Add(new StartupService(name, path));
-        //        }
-        //    }
-
-        //    return startupServices;
-        //}
-
         public static List<StartupTask> GetStartupScheduledTasks()
         {
             var taskItems = new List<StartupTask>();

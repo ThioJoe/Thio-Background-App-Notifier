@@ -28,48 +28,37 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.richTextBoxDevOutput = new System.Windows.Forms.RichTextBox();
-            this.buttonDevTest = new System.Windows.Forms.Button();
+            this.buttonDevView = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // richTextBoxDevOutput
+            // buttonDevView
             // 
-            this.richTextBoxDevOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxDevOutput.Location = new System.Drawing.Point(12, 132);
-            this.richTextBoxDevOutput.Name = "richTextBoxDevOutput";
-            this.richTextBoxDevOutput.Size = new System.Drawing.Size(1521, 508);
-            this.richTextBoxDevOutput.TabIndex = 0;
-            this.richTextBoxDevOutput.Text = "";
-            // 
-            // buttonDevTest
-            // 
-            this.buttonDevTest.Location = new System.Drawing.Point(725, 56);
-            this.buttonDevTest.Name = "buttonDevTest";
-            this.buttonDevTest.Size = new System.Drawing.Size(145, 47);
-            this.buttonDevTest.TabIndex = 1;
-            this.buttonDevTest.Text = "Test";
-            this.buttonDevTest.UseVisualStyleBackColor = true;
-            this.buttonDevTest.Click += new System.EventHandler(this.buttonDevTest_Click);
+            this.buttonDevView.Enabled = false;
+            this.buttonDevView.Location = new System.Drawing.Point(1392, 36);
+            this.buttonDevView.Name = "buttonDevView";
+            this.buttonDevView.Size = new System.Drawing.Size(140, 48);
+            this.buttonDevView.TabIndex = 0;
+            this.buttonDevView.Text = "Dev Window";
+            this.buttonDevView.UseVisualStyleBackColor = true;
+            this.buttonDevView.Visible = false;
+            this.buttonDevView.Click += new System.EventHandler(this.buttonDevView_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1561, 662);
-            this.Controls.Add(this.buttonDevTest);
-            this.Controls.Add(this.richTextBoxDevOutput);
+            this.Controls.Add(this.buttonDevView);
             this.Name = "MainForm";
             this.Text = "Sneaky Startup App Notifier";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox richTextBoxDevOutput;
-        private System.Windows.Forms.Button buttonDevTest;
+        private System.Windows.Forms.Button buttonDevView;
     }
 }
 

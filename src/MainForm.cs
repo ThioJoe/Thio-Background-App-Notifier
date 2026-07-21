@@ -14,51 +14,39 @@ namespace New_Startup_App_Notifier
 {
     public partial class MainForm : Form
     {
+        DevViewForm? _devViewForm = null;
         public MainForm()
         {
             InitializeComponent();
+
+            #if DEBUG
+                buttonDevView.Visible = true;
+                buttonDevView.Enabled = true;
+                _devViewForm = new DevViewForm();
+            #endif
         }
 
-        /// <summary>
-        /// Fetches startup tasks and services and shows them in the dev text box control
-        /// </summary>
-        public void SimpleListStartupItems()
+        
+
+        private void buttonDevView_Click(object sender, EventArgs e)
         {
-            // Fetch startup tasks and services
-            List<StartupService> startupServices = StartupScanner.GetStartupServices();
-            List<StartupTask> startupScheduledTasks = StartupScanner.GetStartupScheduledTasks();
+            // Open the DevViewForm window
+            if (_devViewForm == null)
+                _devViewForm = new DevViewForm();
 
-            // Generate text list
-            string displayString = string.Empty;
-
-            displayString += "========= SERVICES =========\n\n";
-            foreach (StartupService item in startupServices)
-            {
-                displayString += $"{item.Name}:\n";
-                displayString += $"\tPath: {item.ExecPath}" + "\n\n";
-            }
-
-            displayString += "\n\n========= SCHEDULED TASKS =========\n\n";
-            foreach (StartupTask item in startupScheduledTasks)
-            {
-                string currTaskPaths = "\n\t" + string.Join("\n\t", item.ExecActionPathsWithArgs);
-
-                displayString += $"{item.Name}:";
-                displayString += currTaskPaths + "\n\n";
-            }
-
-            // Clear the text box before adding new items
-            richTextBoxDevOutput.Clear();
-
-            // Display startup items in the text box
-            richTextBoxDevOutput.Text = displayString;
+            _devViewForm.Show();
+            _devViewForm.Focus();
+            _devViewForm.BringToFront();
         }
 
-        private void buttonDevTest_Click(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            SimpleListStartupItems();
+            #if DEBUG
+                _devViewForm?.Show();
+                _devViewForm?.Focus();
+                _devViewForm?.BringToFront();
+            #endif
         }
-
     } // End of MainForm Class
 
 } // End of Namespace

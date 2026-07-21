@@ -95,23 +95,25 @@ namespace New_Startup_App_Notifier
             // 
             // labelSubStatus
             // 
-            this.labelSubStatus.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelSubStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSubStatus.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.labelSubStatus.Location = new System.Drawing.Point(26, 62);
             this.labelSubStatus.Name = "labelSubStatus";
-            this.labelSubStatus.Size = new System.Drawing.Size(1040, 58);
+            this.labelSubStatus.Size = new System.Drawing.Size(599, 58);
             this.labelSubStatus.TabIndex = 1;
-            this.labelSubStatus.Text = "This app does not run in the background. It only checks when you run it (for exam" +
-    "ple at startup).";
+            this.labelSubStatus.Text = "This app does not run in the background.\r\nIt only checks when you run it (for exa" +
+    "mple at startup).";
             // 
             // checkBoxRunAtStartup
             // 
             this.checkBoxRunAtStartup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxRunAtStartup.AutoSize = true;
-            this.checkBoxRunAtStartup.Location = new System.Drawing.Point(851, 92);
+            this.checkBoxRunAtStartup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxRunAtStartup.Location = new System.Drawing.Point(825, 94);
             this.checkBoxRunAtStartup.Name = "checkBoxRunAtStartup";
-            this.checkBoxRunAtStartup.Size = new System.Drawing.Size(279, 24);
+            this.checkBoxRunAtStartup.Size = new System.Drawing.Size(333, 26);
             this.checkBoxRunAtStartup.TabIndex = 2;
-            this.checkBoxRunAtStartup.Text = "Re-check when Windows starts up\r\n";
+            this.checkBoxRunAtStartup.Text = "Re-check on each Windows starts up";
             this.checkBoxRunAtStartup.UseVisualStyleBackColor = true;
             this.checkBoxRunAtStartup.CheckedChanged += new System.EventHandler(this.checkBoxRunAtStartup_CheckedChanged);
             // 

@@ -35,7 +35,10 @@ namespace New_Startup_App_Notifier
             this.labelSubStatus = new System.Windows.Forms.Label();
             this.checkBoxRunAtStartup = new System.Windows.Forms.CheckBox();
             this.buttonRescan = new System.Windows.Forms.Button();
-            this.buttonOpenLogFolder = new System.Windows.Forms.Button();
+            this.labelPlaceholder = new System.Windows.Forms.Label();
+            this.labelMainListTitle = new System.Windows.Forms.Label();
+            this.labelWinNotify = new System.Windows.Forms.Label();
+            this.buttonWinNotify = new System.Windows.Forms.Button();
             this.listViewItems = new New_Startup_App_Notifier.BufferedListView();
             this.colNew = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colFirstDetected = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,10 +47,6 @@ namespace New_Startup_App_Notifier
             this.colStarts = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colSource = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.labelPlaceholder = new System.Windows.Forms.Label();
-            this.labelMainListTitle = new System.Windows.Forms.Label();
-            this.labelWinNotify = new System.Windows.Forms.Label();
-            this.buttonWinNotify = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonDevView
@@ -66,7 +65,7 @@ namespace New_Startup_App_Notifier
             // buttonAllStartupServices
             // 
             this.buttonAllStartupServices.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAllStartupServices.Location = new System.Drawing.Point(1097, 18);
+            this.buttonAllStartupServices.Location = new System.Drawing.Point(1321, 20);
             this.buttonAllStartupServices.Name = "buttonAllStartupServices";
             this.buttonAllStartupServices.Size = new System.Drawing.Size(210, 46);
             this.buttonAllStartupServices.TabIndex = 4;
@@ -77,7 +76,7 @@ namespace New_Startup_App_Notifier
             // buttonAllStartupTasks
             // 
             this.buttonAllStartupTasks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAllStartupTasks.Location = new System.Drawing.Point(1097, 72);
+            this.buttonAllStartupTasks.Location = new System.Drawing.Point(1321, 70);
             this.buttonAllStartupTasks.Name = "buttonAllStartupTasks";
             this.buttonAllStartupTasks.Size = new System.Drawing.Size(210, 46);
             this.buttonAllStartupTasks.TabIndex = 5;
@@ -107,7 +106,7 @@ namespace New_Startup_App_Notifier
             // checkBoxRunAtStartup
             // 
             this.checkBoxRunAtStartup.AutoSize = true;
-            this.checkBoxRunAtStartup.Location = new System.Drawing.Point(768, 30);
+            this.checkBoxRunAtStartup.Location = new System.Drawing.Point(851, 96);
             this.checkBoxRunAtStartup.Name = "checkBoxRunAtStartup";
             this.checkBoxRunAtStartup.Size = new System.Drawing.Size(279, 24);
             this.checkBoxRunAtStartup.TabIndex = 2;
@@ -118,24 +117,57 @@ namespace New_Startup_App_Notifier
             // buttonRescan
             // 
             this.buttonRescan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRescan.Location = new System.Drawing.Point(1321, 18);
+            this.buttonRescan.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonRescan.Location = new System.Drawing.Point(851, 40);
             this.buttonRescan.Name = "buttonRescan";
-            this.buttonRescan.Size = new System.Drawing.Size(210, 46);
+            this.buttonRescan.Size = new System.Drawing.Size(279, 46);
             this.buttonRescan.TabIndex = 6;
             this.buttonRescan.Text = "Rescan Now";
             this.buttonRescan.UseVisualStyleBackColor = true;
             this.buttonRescan.Click += new System.EventHandler(this.buttonRescan_Click);
             // 
-            // buttonOpenLogFolder
+            // labelPlaceholder
             // 
-            this.buttonOpenLogFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOpenLogFolder.Location = new System.Drawing.Point(1321, 72);
-            this.buttonOpenLogFolder.Name = "buttonOpenLogFolder";
-            this.buttonOpenLogFolder.Size = new System.Drawing.Size(210, 46);
-            this.buttonOpenLogFolder.TabIndex = 7;
-            this.buttonOpenLogFolder.Text = "Open Log Folder";
-            this.buttonOpenLogFolder.UseVisualStyleBackColor = true;
-            this.buttonOpenLogFolder.Click += new System.EventHandler(this.buttonOpenLogFolder_Click);
+            this.labelPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelPlaceholder.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.labelPlaceholder.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelPlaceholder.Location = new System.Drawing.Point(24, 248);
+            this.labelPlaceholder.Name = "labelPlaceholder";
+            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 390);
+            this.labelPlaceholder.TabIndex = 9;
+            this.labelPlaceholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelPlaceholder.Visible = false;
+            // 
+            // labelMainListTitle
+            // 
+            this.labelMainListTitle.AutoSize = true;
+            this.labelMainListTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelMainListTitle.Location = new System.Drawing.Point(20, 212);
+            this.labelMainListTitle.Name = "labelMainListTitle";
+            this.labelMainListTitle.Size = new System.Drawing.Size(548, 29);
+            this.labelMainListTitle.TabIndex = 10;
+            this.labelMainListTitle.Text = "Latest New Startup Tasks && Background Services:\r\n";
+            // 
+            // labelWinNotify
+            // 
+            this.labelWinNotify.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelWinNotify.Location = new System.Drawing.Point(24, 126);
+            this.labelWinNotify.Name = "labelWinNotify";
+            this.labelWinNotify.Size = new System.Drawing.Size(760, 74);
+            this.labelWinNotify.TabIndex = 11;
+            this.labelWinNotify.Text = "This app only covers startup services and scheduled tasks.";
+            // 
+            // buttonWinNotify
+            // 
+            this.buttonWinNotify.Location = new System.Drawing.Point(729, 144);
+            this.buttonWinNotify.Name = "buttonWinNotify";
+            this.buttonWinNotify.Size = new System.Drawing.Size(195, 65);
+            this.buttonWinNotify.TabIndex = 12;
+            this.buttonWinNotify.Text = "Windows\r\nNotification Settings";
+            this.buttonWinNotify.UseVisualStyleBackColor = true;
+            this.buttonWinNotify.Click += new System.EventHandler(this.buttonWinNotify_Click);
             // 
             // listViewItems
             // 
@@ -196,51 +228,8 @@ namespace New_Startup_App_Notifier
             this.colPath.Text = "Path";
             this.colPath.Width = 460;
             // 
-            // labelPlaceholder
-            // 
-            this.labelPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelPlaceholder.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.labelPlaceholder.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelPlaceholder.Location = new System.Drawing.Point(24, 248);
-            this.labelPlaceholder.Name = "labelPlaceholder";
-            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 390);
-            this.labelPlaceholder.TabIndex = 9;
-            this.labelPlaceholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.labelPlaceholder.Visible = false;
-            // 
-            // labelMainListTitle
-            // 
-            this.labelMainListTitle.AutoSize = true;
-            this.labelMainListTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelMainListTitle.Location = new System.Drawing.Point(20, 212);
-            this.labelMainListTitle.Name = "labelMainListTitle";
-            this.labelMainListTitle.Size = new System.Drawing.Size(548, 29);
-            this.labelMainListTitle.TabIndex = 10;
-            this.labelMainListTitle.Text = "Latest New Startup Tasks && Background Services:\r\n";
-            //
-            // labelWinNotify
-            //
-            this.labelWinNotify.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelWinNotify.Location = new System.Drawing.Point(24, 126);
-            this.labelWinNotify.Name = "labelWinNotify";
-            this.labelWinNotify.Size = new System.Drawing.Size(760, 74);
-            this.labelWinNotify.TabIndex = 11;
-            this.labelWinNotify.Text = "This app only covers startup services and scheduled tasks.";
-            //
-            // buttonWinNotify
-            //
-            this.buttonWinNotify.Location = new System.Drawing.Point(792, 150);
-            this.buttonWinNotify.Name = "buttonWinNotify";
-            this.buttonWinNotify.Size = new System.Drawing.Size(300, 40);
-            this.buttonWinNotify.TabIndex = 12;
-            this.buttonWinNotify.Text = "Open Notification Settings";
-            this.buttonWinNotify.UseVisualStyleBackColor = true;
-            this.buttonWinNotify.Click += new System.EventHandler(this.buttonWinNotify_Click);
-            //
             // MainForm
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1561, 662);
@@ -249,7 +238,6 @@ namespace New_Startup_App_Notifier
             this.Controls.Add(this.labelMainListTitle);
             this.Controls.Add(this.labelPlaceholder);
             this.Controls.Add(this.listViewItems);
-            this.Controls.Add(this.buttonOpenLogFolder);
             this.Controls.Add(this.buttonRescan);
             this.Controls.Add(this.checkBoxRunAtStartup);
             this.Controls.Add(this.labelSubStatus);
@@ -259,7 +247,7 @@ namespace New_Startup_App_Notifier
             this.Controls.Add(this.buttonDevView);
             this.MinimumSize = new System.Drawing.Size(900, 500);
             this.Name = "MainForm";
-            this.Text = MyStrings.AppName;
+            this.Text = "New Background App Notifier";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -275,7 +263,6 @@ namespace New_Startup_App_Notifier
         private System.Windows.Forms.Label labelSubStatus;
         private System.Windows.Forms.CheckBox checkBoxRunAtStartup;
         private System.Windows.Forms.Button buttonRescan;
-        private System.Windows.Forms.Button buttonOpenLogFolder;
         private New_Startup_App_Notifier.BufferedListView listViewItems;
         private System.Windows.Forms.Label labelPlaceholder;
         private System.Windows.Forms.ColumnHeader colNew;

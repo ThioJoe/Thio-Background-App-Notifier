@@ -30,6 +30,7 @@ namespace New_Startup_App_Notifier
             TrayContextMenu trayContextMenu = new TrayContextMenu(
                 exitAppMenuOption: true
             );
+            trayContextMenu.AddCustomMenuItem( text: "Open Log Folder", action: OpenLogFolder );
 
             SystemTray sysTray = new SystemTray(
                 trayContextMenu,
@@ -41,8 +42,6 @@ namespace New_Startup_App_Notifier
             );
 
             #if DEBUG
-                buttonDevView.Visible = true;
-                buttonDevView.Enabled = true;
                 _devViewForm = new DevViewForm();
             #endif
         }
@@ -57,11 +56,6 @@ namespace New_Startup_App_Notifier
             // The window is now shown, so record what was detected (marks the shown items seen + alerted).
             _result.CommitSeen();
 
-            #if DEBUG
-                _devViewForm?.Show();
-                _devViewForm?.Focus();
-                _devViewForm?.BringToFront();
-            #endif
         }
 
         // ---------------------------------------------------------------------
@@ -78,7 +72,7 @@ namespace New_Startup_App_Notifier
         private void UpdateStatusLabels(ScanResult result)
         {
             string backgroundNote =
-                "This app does not run in the background — it only checks when you run it (for example at startup).";
+                "This app does not run in the background — it only checks when it runs.";
 
             if (result.IsFirstRun)
             {
@@ -190,6 +184,24 @@ namespace New_Startup_App_Notifier
             }
         }
 
+        private void OpenLogFolder()
+        {
+            try
+            {
+                Directory.CreateDirectory(DetectionStore.StoreDirectory);
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = DetectionStore.StoreDirectory,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Couldn't open the log folder:\r\n" + ex.Message,
+                    AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
         // ---------------------------------------------------------------------
         // Buttons / interactions
         // ---------------------------------------------------------------------
@@ -244,20 +256,7 @@ namespace New_Startup_App_Notifier
 
         private void buttonOpenLogFolder_Click(object sender, EventArgs e)
         {
-            try
-            {
-                Directory.CreateDirectory(DetectionStore.StoreDirectory);
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = DetectionStore.StoreDirectory,
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, "Couldn't open the log folder:\r\n" + ex.Message,
-                    AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+
         }
 
         private void listViewItems_DoubleClick(object sender, EventArgs e)
@@ -320,8 +319,7 @@ namespace New_Startup_App_Notifier
                 status = "Windows startup-app notifications: couldn't detect the current setting.";
 
             labelWinNotify.Text =
-                "This app only covers startup services and scheduled tasks. For regular startup apps, "
-                + "Windows can notify you itself.\r\n"
+                "This app covers startup services and scheduled tasks.\r\n"
                 + status;
 
             buttonWinNotify.Text = _winNotifyEnabled == false

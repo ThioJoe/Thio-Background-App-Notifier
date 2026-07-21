@@ -15,6 +15,9 @@ public partial class ItemListForm : Form
     // colFirstDetected is the 4th column (index 3); sort it chronologically.
     private readonly ListViewColumnSorter _sorter = new ListViewColumnSorter { DateColumnIndex = 3 };
 
+    // Column header text without any sort arrow, so indicators can be re-applied cleanly.
+    private string[] _baseHeaderText = new string[0];
+
     public ItemListForm(string title, IEnumerable<IStartupItem> items)
     {
         InitializeComponent();
@@ -22,11 +25,18 @@ public partial class ItemListForm : Form
         this.Text = title;
         labelTitle.Text = title;
 
+        _baseHeaderText = new string[listView.Columns.Count];
+        for (int i = 0; i < listView.Columns.Count; i++)
+            _baseHeaderText[i] = listView.Columns[i].Text;
+
         UiHelpers.AttachCopyContextMenu(listView);
         listView.ListViewItemSorter = _sorter;
         listView.ColumnClick += listView_ColumnClick;
 
         Populate(items);
+
+        // The list starts sorted by the first column ascending; show that.
+        UpdateSortIndicators();
     }
 
     private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -43,6 +53,19 @@ public partial class ItemListForm : Form
         }
 
         listView.Sort();
+        UpdateSortIndicators();
+    }
+
+    // Appends an up/down arrow to the header of the currently-sorted column.
+    private void UpdateSortIndicators()
+    {
+        for (int i = 0; i < listView.Columns.Count; i++)
+        {
+            string text = i < _baseHeaderText.Length ? _baseHeaderText[i] : listView.Columns[i].Text;
+            if (i == _sorter.SortColumn)
+                text += _sorter.Order == SortOrder.Ascending ? "  ▲" : "  ▼";
+            listView.Columns[i].Text = text;
+        }
     }
 
     private void Populate(IEnumerable<IStartupItem> items)

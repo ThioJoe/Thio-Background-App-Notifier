@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows.Forms;
 using ThioWinUtils;
 
-namespace New_Startup_App_Notifier
+namespace Thio_Background_App_Notifier
 {
     internal static class Program
     {

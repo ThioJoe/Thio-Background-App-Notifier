@@ -7,7 +7,7 @@ using TaskScheduler;
 
 #nullable enable
 
-namespace New_Startup_App_Notifier;
+namespace Thio_Background_App_Notifier;
 
 /// <summary>
 /// Small formatting helpers shared by the detection log and the UI so that a startup item

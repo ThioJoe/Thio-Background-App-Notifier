@@ -2,7 +2,7 @@ using System;
 
 #nullable enable
 
-namespace New_Startup_App_Notifier;
+namespace Thio_Background_App_Notifier;
 
 /// <summary>
 /// Parsed command-line options.

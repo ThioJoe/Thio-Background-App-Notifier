@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace New_Startup_App_Notifier;
+namespace Thio_Background_App_Notifier;
 
 internal class Utils
 {

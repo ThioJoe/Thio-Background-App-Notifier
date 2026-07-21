@@ -9,7 +9,7 @@ using System.Runtime.Serialization.Json;
 
 #nullable enable
 
-namespace New_Startup_App_Notifier
+namespace Thio_Background_App_Notifier
 {
     /// <summary>
     /// One remembered startup item, as written to the on-disk detection log.

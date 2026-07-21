@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace New_Startup_App_Notifier;
+namespace Thio_Background_App_Notifier;
 
 /// <summary>
 /// Explains Windows' built-in "Startup app notifications" feature (which covers the "regular"

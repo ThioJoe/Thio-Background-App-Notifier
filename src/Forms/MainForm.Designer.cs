@@ -1,4 +1,4 @@
-namespace New_Startup_App_Notifier
+namespace Thio_Background_App_Notifier
 {
     partial class MainForm
     {
@@ -39,7 +39,7 @@ namespace New_Startup_App_Notifier
             this.labelMainListTitle = new System.Windows.Forms.Label();
             this.labelWinNotify = new System.Windows.Forms.Label();
             this.buttonWinNotify = new System.Windows.Forms.Button();
-            this.listViewItems = new New_Startup_App_Notifier.BufferedListView();
+            this.listViewItems = new Thio_Background_App_Notifier.BufferedListView();
             this.colNew = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colFirstDetected = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -267,7 +267,7 @@ namespace New_Startup_App_Notifier
         private System.Windows.Forms.Label labelSubStatus;
         private System.Windows.Forms.CheckBox checkBoxRunAtStartup;
         private System.Windows.Forms.Button buttonRescan;
-        private New_Startup_App_Notifier.BufferedListView listViewItems;
+        private Thio_Background_App_Notifier.BufferedListView listViewItems;
         private System.Windows.Forms.Label labelPlaceholder;
         private System.Windows.Forms.ColumnHeader colNew;
         private System.Windows.Forms.ColumnHeader colType;

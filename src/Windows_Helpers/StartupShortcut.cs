@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 #nullable enable
 
-namespace New_Startup_App_Notifier;
+namespace Thio_Background_App_Notifier;
 
 /// <summary>
 /// Manages an optional shortcut to this app in the current user's Startup folder.

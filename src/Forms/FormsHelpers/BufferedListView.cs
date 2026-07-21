@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace New_Startup_App_Notifier
+namespace Thio_Background_App_Notifier
 {
     /// <summary>
     /// A <see cref="ListView"/> with double buffering enabled so it doesn't flicker while

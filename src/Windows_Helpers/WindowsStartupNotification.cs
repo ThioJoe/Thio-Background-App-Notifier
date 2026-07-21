@@ -4,7 +4,7 @@ using Microsoft.Win32;
 
 #nullable enable
 
-namespace New_Startup_App_Notifier;
+namespace Thio_Background_App_Notifier;
 
 /// <summary>
 /// Reads (and can turn on) Windows' own "Startup app notifications" setting

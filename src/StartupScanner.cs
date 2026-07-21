@@ -12,7 +12,7 @@ using System.Xml.Linq;
 using TaskScheduler;
 using System.Linq;
 
-namespace New_Startup_App_Notifier
+namespace Thio_Background_App_Notifier
 {
     public enum StartupItemType
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Windows.Forms;
 
-namespace New_Startup_App_Notifier
+namespace Thio_Background_App_Notifier
 {
     /// <summary>
     /// Sorts a <see cref="ListView"/> by a clicked column. Most columns sort as text; the column

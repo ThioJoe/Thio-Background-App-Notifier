@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0BD44742-6220-4A72-B26D-30CC73DD1FF0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>New_Startup_App_Notifier</RootNamespace>
-    <AssemblyName>New-Startup-App-Notifier</AssemblyName>
+    <RootNamespace>Thio_Background_App_Notifier</RootNamespace>
+    <AssemblyName>Thio-Background-App-Notifier</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -108,6 +108,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="App\app.manifest" />
     <None Include="Properties\Settings.settings">

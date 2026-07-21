@@ -9,7 +9,7 @@ using ThioWinUtils;
 
 #nullable enable
 
-namespace New_Startup_App_Notifier
+namespace Thio_Background_App_Notifier
 {
     public partial class MainForm : Form
     {

@@ -13,7 +13,12 @@
         <?define ComponentGuid64BitToUse = "$(var.ComponentGuidArm64)" ?>
     <?endif ?>
 
-    <Package Name="Thio's Background App Notifier" Language="1033" Version="$(var.ProductVersion)" Manufacturer="ThioJoe" UpgradeCode="$(var.UpgradeCodeGuid)">
+    <!-- Scope="perUserOrMachine" makes this a dual-purpose package: the user can install it
+         "for all users" (per-machine, into Program Files, requires elevation) OR "just for me"
+         (per-user, into %APPDATA%, no admin rights needed). It defaults to per-user and sets
+         ALLUSERS=2 + MSIINSTALLPERUSER=1 automatically; the InstallScopeDlg (added below) lets an
+         elevated user pick, and the folder is retargeted at runtime by the custom actions further down. -->
+    <Package Name="Thio's Background App Notifier" Language="1033" Version="$(var.ProductVersion)" Manufacturer="ThioJoe" UpgradeCode="$(var.UpgradeCodeGuid)" Scope="perUserOrMachine">
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
         <Media Id="1" Cabinet="cab1.cab" EmbedCab="yes" />
 
@@ -26,7 +31,19 @@
 		<Property Id="ARPPRODUCTICON" Value="MyAppIcon" />
 
         <!-- If the installer were to ask for the installation directory, this would show. But currently it doesn't. -->
-        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER_X64" />
+        <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+
+        <!-- ============================ Per-user / per-machine scope setup ============================ -->
+        <!-- Sub-folder appended under the chosen root. Per-machine => [ProgramFiles64Folder]\ThioJoe\...
+             Per-user => [AppDataFolder]\ThioJoe\... (AppDataFolder is Roaming %APPDATA%). -->
+        <Property Id="ApplicationFolderName" Value="ThioJoe\Thio's Background App Notifier" />
+        <!-- Default radio selection on the scope dialog when the user is elevated (can choose either).
+             A non-elevated user is forced to per-user by the InstallScopeDlg publish events below. -->
+        <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+        <!-- These enable both options on the shared InstallScopeDlg. They are WiX (build-time) variables,
+             not MSI properties, and are required because that dialog references them in its conditions. -->
+        <WixVariable Id="WixUISupportPerUser" Value="1" />
+        <WixVariable Id="WixUISupportPerMachine" Value="1" />
 
         <UI>
             <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
@@ -43,6 +60,7 @@
             <DialogRef Id="ResumeDlg" />
             <DialogRef Id="UserExit" />
             <DialogRef Id="WelcomeDlg" />
+            <DialogRef Id="InstallScopeDlg" />
 
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication" Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed" />
             <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
@@ -54,8 +72,20 @@
             <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg" />
             <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg" />
 
-            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Condition="NOT Installed" />
-            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2" Condition="NOT Installed" />
+            <!-- Fresh install flow: Welcome -> InstallScope (choose all-users / just-me) -> VerifyReady -->
+            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallScopeDlg" Condition="NOT Installed" />
+
+            <Publish Dialog="InstallScopeDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" />
+            <!-- A standard (non-elevated) user can't install per-machine, so force the per-user choice for them. -->
+            <Publish Dialog="InstallScopeDlg" Control="Next" Property="WixAppFolder" Value="WixPerUserFolder" Order="1" Condition="!(wix.WixUISupportPerUser) AND NOT Privileged" />
+            <!-- Set ALLUSERS and the install folder to match the selected scope. -->
+            <Publish Dialog="InstallScopeDlg" Control="Next" Property="ALLUSERS" Value="{}" Order="2" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
+            <Publish Dialog="InstallScopeDlg" Control="Next" Property="ALLUSERS" Value="1" Order="3" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
+            <Publish Dialog="InstallScopeDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerUserFolder]" Order="4" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
+            <Publish Dialog="InstallScopeDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerMachineFolder]" Order="5" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
+            <Publish Dialog="InstallScopeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="6" />
+
+            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="InstallScopeDlg" Order="2" Condition="NOT Installed" />
 
             <Property Id="ARPNOMODIFY" Value="1" />
        
@@ -70,7 +100,7 @@
         <Feature Id="ProductFeature" Title="Thio's Background App Notifier">
             
             <!-- ========================= 64-bit Exe (x64 and ARM64) ========================= -->
-            <Component Id="Component_64bit" Guid="$(var.ComponentGuid64BitToUse)" Bitness="always64" Directory="INSTALLFOLDER_64Bit" >
+            <Component Id="Component_64bit" Guid="$(var.ComponentGuid64BitToUse)" Bitness="always64" Directory="APPLICATIONFOLDER" >
 
                 <?if $(sys.BUILDARCH) = x64 ?>
                     <File Id="File_64bit"
@@ -93,11 +123,11 @@
                             />
                 <?endif?>
 				
-                <Shortcut Id="StartupShortcut" 
-                        Name="Thio's Background App Notifier" 
-                        Directory="StartupFolder" 
+                <Shortcut Id="StartupShortcut"
+                        Name="Thio's Background App Notifier"
+                        Directory="StartupFolder"
                         Target="[#File_64bit]"
-                        WorkingDirectory="INSTALLFOLDER_64Bit" />
+                        WorkingDirectory="APPLICATIONFOLDER" />
 
             </Component>
 			
@@ -107,11 +137,38 @@
 
     <Fragment>
 		<StandardDirectory Id="StartupFolder" />
+		<!-- Roaming %APPDATA% root, used for the per-user install location. -->
+		<StandardDirectory Id="AppDataFolder" />
+        <!-- APPLICATIONFOLDER is retargeted at runtime by the custom actions below (Program Files for
+             all-users, %APPDATA% for just-me). The authored location under Program Files is only a
+             fallback; the actual path is always set via the APPLICATIONFOLDER property. -->
         <StandardDirectory Id="ProgramFiles64Folder">
-            <Directory Id="ManufacturerFolder_64Bit" Name="ThioJoe">
-                <Directory Id="INSTALLFOLDER_64Bit" Name="Thio's Background App Notifier" />
-            </Directory>
+            <Directory Id="APPLICATIONFOLDER" Name="Thio's Background App Notifier" />
         </StandardDirectory>
+
+        <!-- ================= Choose the install folder based on per-user vs per-machine =================
+             This mirrors the logic WixUI_Advanced uses internally, but points the per-user folder at
+             Roaming %APPDATA%\ThioJoe\... (instead of the WiX default LocalAppData\Apps\...) and the
+             per-machine folder at 64-bit Program Files. Both defaults are computed early; the
+             SetAppFolder* actions only apply them for silent/default installs where the UI hasn't
+             already set APPLICATIONFOLDER (the InstallScopeDlg sets it directly when the UI runs). -->
+        <CustomAction Id="SetDefaultPerUserFolder" Property="WixPerUserFolder" Value="[AppDataFolder][ApplicationFolderName]" Execute="immediate" />
+        <CustomAction Id="SetDefaultPerMachineFolder" Property="WixPerMachineFolder" Value="[ProgramFiles64Folder][ApplicationFolderName]" Execute="immediate" />
+        <CustomAction Id="SetAppFolderPerUser" Property="APPLICATIONFOLDER" Value="[WixPerUserFolder]" Execute="immediate" />
+        <CustomAction Id="SetAppFolderPerMachine" Property="APPLICATIONFOLDER" Value="[WixPerMachineFolder]" Execute="immediate" />
+
+        <InstallExecuteSequence>
+            <Custom Action="SetDefaultPerUserFolder" Before="CostFinalize" />
+            <Custom Action="SetDefaultPerMachineFolder" After="SetDefaultPerUserFolder" />
+            <Custom Action="SetAppFolderPerUser" After="SetDefaultPerMachineFolder" Condition="ACTION=&quot;INSTALL&quot; AND APPLICATIONFOLDER=&quot;&quot; AND (ALLUSERS=&quot;&quot; OR (ALLUSERS=2 AND (NOT Privileged)))" />
+            <Custom Action="SetAppFolderPerMachine" After="SetAppFolderPerUser" Condition="ACTION=&quot;INSTALL&quot; AND APPLICATIONFOLDER=&quot;&quot; AND (ALLUSERS=1 OR (ALLUSERS=2 AND Privileged))" />
+        </InstallExecuteSequence>
+        <InstallUISequence>
+            <Custom Action="SetDefaultPerUserFolder" Before="CostFinalize" />
+            <Custom Action="SetDefaultPerMachineFolder" After="SetDefaultPerUserFolder" />
+            <Custom Action="SetAppFolderPerUser" After="SetDefaultPerMachineFolder" Condition="ACTION=&quot;INSTALL&quot; AND APPLICATIONFOLDER=&quot;&quot; AND (ALLUSERS=&quot;&quot; OR (ALLUSERS=2 AND (NOT Privileged)))" />
+            <Custom Action="SetAppFolderPerMachine" After="SetAppFolderPerUser" Condition="ACTION=&quot;INSTALL&quot; AND APPLICATIONFOLDER=&quot;&quot; AND (ALLUSERS=1 OR (ALLUSERS=2 AND Privileged))" />
+        </InstallUISequence>
 
         <CustomAction Id="LaunchApplication" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" />
 

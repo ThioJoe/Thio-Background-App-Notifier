@@ -77,7 +77,7 @@ namespace New_Startup_App_Notifier
 
             if (result.IsFirstRun)
             {
-                labelStatus.Text = $"First run — now tracking {result.AllItems.Count} startup item(s).";
+                labelStatus.Text = $"First run — recorded a baseline of {result.AllItems.Count} startup item(s).";
                 labelStatus.ForeColor = SystemColors.ControlText;
                 labelSubStatus.Text =
                     "All current startup items have been recorded as the baseline. From now on you'll be told which are new.\r\n"
@@ -108,13 +108,17 @@ namespace New_Startup_App_Notifier
 
         private void PopulateList(ScanResult result)
         {
+            // The main list only shows items that have appeared since the first-run baseline, so a
+            // fresh install doesn't look like a wall of things needing attention.
+            var items = result.ItemsSinceBaseline;
+
             listViewItems.BeginUpdate();
             try
             {
                 listViewItems.Items.Clear();
 
                 // Most-recently-detected first, so anything new floats to the top.
-                var ordered = result.AllItems
+                var ordered = items
                     .OrderByDescending(i => i.FirstDetectionTime)
                     .ThenBy(i => i.Name, StringComparer.OrdinalIgnoreCase);
 
@@ -142,6 +146,27 @@ namespace New_Startup_App_Notifier
             finally
             {
                 listViewItems.EndUpdate();
+            }
+
+            UpdatePlaceholder(result, items.Count == 0);
+        }
+
+        private void UpdatePlaceholder(ScanResult result, bool isEmpty)
+        {
+            if (isEmpty)
+            {
+                string lead = result.IsFirstRun
+                    ? "No new startup apps yet — this first run just recorded what's already set to run."
+                    : "No new startup apps found since the first run.";
+
+                labelPlaceholder.Text = lead + "\r\n\r\n"
+                    + "Use “All Startup Services” or “All Startup Tasks” above to see everything currently set to run.";
+                labelPlaceholder.Visible = true;
+                labelPlaceholder.BringToFront();
+            }
+            else
+            {
+                labelPlaceholder.Visible = false;
             }
         }
 

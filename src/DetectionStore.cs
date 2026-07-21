@@ -58,6 +58,13 @@ namespace New_Startup_App_Notifier
         /// <summary>Items detected for the first time on this run (always empty on the first/baseline run).</summary>
         public List<IStartupItem> NewItems { get; set; } = new List<IStartupItem>();
 
+        /// <summary>
+        /// Items detected at any point after the first-run baseline (i.e. everything that has appeared
+        /// since tracking began, not the baseline itself). Empty on the first run. This is what the
+        /// main window lists so the baseline doesn't look like it needs attention.
+        /// </summary>
+        public List<IStartupItem> ItemsSinceBaseline { get; set; } = new List<IStartupItem>();
+
         public bool HasNewItems => NewItems.Count > 0;
     }
 
@@ -178,11 +185,17 @@ namespace New_Startup_App_Notifier
                     byKey[known.IdentityKey] = known;
             }
 
+            // The first-run timestamp identifies baseline items: everything recorded on the first run
+            // shares this exact value, so anything with a different FirstDetectedUtc appeared later.
+            string? baselineStamp = _data.FirstRunUtc;
+
             var newItems = new List<IStartupItem>();
+            var itemsSinceBaseline = new List<IStartupItem>();
 
             foreach (IStartupItem item in liveItems)
             {
                 string key = item.IdentityKey;
+                KnownStartupItem record;
 
                 if (byKey.TryGetValue(key, out KnownStartupItem? existing))
                 {
@@ -194,11 +207,12 @@ namespace New_Startup_App_Notifier
 
                     item.IsFirstDetection = false;
                     item.FirstDetectionTime = FromIso(existing.FirstDetectedUtc, nowLocal);
+                    record = existing;
                 }
                 else
                 {
                     // Never seen before.
-                    var record = new KnownStartupItem
+                    record = new KnownStartupItem
                     {
                         IdentityKey = key,
                         ItemType = item.Type.ToString(),
@@ -219,6 +233,12 @@ namespace New_Startup_App_Notifier
                     if (!isFirstRun)
                         newItems.Add(item);
                 }
+
+                // Anything not part of the first-run baseline is "since baseline" and stays listed on
+                // the main window (whether it was added this run or a previous one).
+                bool isBaseline = isFirstRun || record.FirstDetectedUtc == baselineStamp;
+                if (!isBaseline)
+                    itemsSinceBaseline.Add(item);
             }
 
             DateTime? previousRunLocal = TryFromIso(_data.LastRunUtc);
@@ -235,7 +255,8 @@ namespace New_Startup_App_Notifier
                 AllItems = liveItems,
                 Services = liveItems.Where(i => i.Type == StartupItemType.Service).ToList(),
                 Tasks = liveItems.Where(i => i.Type == StartupItemType.ScheduledTask).ToList(),
-                NewItems = newItems
+                NewItems = newItems,
+                ItemsSinceBaseline = itemsSinceBaseline
             };
         }
 

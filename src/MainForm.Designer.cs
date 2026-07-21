@@ -37,6 +37,7 @@ namespace New_Startup_App_Notifier
             this.buttonRescan = new System.Windows.Forms.Button();
             this.buttonOpenLogFolder = new System.Windows.Forms.Button();
             this.listViewItems = new New_Startup_App_Notifier.BufferedListView();
+            this.labelPlaceholder = new System.Windows.Forms.Label();
             this.colNew = new System.Windows.Forms.ColumnHeader();
             this.colType = new System.Windows.Forms.ColumnHeader();
             this.colName = new System.Windows.Forms.ColumnHeader();
@@ -158,6 +159,20 @@ namespace New_Startup_App_Notifier
             this.listViewItems.View = System.Windows.Forms.View.Details;
             this.listViewItems.DoubleClick += new System.EventHandler(this.listViewItems_DoubleClick);
             //
+            // labelPlaceholder
+            //
+            this.labelPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelPlaceholder.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.labelPlaceholder.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelPlaceholder.Location = new System.Drawing.Point(24, 172);
+            this.labelPlaceholder.Name = "labelPlaceholder";
+            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 466);
+            this.labelPlaceholder.TabIndex = 9;
+            this.labelPlaceholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.labelPlaceholder.Visible = false;
+            //
             // colNew
             //
             this.colNew.Text = "";
@@ -198,6 +213,7 @@ namespace New_Startup_App_Notifier
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1561, 662);
+            this.Controls.Add(this.labelPlaceholder);
             this.Controls.Add(this.listViewItems);
             this.Controls.Add(this.buttonOpenLogFolder);
             this.Controls.Add(this.buttonRescan);
@@ -227,6 +243,7 @@ namespace New_Startup_App_Notifier
         private System.Windows.Forms.Button buttonRescan;
         private System.Windows.Forms.Button buttonOpenLogFolder;
         private New_Startup_App_Notifier.BufferedListView listViewItems;
+        private System.Windows.Forms.Label labelPlaceholder;
         private System.Windows.Forms.ColumnHeader colNew;
         private System.Windows.Forms.ColumnHeader colType;
         private System.Windows.Forms.ColumnHeader colName;

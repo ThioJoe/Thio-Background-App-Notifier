@@ -308,17 +308,17 @@ namespace New_Startup_App_Notifier
 
             if (enabled == true)
             {
-                labelWinNotify.Text = "Currently ON";
+                labelWinNotify.Text = "Windows Startup App Notifications: ON";
                 labelWinNotify.ForeColor = Color.FromArgb(0, 128, 0);
             }
             else if (enabled == false)
             {
-                labelWinNotify.Text = "Currently OFF";
+                labelWinNotify.Text = "Windows Startup App Notifications: OFF";
                 labelWinNotify.ForeColor = Color.FromArgb(192, 0, 0);
             }
             else
             {
-                labelWinNotify.Text = "Status unknown";
+                labelWinNotify.Text = "Windows Startup App Notifications: Status unknown";
                 labelWinNotify.ForeColor = SystemColors.GrayText;
             }
         }

@@ -8,26 +8,6 @@ namespace New_Startup_App_Notifier;
 
 internal class Utils
 {
-    internal static string ResolveIndirectString(string input)
-    {
-        // If the string doesn't start with '@', it's already a standard string (or empty)
-        if (string.IsNullOrEmpty(input) || !input.StartsWith("@"))
-        {
-            return input;
-        }
-
-        StringBuilder outBuf = new StringBuilder(1024);
-        int result = NativeMethods.SHLoadIndirectString(input, outBuf, (uint)outBuf.Capacity, IntPtr.Zero);
-
-        // A result of 0 (S_OK) means the string was successfully resolved
-        if (result == 0)
-        {
-            return outBuf.ToString();
-        }
-
-        // Fallback to the raw string if resolution fails (e.g., missing DLL)
-        return input;
-    }
 
     /// <summary>
     /// Produces the friendliest available name for a service DisplayName. First tries to resolve
@@ -37,7 +17,7 @@ internal class Utils
     /// </summary>
     internal static string DeriveFriendlyName(string rawDisplayName)
     {
-        string resolved = ResolveIndirectString(rawDisplayName);
+        string resolved = WindowsUtils.ResolveIndirectString(rawDisplayName);
 
         // If it's still an unresolved indirect string, look for a human-readable fallback after ';'.
         if (!string.IsNullOrEmpty(resolved) && resolved.StartsWith("@"))

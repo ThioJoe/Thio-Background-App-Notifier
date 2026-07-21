@@ -190,16 +190,36 @@ namespace New_Startup_App_Notifier
         // Buttons / interactions
         // ---------------------------------------------------------------------
 
+        // Kept so an already-open "All" window is reused/focused instead of stacking duplicates.
+        private ItemListForm? _servicesForm;
+        private ItemListForm? _tasksForm;
+
         private void buttonAllStartupServices_Click(object sender, EventArgs e)
         {
-            using (var form = new ItemListForm("All Startup Services (" + _result.Services.Count + ")", _result.Services))
-                form.ShowDialog(this);
+            _servicesForm = ShowOrFocus(_servicesForm,
+                "All Startup Services (" + _result.Services.Count + ")", _result.Services);
         }
 
         private void buttonAllStartupTasks_Click(object sender, EventArgs e)
         {
-            using (var form = new ItemListForm("All Startup Tasks (" + _result.Tasks.Count + ")", _result.Tasks))
-                form.ShowDialog(this);
+            _tasksForm = ShowOrFocus(_tasksForm,
+                "All Startup Tasks (" + _result.Tasks.Count + ")", _result.Tasks);
+        }
+
+        // Shows the list window non-modally (so the main window stays usable). If one is already
+        // open, brings it to the front instead of opening another.
+        private ItemListForm ShowOrFocus(ItemListForm? existing, string title, IEnumerable<IStartupItem> items)
+        {
+            if (existing != null && !existing.IsDisposed)
+            {
+                existing.BringToFront();
+                existing.Activate();
+                return existing;
+            }
+
+            var form = new ItemListForm(title, items);
+            form.Show(this);
+            return form;
         }
 
         private void buttonRescan_Click(object sender, EventArgs e)

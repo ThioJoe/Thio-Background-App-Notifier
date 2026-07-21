@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ThioWinUtils;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace New_Startup_App_Notifier;
 
@@ -53,5 +55,16 @@ public partial class DevViewForm : Form
     private void buttonDevTest_Click(object sender, EventArgs e)
     {
         SimpleListStartupItems();
+    }
+
+    private void buttonTestModernDialog_Click(object sender, EventArgs e)
+    {
+        ModernTaskDialog.Template.VerificationResult vr =
+                    ModernTaskDialog.Template.ShowYesNoWithVerification(
+                        title: "Sneaky Startup App Notifier",
+                        mainInstruction: "Main Instruction Headline",
+                        content: "Body Content",
+                        verificationText: "Remind me again at next startup",
+                        icon: ModernTaskDialog.TaskDialogIcon.Information);
     }
 }

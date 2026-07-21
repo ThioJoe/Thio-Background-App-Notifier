@@ -30,6 +30,7 @@ partial class DevViewForm
     {
             this.richTextBoxDevOutput = new System.Windows.Forms.RichTextBox();
             this.buttonDevTest = new System.Windows.Forms.Button();
+            this.buttonTestModernDialog = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // richTextBoxDevOutput
@@ -53,11 +54,22 @@ partial class DevViewForm
             this.buttonDevTest.UseVisualStyleBackColor = true;
             this.buttonDevTest.Click += new System.EventHandler(this.buttonDevTest_Click);
             // 
+            // buttonTestModernDialog
+            // 
+            this.buttonTestModernDialog.Location = new System.Drawing.Point(145, 40);
+            this.buttonTestModernDialog.Name = "buttonTestModernDialog";
+            this.buttonTestModernDialog.Size = new System.Drawing.Size(139, 52);
+            this.buttonTestModernDialog.TabIndex = 3;
+            this.buttonTestModernDialog.Text = "Test Dialog";
+            this.buttonTestModernDialog.UseVisualStyleBackColor = true;
+            this.buttonTestModernDialog.Click += new System.EventHandler(this.buttonTestModernDialog_Click);
+            // 
             // DevViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1585, 779);
+            this.Controls.Add(this.buttonTestModernDialog);
             this.Controls.Add(this.buttonDevTest);
             this.Controls.Add(this.richTextBoxDevOutput);
             this.Name = "DevViewForm";
@@ -70,4 +82,5 @@ partial class DevViewForm
 
     private System.Windows.Forms.RichTextBox richTextBoxDevOutput;
     private System.Windows.Forms.Button buttonDevTest;
+    private System.Windows.Forms.Button buttonTestModernDialog;
 }

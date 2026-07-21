@@ -8,6 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Thio_Background_App_Notifier</RootNamespace>
     <AssemblyName>Thio-Background-App-Notifier</AssemblyName>
+    <ApplicationManifest>App\app.manifest</ApplicationManifest>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

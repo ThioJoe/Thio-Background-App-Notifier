@@ -45,19 +45,17 @@
     </application>
   </compatibility>
 
-  <!-- Indicates that the application is DPI-aware and will not be automatically scaled by Windows at higher
-       DPIs. Windows Presentation Foundation (WPF) applications are automatically DPI-aware and do not need 
-       to opt in. Windows Forms applications targeting .NET Framework 4.6 that opt into this setting, should 
-       also set the 'EnableWindowsFormsHighDpiAutoResizing' setting to 'true' in their app.config. 
-       
-       Makes the application long-path aware. See https://docs.microsoft.com/windows/win32/fileio/maximum-file-path-limitation -->
-	<asmv3:application xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
-		<asmv3:windowsSettings>
-			<dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
-			<dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2, PerMonitor</dpiAwareness>
-			<gdiScaling xmlns="http://schemas.microsoft.com/SMI/2017/WindowsSettings">true</gdiScaling>
-		</asmv3:windowsSettings>
-	</asmv3:application>
+  <!-- DPI awareness is intentionally NOT declared in this manifest.
+
+       This is a .NET Framework WinForms app that configures PerMonitorV2 DPI via app.config
+       (System.Windows.Forms.ApplicationConfigurationSection DpiAwareness + EnableWindowsFormsHighDpiAutoResizing).
+       A dpiAware/dpiAwareness entry here is applied by the OS at process load and OVERRIDES app.config,
+       which locks the process's awareness before WinForms runs and stops WinForms from performing its own
+       per-monitor scaling — the symptom is sharp text but an unscaled/tiny layout.
+
+       So: keep DPI settings in app.config ONLY. This manifest exists purely so that
+       Microsoft.Windows.Common-Controls v6 is embedded, which comctl32's TaskDialogIndirect
+       (ModernTaskDialog) requires. -->
 
   <!-- Enable themes for Windows common controls and dialogs (Windows XP and later) -->
   <dependency>

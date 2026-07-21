@@ -48,6 +48,7 @@ namespace New_Startup_App_Notifier
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            UiHelpers.AttachCopyContextMenu(listViewItems);
             RefreshStartupCheckbox();
             DisplayResult(_result);
 

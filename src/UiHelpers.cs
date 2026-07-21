@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using TaskScheduler;
 
@@ -109,5 +111,61 @@ internal static class UiHelpers
 
         MessageBox.Show(owner, details, "Startup Item Details",
             MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    /// <summary>
+    /// Attaches a right-click "Copy" context menu (and Ctrl+C support) that copies the selected
+    /// rows to the clipboard as tab-separated text. Reusable across every list in the app.
+    /// </summary>
+    public static void AttachCopyContextMenu(ListView listView)
+    {
+        var menu = new ContextMenuStrip();
+        var copyItem = new ToolStripMenuItem("Copy")
+        {
+            ShortcutKeyDisplayString = "Ctrl+C"
+        };
+        copyItem.Click += (s, e) => CopySelectedRows(listView);
+        menu.Items.Add(copyItem);
+
+        // Only offer the menu when at least one row is selected.
+        menu.Opening += (s, e) => e.Cancel = listView.SelectedItems.Count == 0;
+        listView.ContextMenuStrip = menu;
+
+        listView.KeyDown += (s, e) =>
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                CopySelectedRows(listView);
+                e.Handled = true;
+            }
+        };
+    }
+
+    /// <summary>
+    /// Copies the currently selected rows (all their columns) to the clipboard as tab-separated
+    /// lines, in the order they appear in the list.
+    /// </summary>
+    public static void CopySelectedRows(ListView listView)
+    {
+        if (listView.SelectedItems.Count == 0)
+            return;
+
+        var sb = new StringBuilder();
+        foreach (ListViewItem row in listView.SelectedItems)
+        {
+            var cells = new List<string>();
+            foreach (ListViewItem.ListViewSubItem sub in row.SubItems)
+                cells.Add(sub.Text);
+            sb.AppendLine(string.Join("\t", cells));
+        }
+
+        try
+        {
+            Clipboard.SetText(sb.ToString());
+        }
+        catch
+        {
+            // The clipboard can occasionally be locked by another process; ignore rather than crash.
+        }
     }
 }

@@ -19,6 +19,7 @@ public partial class ItemListForm : Form
         this.Text = title;
         labelTitle.Text = title;
 
+        UiHelpers.AttachCopyContextMenu(listView);
         Populate(items);
     }
 

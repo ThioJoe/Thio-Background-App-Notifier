@@ -28,4 +28,24 @@ internal class Utils
         // Fallback to the raw string if resolution fails (e.g., missing DLL)
         return input;
     }
+
+    /// <summary>
+    /// Normalizes a service ImagePath (or similar) into a stable, comparable key.
+    /// Strips the NT object-manager prefix and lower-cases it so the same executable
+    /// resolves to the same key on every run. Any launch arguments are preserved so that,
+    /// for example, two different svchost-hosted services do not collapse into one.
+    /// </summary>
+    internal static string NormalizePathForKey(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return string.Empty;
+
+        string s = raw.Trim();
+
+        // Strip the NT namespace prefix that some driver/service paths use (e.g. \??\C:\...)
+        if (s.StartsWith(@"\??\"))
+            s = s.Substring(4);
+
+        return s.ToLowerInvariant();
+    }
 }

@@ -27,6 +27,12 @@ namespace New_Startup_App_Notifier
         StartupItemType Type { get; } // "Service" or "ScheduledTask"
 
         /// <summary>
+        /// A stable string that uniquely identifies this startup item across runs.
+        /// Used by the detection log to decide whether an item is genuinely new.
+        /// </summary>
+        string IdentityKey { get; }
+
+        /// <summary>
         /// The current run is the first time this startup item is detected.
         /// </summary>
         bool IsFirstDetection { get; set; }
@@ -45,6 +51,7 @@ namespace New_Startup_App_Notifier
         }
 
         public string Name { get; init; }
+        public string ServiceName { get; init; } // The (unique) registry key name of the service
         public string ExecPath { get; init; }
         public string RegPath { get; init; }
         public int StartupType { get; init; }
@@ -56,12 +63,31 @@ namespace New_Startup_App_Notifier
         // Explicit interface implementation - maps to the existing ExecPath property
         string IStartupItem.Path => ExecPath;
 
+        /// <summary>
+        /// Identify a service by its executable path (per the design notes: track the ImagePath,
+        /// not just the service name, so re-registering apps aren't seen as new every boot).
+        /// Falls back to the registry key name if no path is available.
+        /// </summary>
+        public string IdentityKey
+        {
+            get
+            {
+                string normalizedPath = Utils.NormalizePathForKey(ExecPath);
+                if (!string.IsNullOrEmpty(normalizedPath))
+                    return "svc:" + normalizedPath;
+
+                return "svc-name:" + (ServiceName ?? string.Empty).ToLowerInvariant();
+            }
+        }
+
         // Constructor
-        public StartupService(string rawNameString, string path, string regPath)
+        public StartupService(string rawNameString, string serviceName, string path, string regPath, int startType)
         {
             Name = Utils.ResolveIndirectString(rawNameString);
+            ServiceName = serviceName;
             ExecPath = path;
             RegPath = regPath;
+            StartupType = startType;
         }
 
     }
@@ -80,6 +106,13 @@ namespace New_Startup_App_Notifier
 
         // Explicit interface implementation - joins the exec action paths (with args) used to start the task
         string IStartupItem.Path => string.Join("; ", ExecActionPathsWithArgs);
+
+        /// <summary>
+        /// Identify a scheduled task by its full Task Scheduler path (folder + name), which is unique
+        /// and stable across runs.
+        /// </summary>
+        public string IdentityKey => "task:" + (TaskSchedulerPath ?? string.Empty).ToLowerInvariant();
+
         public List<_TASK_TRIGGER_TYPE2> StartupTaskTypes { get; init; }
         public ITriggerCollection Triggers { get; init; }
         public List<IExecAction2> ExecActions { get; init; }
@@ -235,9 +268,11 @@ namespace New_Startup_App_Notifier
 
                                 items.Add(new StartupService
                                     (
-                                        rawNameString: displayName, 
-                                        path:imagePath,
-                                        regPath: regPath
+                                        rawNameString: displayName,
+                                        serviceName: subKeyName,
+                                        path: imagePath,
+                                        regPath: regPath,
+                                        startType: start
                                     )
                                 );
                             }
@@ -337,14 +372,22 @@ namespace New_Startup_App_Notifier
                     {
                         if (StartupTask.GetAutoStartTypes(task).Count > 0)
                         {
-                            string taskPath = string.Empty;
+                            // Only include tasks that actually launch an executable, and add each such
+                            // task exactly once (a task can have multiple exec actions).
+                            bool hasExecAction = false;
                             foreach (IAction action in task.Definition.Actions)
                             {
                                 // 0 = TASK_ACTION_EXEC
                                 if (action.Type == _TASK_ACTION_TYPE.TASK_ACTION_EXEC)
                                 {
-                                    taskItems.Add(new StartupTask(task)); // Just add it to the list. It will handle itself for setting path property
+                                    hasExecAction = true;
+                                    break;
                                 }
+                            }
+
+                            if (hasExecAction)
+                            {
+                                taskItems.Add(new StartupTask(task)); // It sets its own path property
                             }
                         }
                     }

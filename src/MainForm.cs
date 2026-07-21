@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -116,6 +117,12 @@ namespace New_Startup_App_Notifier
             try
             {
                 listViewItems.Items.Clear();
+                listViewItems.Groups.Clear();
+
+                // Group rows by the day they were first detected so different days are separated by a
+                // header divider. Groups appear in the order they're added (newest day first here).
+                listViewItems.ShowGroups = true;
+                var groupsByDate = new Dictionary<DateTime, ListViewGroup>();
 
                 // Most-recently-detected first, so anything new floats to the top.
                 var ordered = items
@@ -139,6 +146,15 @@ namespace New_Startup_App_Notifier
                         row.UseItemStyleForSubItems = true;
                         row.BackColor = Color.FromArgb(255, 249, 196); // light yellow highlight
                     }
+
+                    DateTime day = item.FirstDetectionTime.Date;
+                    if (!groupsByDate.TryGetValue(day, out ListViewGroup group))
+                    {
+                        group = new ListViewGroup(day.ToLongDateString()) { HeaderAlignment = HorizontalAlignment.Left };
+                        groupsByDate[day] = group;
+                        listViewItems.Groups.Add(group);
+                    }
+                    row.Group = group;
 
                     listViewItems.Items.Add(row);
                 }

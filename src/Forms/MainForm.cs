@@ -72,38 +72,36 @@ namespace Thio_Background_App_Notifier
 
         private void UpdateStatusLabels(ScanResult result)
         {
-            string backgroundNote =
-                "This app does not run in the background — it only checks when it runs.";
+            // The tracked-item counter is its own dedicated label (the boxed number in the status
+            // card), independent of whatever the status message happens to say.
+            labelTrackedCount.Text = result.AllItems.Count.ToString();
+
+            const string backgroundNote =
+                "This app doesn't run in the background — it only checks when you open it.";
+
+            string lastChecked = result.PreviousRunTimeLocal.HasValue
+                ? "Last checked " + result.PreviousRunTimeLocal.Value.ToString("g") + "."
+                : "This is the first time it has run.";
 
             if (result.IsFirstRun)
             {
-                labelStatus.Text = $"First run — recorded a baseline of {result.AllItems.Count} startup item(s).";
-                labelStatus.ForeColor = SystemColors.ControlText;
-                labelSubStatus.Text =
-                    "All current startup items have been recorded as the baseline. From now on you'll be told which are new.\r\n"
-                    + backgroundNote;
+                labelStatusValue.Text = $"First run — saved a baseline of {result.AllItems.Count} startup item(s).";
+                labelStatusValue.ForeColor = SystemColors.ControlText;
+                labelStatusDetail.Text =
+                    "From now on you'll be told which startup items are new.   " + backgroundNote;
             }
             else if (result.HasUnseenItems)
             {
-                labelStatus.Text = $"{result.UnseenItems.Count} new startup item(s) since you last checked.";
-                labelStatus.ForeColor = Color.FromArgb(176, 0, 0);
-                labelSubStatus.Text = BuildTrackingText(result) + "\r\n"
-                    + "New items are highlighted below. " + backgroundNote;
+                labelStatusValue.Text = $"{result.UnseenItems.Count} new startup item(s) since you last checked.";
+                labelStatusValue.ForeColor = Color.FromArgb(176, 0, 0);
+                labelStatusDetail.Text = "New items are highlighted below.   " + lastChecked;
             }
             else
             {
-                labelStatus.Text = "No new startup items since you last checked.";
-                labelStatus.ForeColor = Color.FromArgb(0, 120, 0);
-                labelSubStatus.Text = BuildTrackingText(result) + "\r\n" + backgroundNote;
+                labelStatusValue.Text = "No new startup items since you last checked.";
+                labelStatusValue.ForeColor = Color.FromArgb(0, 120, 0);
+                labelStatusDetail.Text = lastChecked + "   " + backgroundNote;
             }
-        }
-
-        private static string BuildTrackingText(ScanResult result)
-        {
-            string tracking = "Tracking " + result.AllItems.Count + " startup item(s).";
-            if (result.PreviousRunTimeLocal.HasValue)
-                return "Previous run: " + result.PreviousRunTimeLocal.Value.ToString("g") + "     " + tracking;
-            return tracking;
         }
 
         private void PopulateList(ScanResult result)
@@ -300,26 +298,27 @@ namespace Thio_Background_App_Notifier
         // Windows' own "regular startup app" notification
         // ---------------------------------------------------------------------
 
-        // Shows the current Windows "Startup app notifications" setting as a prominent colored label.
-        // The details / actions live in a dedicated info form (buttonWinNotify).
+        // Shows the current Windows "Startup app notifications" setting as a prominent colored value.
+        // Only the value label changes here; its caption/hint are fixed designer labels. The details
+        // and actions live in a dedicated info form (buttonWinNotify).
         private void RefreshWindowsNotificationState()
         {
             bool? enabled = WindowsStartupNotification.IsEnabled();
 
             if (enabled == true)
             {
-                labelWinNotify.Text = "Windows Startup App Notifications: ON";
-                labelWinNotify.ForeColor = Color.FromArgb(0, 128, 0);
+                labelWinNotifyValue.Text = "On";
+                labelWinNotifyValue.ForeColor = Color.FromArgb(0, 128, 0);
             }
             else if (enabled == false)
             {
-                labelWinNotify.Text = "Windows Startup App Notifications: OFF";
-                labelWinNotify.ForeColor = Color.FromArgb(192, 0, 0);
+                labelWinNotifyValue.Text = "Off";
+                labelWinNotifyValue.ForeColor = Color.FromArgb(192, 0, 0);
             }
             else
             {
-                labelWinNotify.Text = "Windows Startup App Notifications: Status unknown";
-                labelWinNotify.ForeColor = SystemColors.GrayText;
+                labelWinNotifyValue.Text = "Unknown";
+                labelWinNotifyValue.ForeColor = SystemColors.GrayText;
             }
         }
 
@@ -330,6 +329,44 @@ namespace Thio_Background_App_Notifier
 
             // The setting may have changed in the info form; reflect it.
             RefreshWindowsNotificationState();
+        }
+
+        // ---------------------------------------------------------------------
+        // About / Help
+        // ---------------------------------------------------------------------
+
+        private void buttonAbout_Click(object sender, EventArgs e)
+        {
+            const string repoUrl = "https://github.com/ThioJoe/New-Startup-App-Notifier";
+
+            string tips =
+                "Watches for new programs, services, and scheduled tasks that are set to run at "
+                + "startup, and points out anything that appeared since you last checked.\r\n\r\n"
+                + "Tips:\r\n"
+                + "•  It doesn't run in the background — open it (or tick “Re-check when Windows "
+                + "starts”) to scan.\r\n"
+                + "•  Use “All Startup Services” / “All Startup Tasks” to browse everything "
+                + "currently set to run.\r\n"
+                + "•  New items are highlighted; double-click any row for full details, or right-click "
+                + "to copy.\r\n"
+                + "•  Keep Windows' own “Startup App Notifications” turned On so Windows alerts you too.\r\n\r\n"
+                + "Created by ThioJoe";
+
+            try
+            {
+                ModernTaskDialog.Template.ShowInfoWithHyperlinks(
+                    title: AppName,
+                    mainInstruction: AppName,
+                    content: tips + "\r\n" + $"<a href=\"{repoUrl}\">{repoUrl}</a>",
+                    parentHandle: this.Handle);
+            }
+            catch (Exception)
+            {
+                // Fall back to a plain message box if the modern task dialog can't be shown
+                // (e.g. missing common-controls v6). The URL is shown as plain text here.
+                MessageBox.Show(this, tips + "\r\n" + repoUrl, AppName,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void buttonDevView_Click(object sender, EventArgs e)

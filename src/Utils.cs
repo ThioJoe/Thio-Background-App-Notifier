@@ -30,6 +30,31 @@ internal class Utils
     }
 
     /// <summary>
+    /// Produces the friendliest available name for a service DisplayName. First tries to resolve
+    /// an indirect string (@dll,-id). If that fails, many driver INF entries carry a plain-text
+    /// fallback after a ';' (e.g. "@oem154.inf,%ViGEmBus.SVCDESC%;Nefarius Virtual Gamepad
+    /// Emulation Service"); use that when present. Otherwise returns the resolved/raw value.
+    /// </summary>
+    internal static string DeriveFriendlyName(string rawDisplayName)
+    {
+        string resolved = ResolveIndirectString(rawDisplayName);
+
+        // If it's still an unresolved indirect string, look for a human-readable fallback after ';'.
+        if (!string.IsNullOrEmpty(resolved) && resolved.StartsWith("@"))
+        {
+            int semicolon = resolved.LastIndexOf(';');
+            if (semicolon >= 0 && semicolon < resolved.Length - 1)
+            {
+                string fallback = resolved.Substring(semicolon + 1).Trim();
+                if (fallback.Length > 0)
+                    return fallback;
+            }
+        }
+
+        return resolved;
+    }
+
+    /// <summary>
     /// Normalizes a service ImagePath (or similar) into a stable, comparable key.
     /// Strips the NT object-manager prefix and lower-cases it so the same executable
     /// resolves to the same key on every run. Any launch arguments are preserved so that,

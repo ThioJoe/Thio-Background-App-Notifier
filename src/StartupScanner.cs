@@ -55,7 +55,15 @@ namespace New_Startup_App_Notifier
         public string ExecPath { get; init; }
         public string RegPath { get; init; }
         public int StartupType { get; init; }
+        public int ServiceType { get; init; } // Registry "Type" value (driver vs Win32 service)
         public StartupItemType Type { get; } = StartupItemType.Service;
+
+        /// <summary>
+        /// True when this registry entry is a driver rather than a normal Win32 service.
+        /// Driver type values: 1 = kernel, 2 = file system, 4 = adapter, 8 = recognizer
+        /// (Win32 services are 16 / 32).
+        /// </summary>
+        public bool IsDriver => ServiceType == 1 || ServiceType == 2 || ServiceType == 4 || ServiceType == 8;
 
         public bool IsFirstDetection { get; set; }
         public DateTime FirstDetectionTime { get; set; }
@@ -81,13 +89,14 @@ namespace New_Startup_App_Notifier
         }
 
         // Constructor
-        public StartupService(string rawNameString, string serviceName, string path, string regPath, int startType)
+        public StartupService(string rawNameString, string serviceName, string path, string regPath, int startType, int serviceType)
         {
-            Name = Utils.ResolveIndirectString(rawNameString);
+            Name = Utils.DeriveFriendlyName(rawNameString);
             ServiceName = serviceName;
             ExecPath = path;
             RegPath = regPath;
             StartupType = startType;
+            ServiceType = serviceType;
         }
 
     }
@@ -265,6 +274,7 @@ namespace New_Startup_App_Notifier
                                 string displayName = serviceKey.GetValue("DisplayName") as string ?? subKeyName;
                                 string imagePath = serviceKey.GetValue("ImagePath") as string ?? string.Empty;
                                 string regPath = $@"HKEY_LOCAL_MACHINE\{registryPath}\{subKeyName}";
+                                int serviceType = serviceKey.GetValue("Type") is int typeVal ? typeVal : 0;
 
                                 items.Add(new StartupService
                                     (
@@ -272,7 +282,8 @@ namespace New_Startup_App_Notifier
                                         serviceName: subKeyName,
                                         path: imagePath,
                                         regPath: regPath,
-                                        startType: start
+                                        startType: start,
+                                        serviceType: serviceType
                                     )
                                 );
                             }

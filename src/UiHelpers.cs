@@ -19,6 +19,17 @@ internal static class UiHelpers
         => item.Type == StartupItemType.Service ? "Service" : "Scheduled Task";
 
     /// <summary>
+    /// The name to show in lists. Driver services get a "Driver: " prefix since their raw names are
+    /// often not human-readable (and Utils already extracts any friendly name it can).
+    /// </summary>
+    public static string GetDisplayName(IStartupItem item)
+    {
+        if (item is StartupService service && service.IsDriver)
+            return "Driver: " + service.Name;
+        return item.Name;
+    }
+
+    /// <summary>
     /// A short, human-friendly description of when/how the item starts.
     /// For services this is the start type (Automatic / Boot / System); for scheduled tasks
     /// it is the list of auto-start triggers (Logon, Boot, Daily, Idle).
@@ -97,7 +108,7 @@ internal static class UiHelpers
     public static void ShowDetails(IWin32Window owner, IStartupItem item)
     {
         string details =
-            "Name:\r\n  " + item.Name + "\r\n\r\n" +
+            "Name:\r\n  " + GetDisplayName(item) + "\r\n\r\n" +
             "Type:\r\n  " + GetTypeLabel(item) + "\r\n\r\n" +
             "Starts:\r\n  " + GetDetail(item) + "\r\n\r\n" +
             "Source (guess):\r\n  " + GetSourceHint(item) + "\r\n\r\n" +

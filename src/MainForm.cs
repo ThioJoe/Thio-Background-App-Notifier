@@ -135,7 +135,7 @@ namespace New_Startup_App_Notifier
                     var row = new ListViewItem(item.IsFirstDetection ? "NEW" : string.Empty);
                     row.SubItems.Add(UiHelpers.FormatDetected(item.FirstDetectionTime));
                     row.SubItems.Add(UiHelpers.GetTypeLabel(item));
-                    row.SubItems.Add(item.Name);
+                    row.SubItems.Add(UiHelpers.GetDisplayName(item));
                     row.SubItems.Add(UiHelpers.GetDetail(item));
                     row.SubItems.Add(UiHelpers.GetSourceHint(item));
                     row.SubItems.Add(item.Path);

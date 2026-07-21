@@ -75,9 +75,9 @@ public partial class ItemListForm : Form
         {
             listView.Items.Clear();
 
-            foreach (IStartupItem item in items.OrderBy(i => i.Name, StringComparer.OrdinalIgnoreCase))
+            foreach (IStartupItem item in items.OrderBy(i => UiHelpers.GetDisplayName(i), StringComparer.OrdinalIgnoreCase))
             {
-                var row = new ListViewItem(item.Name);
+                var row = new ListViewItem(UiHelpers.GetDisplayName(item));
                 row.SubItems.Add(UiHelpers.GetDetail(item));
                 row.SubItems.Add(UiHelpers.GetSourceHint(item));
                 row.SubItems.Add(item.FirstDetectionTime.ToString("g"));

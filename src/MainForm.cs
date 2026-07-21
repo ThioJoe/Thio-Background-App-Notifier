@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ThioWinUtils;
 
 #nullable enable
 
@@ -18,6 +19,19 @@ namespace New_Startup_App_Notifier
         public MainForm()
         {
             InitializeComponent();
+
+            TrayContextMenu trayContextMenu = new TrayContextMenu( // TODO
+                exitAppMenuOption: true
+            );
+
+            SystemTray sysTray = new SystemTray(
+                trayContextMenu,
+                iconHandle: null,
+                useExeIcon: true,
+                tooltipText: "Sneaky Startup App Notifier",
+                restoreAction: null,
+                hwndInput: this.Handle
+            );
 
             #if DEBUG
                 buttonDevView.Visible = true;

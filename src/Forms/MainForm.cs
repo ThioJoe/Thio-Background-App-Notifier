@@ -29,7 +29,7 @@ namespace Thio_Background_App_Notifier
             // ---- System tray (left as-is from the existing implementation for now) ----
             TrayContextMenu trayContextMenu = new TrayContextMenu(
                 exitAppMenuOption: true,
-                updateURL: "https://github.com/ThioJoe/New-Startup-App-Notifier/releases"
+                updateURL: $"{MyStrings.repoUrl}/releases"
             );
             trayContextMenu.AddCustomMenuItem( text: "Open Log Folder", action: OpenLogFolder );
 
@@ -353,8 +353,6 @@ namespace Thio_Background_App_Notifier
 
         private void buttonAbout_Click(object sender, EventArgs e)
         {
-            const string repoUrl = "https://github.com/ThioJoe/New-Startup-App-Notifier";
-
             string tips =
                 "Checks for new background services and scheduled tasks that are set to automatically run either at startup or daily, and points out anything that appeared since you last checked.\r\n\r\n"
                 + "Tips:\r\n"
@@ -369,14 +367,14 @@ namespace Thio_Background_App_Notifier
                 ModernTaskDialog.Template.ShowInfoWithHyperlinks(
                     title: AppName,
                     mainInstruction: AppName,
-                    content: tips + "\r\n" + $"<a href=\"{repoUrl}\">{repoUrl}</a>",
+                    content: tips + "\r\n" + $"<a href=\"{MyStrings.repoUrl}\">{MyStrings.repoUrl}</a>",
                     parentHandle: this.Handle);
             }
             catch (Exception)
             {
                 // Fall back to a plain message box if the modern task dialog can't be shown
                 // (e.g. missing common-controls v6). The URL is shown as plain text here.
-                MessageBox.Show(this, tips + "\r\n" + repoUrl, AppName,
+                MessageBox.Show(this, tips + "\r\n" + MyStrings.repoUrl, AppName,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }

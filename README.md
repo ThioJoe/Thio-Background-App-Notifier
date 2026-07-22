@@ -53,10 +53,10 @@ It scans silently and only pops up a notification **if** something new actually 
 
 # How to Download
 
-1. Go to the [Releases](https://github.com/ThioJoe/New-Startup-App-Notifier/releases) page.
+1. Go to the [Releases](https://github.com/ThioJoe/Thio-Background-App-Notifier/releases) page.
 2. For the latest release, look under `Assets` and grab either:
-    - **Installer**: The `.msi` — installs per-user or for all users, and can add the optional Start Menu / quiet-startup shortcuts.
-    - **Portable**: The standalone `Thio-Background-App-Notifier.exe` -- just run it, no install needed.
+    - **Installer**: The `.msi` — installs per-user or for all users. This will also allow it to be updated via `winget` later.
+    - **Portable**: The standalone `Thio-Background-App-Notifier_*.exe` -- just run it, no install needed.
 
 > **Requirements:** Windows with **.NET Framework 4.8** (already included on Windows 10/11). No admin rights are needed for normal use.
 
@@ -94,7 +94,9 @@ It scans silently and only pops up a notification **if** something new actually 
 
 --------
 
-# Building From Source
+## Building From Source
+
+<details><summary>Expand for details</summary>
 
 ### Requirements:
 * Visual Studio (with the .NET desktop workload)
@@ -107,3 +109,4 @@ It scans silently and only pops up a notification **if** something new actually 
 
 The installer is built with [WiX](https://wixtoolset.org/); the installer definition lives in the `Build/` folder.
 
+</details>

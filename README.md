@@ -10,9 +10,9 @@
     Thio's Background App Notifier
 </h1>
 
-### A lightweight Windows tool that notifies you about new startup background services and scheduled tasks, which Windows does not tell you about.
+### A lightweight Windows tool that notifies you about new auto-starting background services and scheduled tasks, which Windows does not tell you about.
 
-It does **not** run continuously, it's not a hypocrite. But you _can_ set it to quietly run once at each Windows startup, and it will show a message box if any new startup items are found since last check. If not, it just closes.
+It does **not** run continuously, it's not a hypocrite. But you _can_ set it to quietly run once at each Windows startup, and it will show a message box if any new auto running items are found since last check. If not, it just closes.
 
 ## Screenshots
 
@@ -22,9 +22,14 @@ It does **not** run continuously, it's not a hypocrite. But you _can_ set it to 
 
 # What It Does (And Why?)
 
-Many programs set themselves to launch at startup without ever showing up in the normal Startup apps list. They register a **Windows Service** or a **Scheduled Task** instead, which run silently in the background and are easy to miss.
+Many programs set themselves to launch at startup or daily without ever showing up in the normal Startup apps list. They register a **Windows Service** or a **Scheduled Task** instead, which run silently in the background and are easy to miss.
 
-The first time you run it, it records a baseline of auto-starting services and scheduled tasks. After that, whenever you open it (or let it check at logon), it tells you **what's new since you last looked** and highlights it.
+The first time you run it, it records a baseline of:
+- Scheduled tasks that run at login
+- Scheduled tasks that run daily
+- Windows Services set to start Automatically
+
+After that, whenever you open it (or let it check at logon), it tells you **what's new since you last looked** and highlights it.
 
 It is **fully portable** (just one exe), but there is an _optional_ `.msi` installer, so you can keep it up to date via `winget`.
 
@@ -65,7 +70,7 @@ It scans silently and only pops up a notification **if** something new actually 
 # How to Use
 
 1. **Run it once to set your baseline.** The first launch just records everything currently set to auto-start — nothing is flagged as new yet.
-2. **Open it again whenever you want to check.** It rescans and shows any startup Services or Scheduled Tasks that appeared since last time, highlighted in the list.
+2. **Open it again whenever you want to check.** It rescans and shows any auto-run Services or Scheduled Tasks that appeared since last time, highlighted in the list.
 3. **Double-click any row** for full details (executable path, service start type, task triggers, when it was first detected, etc.).
 4. Use **"All Startup Services"** or **"All Startup Tasks"** to browse *everything* currently set to run, not just the new stuff.
 
@@ -75,13 +80,10 @@ It scans silently and only pops up a notification **if** something new actually 
 # Frequently Asked Questions
 
 ### **Q:** Does it run constantly in the background?
-**A:** No. It only scans when you open it. The optional "Run at startup" mode does a single silent check at logon and then exits if there's nothing new.
+**A:** No. It only scans when you open it. The optional "Re-check at startup" does a single silent check at logon and then exits if there's nothing new.
 
 ### **Q:** Why doesn't it list my normal startup programs?
 **A:** Because Windows already warns you about "normal" startup apps via its built-in "Startup app notifications." This tool covers the categories Windows *doesn't* (background Services and Scheduled Tasks). There may be other categories added in the future, but these are the big ones.
-
-### **Q:** It flagged a bunch of items the first time — is something wrong?
-**A:** The very first run just records a baseline of what's already there, so nothing should be flagged as new. Anything highlighted afterward genuinely appeared *after* that baseline.
 
 ### **Q:** Does it need administrator rights?
 **A:** Not for normal scanning or the detection log. Some items you lack permission to read are simply skipped.
@@ -90,7 +92,7 @@ It scans silently and only pops up a notification **if** something new actually 
 **A:** No. It's read-only — it only *reports* what it finds. The only thing it writes is its own detection log and (optionally) its own startup shortcut.
 
 ### **Q:** Will this detect malware?
-**A:** Possibly, but it's mainly intended for legitimate software with nuissance practices. There are lots of other ways malware can hide that this app wouldn't catch.
+**A:** Possibly, but it's mainly intended for legitimate software with annoying startup practices. There are lots of other ways malware can hide that this app wouldn't catch.
 
 --------
 

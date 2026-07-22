@@ -86,9 +86,9 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonAbout
             // 
-            this.buttonAbout.Location = new System.Drawing.Point(1397, 138);
+            this.buttonAbout.Location = new System.Drawing.Point(1397, 28);
             this.buttonAbout.Name = "buttonAbout";
-            this.buttonAbout.Size = new System.Drawing.Size(140, 32);
+            this.buttonAbout.Size = new System.Drawing.Size(140, 41);
             this.buttonAbout.TabIndex = 4;
             this.buttonAbout.Text = "About / Help";
             this.buttonAbout.UseCompatibleTextRendering = true;
@@ -99,9 +99,9 @@ namespace Thio_Background_App_Notifier
             // 
             this.buttonRescan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRescan.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonRescan.Location = new System.Drawing.Point(1149, 14);
+            this.buttonRescan.Location = new System.Drawing.Point(24, 112);
             this.buttonRescan.Name = "buttonRescan";
-            this.buttonRescan.Size = new System.Drawing.Size(388, 50);
+            this.buttonRescan.Size = new System.Drawing.Size(294, 98);
             this.buttonRescan.TabIndex = 0;
             this.buttonRescan.Text = "Rescan Now";
             this.buttonRescan.UseVisualStyleBackColor = true;
@@ -111,7 +111,7 @@ namespace Thio_Background_App_Notifier
             // 
             this.buttonAllStartupServices.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonAllStartupServices.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonAllStartupServices.Location = new System.Drawing.Point(1149, 74);
+            this.buttonAllStartupServices.Location = new System.Drawing.Point(346, 112);
             this.buttonAllStartupServices.Name = "buttonAllStartupServices";
             this.buttonAllStartupServices.Size = new System.Drawing.Size(201, 46);
             this.buttonAllStartupServices.TabIndex = 1;
@@ -123,9 +123,9 @@ namespace Thio_Background_App_Notifier
             // 
             this.buttonAllStartupTasks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonAllStartupTasks.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonAllStartupTasks.Location = new System.Drawing.Point(1356, 74);
+            this.buttonAllStartupTasks.Location = new System.Drawing.Point(346, 164);
             this.buttonAllStartupTasks.Name = "buttonAllStartupTasks";
-            this.buttonAllStartupTasks.Size = new System.Drawing.Size(181, 46);
+            this.buttonAllStartupTasks.Size = new System.Drawing.Size(201, 46);
             this.buttonAllStartupTasks.TabIndex = 2;
             this.buttonAllStartupTasks.Text = "All Startup Tasks";
             this.buttonAllStartupTasks.UseVisualStyleBackColor = true;
@@ -133,7 +133,6 @@ namespace Thio_Background_App_Notifier
             // 
             // checkBoxRunAtStartup
             // 
-            this.checkBoxRunAtStartup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxRunAtStartup.AutoSize = true;
             this.checkBoxRunAtStartup.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.checkBoxRunAtStartup.Location = new System.Drawing.Point(16, 25);
@@ -147,9 +146,9 @@ namespace Thio_Background_App_Notifier
             // buttonDevView
             // 
             this.buttonDevView.Enabled = false;
-            this.buttonDevView.Location = new System.Drawing.Point(661, 14);
+            this.buttonDevView.Location = new System.Drawing.Point(1314, 28);
             this.buttonDevView.Name = "buttonDevView";
-            this.buttonDevView.Size = new System.Drawing.Size(66, 33);
+            this.buttonDevView.Size = new System.Drawing.Size(66, 41);
             this.buttonDevView.TabIndex = 7;
             this.buttonDevView.Text = "Dev";
             this.buttonDevView.UseVisualStyleBackColor = true;
@@ -161,7 +160,7 @@ namespace Thio_Background_App_Notifier
             this.panelHeaderDivider.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelHeaderDivider.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.panelHeaderDivider.Location = new System.Drawing.Point(24, 218);
+            this.panelHeaderDivider.Location = new System.Drawing.Point(24, 226);
             this.panelHeaderDivider.Name = "panelHeaderDivider";
             this.panelHeaderDivider.Size = new System.Drawing.Size(1513, 2);
             this.panelHeaderDivider.TabIndex = 22;
@@ -174,7 +173,7 @@ namespace Thio_Background_App_Notifier
             this.panelStatus.Controls.Add(this.labelTrackedCount);
             this.panelStatus.Controls.Add(this.labelStatusDetail);
             this.panelStatus.Controls.Add(this.labelStatusValue);
-            this.panelStatus.Location = new System.Drawing.Point(24, 233);
+            this.panelStatus.Location = new System.Drawing.Point(24, 241);
             this.panelStatus.Name = "panelStatus";
             this.panelStatus.Size = new System.Drawing.Size(704, 163);
             this.panelStatus.TabIndex = 23;
@@ -226,7 +225,7 @@ namespace Thio_Background_App_Notifier
             this.panelWinNotify.Controls.Add(this.labelWinNotifyHint);
             this.panelWinNotify.Controls.Add(this.labelWinNotifyValue);
             this.panelWinNotify.Controls.Add(this.buttonWinNotify);
-            this.panelWinNotify.Location = new System.Drawing.Point(943, 233);
+            this.panelWinNotify.Location = new System.Drawing.Point(943, 241);
             this.panelWinNotify.Name = "panelWinNotify";
             this.panelWinNotify.Size = new System.Drawing.Size(594, 163);
             this.panelWinNotify.TabIndex = 24;
@@ -316,9 +315,9 @@ namespace Thio_Background_App_Notifier
             this.groupBoxStartup.Controls.Add(this.checkBoxRunAtStartup);
             this.groupBoxStartup.Controls.Add(this.labelRecheckSubtitle);
             this.groupBoxStartup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxStartup.Location = new System.Drawing.Point(24, 108);
+            this.groupBoxStartup.Location = new System.Drawing.Point(1108, 112);
             this.groupBoxStartup.Name = "groupBoxStartup";
-            this.groupBoxStartup.Size = new System.Drawing.Size(402, 92);
+            this.groupBoxStartup.Size = new System.Drawing.Size(429, 92);
             this.groupBoxStartup.TabIndex = 28;
             this.groupBoxStartup.TabStop = false;
             // 

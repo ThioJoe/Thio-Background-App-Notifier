@@ -84,10 +84,10 @@ namespace Thio_Background_App_Notifier
             this.labelAppSubtitle.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.labelAppSubtitle.Location = new System.Drawing.Point(28, 69);
             this.labelAppSubtitle.Name = "labelAppSubtitle";
-            this.labelAppSubtitle.Size = new System.Drawing.Size(760, 40);
+            this.labelAppSubtitle.Size = new System.Drawing.Size(982, 40);
             this.labelAppSubtitle.TabIndex = 21;
             this.labelAppSubtitle.Text = "Tracks new background services and scheduled tasks that are set to automatically " +
-    "run\r\n\r\n.";
+    "run.";
             // 
             // buttonAbout
             // 

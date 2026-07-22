@@ -37,9 +37,10 @@
         <!-- Sub-folder appended under the chosen root. Per-machine => [ProgramFiles64Folder]\ThioJoe\...
              Per-user => [AppDataFolder]\ThioJoe\... (AppDataFolder is Roaming %APPDATA%). -->
         <Property Id="ApplicationFolderName" Value="ThioJoe\Thio's Background App Notifier" />
-        <!-- Default radio selection on the scope dialog when the user is elevated (can choose either).
+        <!-- Default radio selection on the scope dialog. Defaults to per-user ("just for you") to
+             match the package's per-user default scope; an elevated user can still pick all-users.
              A non-elevated user is forced to per-user by the InstallScopeDlg publish events below. -->
-        <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+        <Property Id="WixAppFolder" Value="WixPerUserFolder" />
         <!-- These enable both options on the shared InstallScopeDlg. They are WiX (build-time) variables,
              not MSI properties, and are required because that dialog references them in its conditions. -->
         <WixVariable Id="WixUISupportPerUser" Value="1" />

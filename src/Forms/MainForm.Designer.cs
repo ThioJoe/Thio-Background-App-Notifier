@@ -28,8 +28,9 @@ namespace Thio_Background_App_Notifier
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelAppTitle = new System.Windows.Forms.Label();
-            this.labelAppSubtitle = new System.Windows.Forms.Label();
+            this.components = new System.ComponentModel.Container();
+            this.labelAppTitle = new Thio_Background_App_Notifier.TrueTransparentLabel();
+            this.labelAppSubtitle = new Thio_Background_App_Notifier.TrueTransparentLabel();
             this.buttonAbout = new System.Windows.Forms.Button();
             this.buttonRescan = new System.Windows.Forms.Button();
             this.buttonAllStartupServices = new System.Windows.Forms.Button();
@@ -38,18 +39,18 @@ namespace Thio_Background_App_Notifier
             this.buttonDevView = new System.Windows.Forms.Button();
             this.panelHeaderDivider = new System.Windows.Forms.Panel();
             this.panelStatus = new System.Windows.Forms.Panel();
-            this.labelTrackedCaption = new System.Windows.Forms.Label();
-            this.labelTrackedCount = new System.Windows.Forms.Label();
-            this.labelStatusDetail = new System.Windows.Forms.Label();
-            this.labelStatusValue = new System.Windows.Forms.Label();
+            this.labelTrackedCount = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
+            this.labelTrackedCaption = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
+            this.labelStatusDetail = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
+            this.labelStatusValue = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.panelWinNotify = new System.Windows.Forms.Panel();
-            this.labelWinNotifyCaption = new System.Windows.Forms.Label();
-            this.labelWinNotifyHint = new System.Windows.Forms.Label();
-            this.labelWinNotifyValue = new System.Windows.Forms.Label();
+            this.labelWinNotifyCaption = new Thio_Background_App_Notifier.TrueTransparentLabel();
+            this.labelWinNotifyHint = new Thio_Background_App_Notifier.TrueTransparentLabel();
+            this.labelWinNotifyValue = new Thio_Background_App_Notifier.TrueTransparentLabel();
             this.buttonWinNotify = new System.Windows.Forms.Button();
-            this.labelMainListTitle = new System.Windows.Forms.Label();
-            this.labelPlaceholder = new System.Windows.Forms.Label();
-            this.labelRecheckSubtitle = new System.Windows.Forms.Label();
+            this.labelMainListTitle = new Thio_Background_App_Notifier.TrueTransparentLabel();
+            this.labelPlaceholder = new Thio_Background_App_Notifier.TrueTransparentLabel();
+            this.labelRecheckSubtitle = new Thio_Background_App_Notifier.TrueTransparentLabel();
             this.groupBoxStartup = new System.Windows.Forms.GroupBox();
             this.listViewItems = new Thio_Background_App_Notifier.BufferedListView();
             this.colNew = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -167,8 +168,8 @@ namespace Thio_Background_App_Notifier
             // 
             this.panelStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
             this.panelStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelStatus.Controls.Add(this.labelTrackedCaption);
             this.panelStatus.Controls.Add(this.labelTrackedCount);
+            this.panelStatus.Controls.Add(this.labelTrackedCaption);
             this.panelStatus.Controls.Add(this.labelStatusDetail);
             this.panelStatus.Controls.Add(this.labelStatusValue);
             this.panelStatus.Location = new System.Drawing.Point(24, 241);
@@ -176,43 +177,49 @@ namespace Thio_Background_App_Notifier
             this.panelStatus.Size = new System.Drawing.Size(704, 163);
             this.panelStatus.TabIndex = 23;
             // 
-            // labelTrackedCaption
-            // 
-            this.labelTrackedCaption.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTrackedCaption.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.labelTrackedCaption.Location = new System.Drawing.Point(227, 122);
-            this.labelTrackedCaption.Name = "labelTrackedCaption";
-            this.labelTrackedCaption.Size = new System.Drawing.Size(226, 35);
-            this.labelTrackedCaption.TabIndex = 3;
-            this.labelTrackedCaption.Text = "startup items tracked";
-            this.labelTrackedCaption.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // labelTrackedCount
             // 
+            this.labelTrackedCount.BackColor = System.Drawing.Color.Transparent;
             this.labelTrackedCount.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTrackedCount.Location = new System.Drawing.Point(227, 69);
             this.labelTrackedCount.Name = "labelTrackedCount";
             this.labelTrackedCount.Size = new System.Drawing.Size(226, 57);
             this.labelTrackedCount.TabIndex = 2;
-            this.labelTrackedCount.Text = "—";
+            this.labelTrackedCount.Text = "__";
             this.labelTrackedCount.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            // 
+            // labelTrackedCaption
+            // 
+            this.labelTrackedCaption.BackColor = System.Drawing.Color.Transparent;
+            this.labelTrackedCaption.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTrackedCaption.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.labelTrackedCaption.Location = new System.Drawing.Point(227, 126);
+            this.labelTrackedCaption.Name = "labelTrackedCaption";
+            this.labelTrackedCaption.Size = new System.Drawing.Size(226, 31);
+            this.labelTrackedCaption.TabIndex = 3;
+            this.labelTrackedCaption.Text = "startup items tracked";
+            this.labelTrackedCaption.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelStatusDetail
             // 
+            this.labelStatusDetail.BackColor = System.Drawing.Color.Transparent;
             this.labelStatusDetail.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelStatusDetail.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.labelStatusDetail.Location = new System.Drawing.Point(18, 49);
             this.labelStatusDetail.Name = "labelStatusDetail";
             this.labelStatusDetail.Size = new System.Drawing.Size(681, 24);
             this.labelStatusDetail.TabIndex = 1;
+            this.labelStatusDetail.Text = "Last Checked:";
             // 
             // labelStatusValue
             // 
+            this.labelStatusValue.BackColor = System.Drawing.Color.Transparent;
             this.labelStatusValue.Font = new System.Drawing.Font("Segoe UI", 13.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelStatusValue.Location = new System.Drawing.Point(15, 8);
             this.labelStatusValue.Name = "labelStatusValue";
-            this.labelStatusValue.Size = new System.Drawing.Size(684, 32);
+            this.labelStatusValue.Size = new System.Drawing.Size(684, 41);
             this.labelStatusValue.TabIndex = 0;
+            this.labelStatusValue.Text = "Fetching startup items...";
             // 
             // panelWinNotify
             // 
@@ -415,8 +422,8 @@ namespace Thio_Background_App_Notifier
 
         #endregion
 
-        private System.Windows.Forms.Label labelAppTitle;
-        private System.Windows.Forms.Label labelAppSubtitle;
+        private TrueTransparentLabel labelAppTitle;
+        private TrueTransparentLabel labelAppSubtitle;
         private System.Windows.Forms.Button buttonAbout;
         private System.Windows.Forms.Button buttonRescan;
         private System.Windows.Forms.Button buttonAllStartupServices;
@@ -425,17 +432,15 @@ namespace Thio_Background_App_Notifier
         private System.Windows.Forms.Button buttonDevView;
         private System.Windows.Forms.Panel panelHeaderDivider;
         private System.Windows.Forms.Panel panelStatus;
-        private System.Windows.Forms.Label labelStatusValue;
-        private System.Windows.Forms.Label labelStatusDetail;
-        private System.Windows.Forms.Label labelTrackedCount;
-        private System.Windows.Forms.Label labelTrackedCaption;
+        private TrueTransparentLabel labelTrackedCount;
+        private TrueTransparentLabel labelTrackedCaption;
         private System.Windows.Forms.Panel panelWinNotify;
-        private System.Windows.Forms.Label labelWinNotifyCaption;
-        private System.Windows.Forms.Label labelWinNotifyHint;
-        private System.Windows.Forms.Label labelWinNotifyValue;
+        private TrueTransparentLabel labelWinNotifyCaption;
+        private TrueTransparentLabel labelWinNotifyHint;
+        private TrueTransparentLabel labelWinNotifyValue;
         private System.Windows.Forms.Button buttonWinNotify;
         private Thio_Background_App_Notifier.BufferedListView listViewItems;
-        private System.Windows.Forms.Label labelPlaceholder;
+        private TrueTransparentLabel labelPlaceholder;
         private System.Windows.Forms.ColumnHeader colNew;
         private System.Windows.Forms.ColumnHeader colType;
         private System.Windows.Forms.ColumnHeader colName;
@@ -443,8 +448,10 @@ namespace Thio_Background_App_Notifier
         private System.Windows.Forms.ColumnHeader colSource;
         private System.Windows.Forms.ColumnHeader colFirstDetected;
         private System.Windows.Forms.ColumnHeader colPath;
-        private System.Windows.Forms.Label labelMainListTitle;
-        private System.Windows.Forms.Label labelRecheckSubtitle;
+        private TrueTransparentLabel labelMainListTitle;
+        private TrueTransparentLabel labelRecheckSubtitle;
         private System.Windows.Forms.GroupBox groupBoxStartup;
+        private TrueTransparentLabel labelStatusValue;
+        private TrueTransparentLabel labelStatusDetail;
     }
 }

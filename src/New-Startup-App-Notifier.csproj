@@ -56,10 +56,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\AppOptions.cs" />
-    <Compile Include="Forms\BaseForm.cs">
+    <Compile Include="Forms\FormsComponents\BaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormsHelpers\BufferedListView.cs">
+    <Compile Include="Forms\FormsComponents\BufferedListView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DetectionStore.cs" />
@@ -68,6 +68,12 @@
     </Compile>
     <Compile Include="Forms\DevViewForm.Designer.cs">
       <DependentUpon>DevViewForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormsComponents\TrueTransparentLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\FormsComponents\TrueTransparentLabel.Designer.cs">
+      <DependentUpon>TrueTransparentLabel.cs</DependentUpon>
     </Compile>
     <Compile Include="Globals.cs" />
     <Compile Include="Includes\ModernTaskDialog.cs" />

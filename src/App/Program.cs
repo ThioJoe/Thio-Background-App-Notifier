@@ -83,7 +83,7 @@ namespace Thio_Background_App_Notifier
 
             if (count > maxNames)
                 body += "\n… and " + (count - maxNames) + " more";
-            body += $"\n\n-----------------------------------------------------------\n\nSee details now?";
+            body += $"\n\n———————\nSee details now?";
 
             try
             {

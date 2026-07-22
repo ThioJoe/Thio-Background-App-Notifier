@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ThioWinUtils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using static ThioWinUtils.ModernTaskDialog;
 
 namespace Thio_Background_App_Notifier;
 
@@ -59,12 +60,50 @@ public partial class DevViewForm : Form
 
     private void buttonTestModernDialog_Click(object sender, EventArgs e)
     {
-        ModernTaskDialog.Template.VerificationResult vr =
-                    ModernTaskDialog.Template.ShowYesNoWithVerification(
-                        title: AppName,
-                        mainInstruction: "Main Instruction Headline",
-                        content: "Body Content",
-                        verificationText: "Remind me again at next startup",
-                        icon: ModernTaskDialog.TaskDialogIcon.Information);
+        //ModernTaskDialog.Template.VerificationResult vr =
+        //            ModernTaskDialog.Template.ShowYesNoWithVerification(
+        //                title: AppName,
+        //                mainInstruction: "Main Instruction Headline",
+        //                content: "Body Content",
+        //                verificationText: "Remind me again at next startup",
+        //                icon: ModernTaskDialog.TaskDialogIcon.Information);
+
+        int count = 2; // Dummy number
+        string headline = count == 1
+                ? "1 new startup item detected:"
+                : count + " new startup items detected:";
+
+        // List a few of the names so the user knows what turned up.
+        const int maxNames = 5;
+        List<string> names = ["Example Startup Name 1", "Example 2"]; // Dummy Names
+
+        string body = "• " + string.Join("\n• ", names);
+
+        if (count > maxNames)
+            body += "\n… and " + (count - maxNames) + " more";
+        body += $"\n\n———————\nSee details now?";
+
+
+        var dialog = new ModernTaskDialog
+        {
+            Title = AppName,
+            MainInstruction = headline,
+            Content = body,
+            VerificationText = "Remind me again at next startup",
+            MainIcon = ModernTaskDialog.TaskDialogIcon.Warning,
+
+            CommonButtons = TaskDialogCommonButtonFlags.TDCBF_YES_BUTTON |
+                                TaskDialogCommonButtonFlags.TDCBF_NO_BUTTON,
+            Flags = TaskDialogFlags.TDF_ALLOW_DIALOG_CANCELLATION |
+                        TaskDialogFlags.TDF_POSITION_RELATIVE_TO_WINDOW |
+                        TaskDialogFlags.TDF_SIZE_TO_CONTENT,
+            ParentWindowHandle = default,
+            Coloredbar = TaskDialogBarColor.Yellow,
+
+        };
+
+        int buttonId = dialog.Show();
+        bool open = buttonId == ModernTaskDialog.Template.ButtonIds.Yes;
+        (bool open, bool VerificationChecked) result = (open, dialog.VerificationChecked);
     }
 }

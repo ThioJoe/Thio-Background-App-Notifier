@@ -92,6 +92,7 @@ namespace Thio_Background_App_Notifier
             // buttonAbout
             // 
             this.buttonAbout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonAbout.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.buttonAbout.Location = new System.Drawing.Point(1397, 48);
             this.buttonAbout.Name = "buttonAbout";
             this.buttonAbout.Size = new System.Drawing.Size(140, 41);
@@ -280,6 +281,7 @@ namespace Thio_Background_App_Notifier
             // buttonWinNotify
             // 
             this.buttonWinNotify.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonWinNotify.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.buttonWinNotify.Location = new System.Drawing.Point(22, 104);
             this.buttonWinNotify.Name = "buttonWinNotify";
             this.buttonWinNotify.Size = new System.Drawing.Size(122, 40);
@@ -402,11 +404,12 @@ namespace Thio_Background_App_Notifier
             this.labelVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelVersion.AutoSize = true;
             this.labelVersion.BackColor = System.Drawing.Color.Transparent;
+            this.labelVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.labelVersion.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelVersion.Location = new System.Drawing.Point(1408, 14);
+            this.labelVersion.Location = new System.Drawing.Point(1365, 14);
             this.labelVersion.Margin = new System.Windows.Forms.Padding(0);
             this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(138, 20);
+            this.labelVersion.Size = new System.Drawing.Size(172, 25);
             this.labelVersion.TabIndex = 29;
             this.labelVersion.Text = "Version: Unknown";
             // 

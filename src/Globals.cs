@@ -8,4 +8,6 @@ public static class MyStrings
 {
     public const string AppName = "Thio's Background App Notifier";
     public const string AppNameDashed = "Thio-Background-App-Notifier";
+    public const string DefaultInstallGroupFolder = "ThioJoe";
+    public static readonly string DefaultRelativeInstallPath = $"{MyStrings.DefaultInstallGroupFolder}\\{MyStrings.AppName}";
 }

@@ -18,6 +18,9 @@ public partial class ItemListForm : BaseForm
     // Column header text without any sort arrow, so indicators can be re-applied cleanly.
     private string[] _baseHeaderText = new string[0];
 
+    // Keys (in first-seen order) of any type-specific detail columns (e.g. TaskSchedulerPath) to add for this item set.
+    private readonly List<string> _extraColumnKeys = new List<string>();
+
     public ItemListForm(string title, IEnumerable<IStartupItem> items)
     {
         InitializeComponent();
@@ -25,18 +28,49 @@ public partial class ItemListForm : BaseForm
         this.Text = title;
         labelTitle.Text = title;
 
+        List<IStartupItem> itemList = items.ToList();
+        AddTypeSpecificColumns(itemList);
+
         _baseHeaderText = new string[listView.Columns.Count];
         for (int i = 0; i < listView.Columns.Count; i++)
+        {
             _baseHeaderText[i] = listView.Columns[i].Text;
+        }
 
         UiHelpers.AttachCopyContextMenu(listView);
         listView.ListViewItemSorter = _sorter;
         listView.ColumnClick += listView_ColumnClick;
 
-        Populate(items);
+        Populate(itemList);
 
         // The list starts sorted by the first column ascending; show that.
         UpdateSortIndicators();
+    }
+
+    // Adds one ListView column per distinct key found across all items' TypeSpecificDetails,
+    // inserted between the fixed columns and the Path column.
+    private void AddTypeSpecificColumns(IEnumerable<IStartupItem> items)
+    {
+        var seenKeys = new HashSet<string>();
+        foreach (IStartupItem item in items)
+        {
+            foreach (Dictionary<string, string> detail in item.TypeSpecificDetails)
+            {
+                foreach (string key in detail.Keys)
+                {
+                    if (seenKeys.Add(key))
+                        _extraColumnKeys.Add(key);
+                }
+            }
+        }
+
+        int insertIndex = colPath.Index;
+        foreach (string key in _extraColumnKeys)
+        {
+            var header = new ColumnHeader { Text = key, Width = 150 };
+            listView.Columns.Insert(insertIndex, header);
+            insertIndex++;
+        }
     }
 
     private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -81,6 +115,21 @@ public partial class ItemListForm : BaseForm
                 row.SubItems.Add(UiHelpers.GetDetail(item));
                 row.SubItems.Add(UiHelpers.GetSourceHint(item));
                 row.SubItems.Add(item.FirstDetectionTime.ToString("g"));
+
+                foreach (string key in _extraColumnKeys)
+                {
+                    string value = string.Empty;
+                    foreach (Dictionary<string, string> detailColumnData in item.TypeSpecificDetails)
+                    {
+                        if (detailColumnData.TryGetValue(key, out string? found))
+                        {
+                            value = found;
+                            break;
+                        }
+                    }
+                    row.SubItems.Add(value);
+                }
+
                 row.SubItems.Add(item.Path);
                 row.Tag = item;
 

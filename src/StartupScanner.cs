@@ -37,6 +37,11 @@ namespace Thio_Background_App_Notifier
         /// </summary>
         bool IsFirstDetection { get; set; }
         DateTime FirstDetectionTime { get; set; }
+
+        /// <summary>
+        /// A list of dictionaries, each representing a column header and contents, for additional columns and data to show for specific startup types.
+        /// </summary>
+        List<Dictionary<string, string>> TypeSpecificDetails { get; set; }
     }
 
     public class StartupService : IStartupItem
@@ -70,6 +75,8 @@ namespace Thio_Background_App_Notifier
 
         // Explicit interface implementation - maps to the existing ExecPath property
         string IStartupItem.Path => ExecPath;
+
+        public List<Dictionary<string, string>> TypeSpecificDetails { get; set; } = []; // None at this time
 
         /// <summary>
         /// Identify a service by its executable path (per the design notes: track the ImagePath,
@@ -128,6 +135,8 @@ namespace Thio_Background_App_Notifier
         public List<string> ExecActionPaths { get; init; }
         public List<string> ExecActionPathsWithArgs { get; init; }
 
+        public List<Dictionary<string, string>> TypeSpecificDetails { get; set; } = [];
+
         // Constructor
         public StartupTask(IRegisteredTask task)
         {
@@ -147,6 +156,12 @@ namespace Thio_Background_App_Notifier
             ExecActionPaths = GetExecActionPaths(execActionsList, includeArgs: false);
             ExecActionPathsWithArgs = GetExecActionPaths(execActionsList, includeArgs: true);
 
+            // Creates a column for task scheduler path in the all autorun tasks form
+            TypeSpecificDetails = [
+                new Dictionary<string, string> {
+                    ["Task Scheduler Path"] = TaskSchedulerPath
+                }
+            ];
         }
 
         // Constant list

@@ -250,7 +250,7 @@ namespace Thio_Background_App_Notifier
                 return existing;
             }
 
-            var form = new ItemListForm(title, items);
+            ItemListForm form = new ItemListForm(title, items);
             form.Show(this);
             return form;
         }

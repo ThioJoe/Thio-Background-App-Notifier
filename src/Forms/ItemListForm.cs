@@ -10,7 +10,7 @@ namespace Thio_Background_App_Notifier;
 /// A simple, reusable "see all" window that lists a set of startup items (services or tasks)
 /// with their first-detection dates.
 /// </summary>
-public partial class ItemListForm : Form
+public partial class ItemListForm : BaseForm
 {
     // colFirstDetected is the 4th column (index 3); sort it chronologically.
     private readonly ListViewColumnSorter _sorter = new ListViewColumnSorter { DateColumnIndex = 3 };

@@ -11,7 +11,7 @@ using ThioWinUtils;
 
 namespace Thio_Background_App_Notifier
 {
-    public partial class MainForm : Form
+    public partial class MainForm : BaseForm
     {
         private ScanResult _result;
 

@@ -10,7 +10,7 @@ namespace Thio_Background_App_Notifier;
 /// Explains Windows' built-in "Startup app notifications" feature (which covers the "regular"
 /// startup apps this tool doesn't track) and lets the user turn it on or open its settings page.
 /// </summary>
-public partial class WindowsNotifyInfoForm : Form
+public partial class WindowsNotifyInfoForm : BaseForm
 {
     private readonly Color _defaultButtonBackColor;
     public WindowsNotifyInfoForm()

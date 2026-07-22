@@ -2,7 +2,7 @@
 
 ### A lightweight Windows tool that notifies you about new startup background services and scheduled tasks, which Windows does not tell you about.
 
-It does **not** run continuously. You can set it to quietly run once at each Windows startup, and it will show a message box if any new startup items are found. If not, it just closes.
+It does **not** run continuously, it's not a hypocrite. But you _can_ set it to quietly run once at each Windows startup, and it will show a message box if any new startup items are found since last check. If not, it just closes.
 
 ## Screenshots
 

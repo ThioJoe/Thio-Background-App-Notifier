@@ -49,6 +49,8 @@ namespace Thio_Background_App_Notifier
             this.buttonWinNotify = new System.Windows.Forms.Button();
             this.labelMainListTitle = new System.Windows.Forms.Label();
             this.labelPlaceholder = new System.Windows.Forms.Label();
+            this.labelRecheckSubtitle = new System.Windows.Forms.Label();
+            this.groupBoxStartup = new System.Windows.Forms.GroupBox();
             this.listViewItems = new Thio_Background_App_Notifier.BufferedListView();
             this.colNew = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colFirstDetected = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -59,6 +61,7 @@ namespace Thio_Background_App_Notifier
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panelStatus.SuspendLayout();
             this.panelWinNotify.SuspendLayout();
+            this.groupBoxStartup.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelAppTitle
@@ -83,11 +86,12 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonAbout
             // 
-            this.buttonAbout.Location = new System.Drawing.Point(23, 112);
+            this.buttonAbout.Location = new System.Drawing.Point(1397, 138);
             this.buttonAbout.Name = "buttonAbout";
-            this.buttonAbout.Size = new System.Drawing.Size(140, 38);
+            this.buttonAbout.Size = new System.Drawing.Size(140, 32);
             this.buttonAbout.TabIndex = 4;
             this.buttonAbout.Text = "About / Help";
+            this.buttonAbout.UseCompatibleTextRendering = true;
             this.buttonAbout.UseVisualStyleBackColor = true;
             this.buttonAbout.Click += new System.EventHandler(this.buttonAbout_Click);
             // 
@@ -95,9 +99,9 @@ namespace Thio_Background_App_Notifier
             // 
             this.buttonRescan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRescan.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonRescan.Location = new System.Drawing.Point(1211, 14);
+            this.buttonRescan.Location = new System.Drawing.Point(1149, 14);
             this.buttonRescan.Name = "buttonRescan";
-            this.buttonRescan.Size = new System.Drawing.Size(326, 50);
+            this.buttonRescan.Size = new System.Drawing.Size(388, 50);
             this.buttonRescan.TabIndex = 0;
             this.buttonRescan.Text = "Rescan Now";
             this.buttonRescan.UseVisualStyleBackColor = true;
@@ -106,9 +110,10 @@ namespace Thio_Background_App_Notifier
             // buttonAllStartupServices
             // 
             this.buttonAllStartupServices.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAllStartupServices.Location = new System.Drawing.Point(1211, 74);
+            this.buttonAllStartupServices.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonAllStartupServices.Location = new System.Drawing.Point(1149, 74);
             this.buttonAllStartupServices.Name = "buttonAllStartupServices";
-            this.buttonAllStartupServices.Size = new System.Drawing.Size(160, 46);
+            this.buttonAllStartupServices.Size = new System.Drawing.Size(201, 46);
             this.buttonAllStartupServices.TabIndex = 1;
             this.buttonAllStartupServices.Text = "All Startup Services";
             this.buttonAllStartupServices.UseVisualStyleBackColor = true;
@@ -117,9 +122,10 @@ namespace Thio_Background_App_Notifier
             // buttonAllStartupTasks
             // 
             this.buttonAllStartupTasks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAllStartupTasks.Location = new System.Drawing.Point(1377, 74);
+            this.buttonAllStartupTasks.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonAllStartupTasks.Location = new System.Drawing.Point(1356, 74);
             this.buttonAllStartupTasks.Name = "buttonAllStartupTasks";
-            this.buttonAllStartupTasks.Size = new System.Drawing.Size(160, 46);
+            this.buttonAllStartupTasks.Size = new System.Drawing.Size(181, 46);
             this.buttonAllStartupTasks.TabIndex = 2;
             this.buttonAllStartupTasks.Text = "All Startup Tasks";
             this.buttonAllStartupTasks.UseVisualStyleBackColor = true;
@@ -129,24 +135,23 @@ namespace Thio_Background_App_Notifier
             // 
             this.checkBoxRunAtStartup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxRunAtStartup.AutoSize = true;
-            this.checkBoxRunAtStartup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxRunAtStartup.Location = new System.Drawing.Point(1233, 134);
+            this.checkBoxRunAtStartup.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.checkBoxRunAtStartup.Location = new System.Drawing.Point(16, 25);
             this.checkBoxRunAtStartup.Name = "checkBoxRunAtStartup";
-            this.checkBoxRunAtStartup.Size = new System.Drawing.Size(287, 26);
+            this.checkBoxRunAtStartup.Size = new System.Drawing.Size(346, 29);
             this.checkBoxRunAtStartup.TabIndex = 3;
-            this.checkBoxRunAtStartup.Text = "Re-check when Windows starts";
+            this.checkBoxRunAtStartup.Text = "Re-check on each Windows startup";
             this.checkBoxRunAtStartup.UseVisualStyleBackColor = true;
             this.checkBoxRunAtStartup.CheckedChanged += new System.EventHandler(this.checkBoxRunAtStartup_CheckedChanged);
             // 
             // buttonDevView
             // 
-            this.buttonDevView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDevView.Enabled = false;
-            this.buttonDevView.Location = new System.Drawing.Point(860, 53);
+            this.buttonDevView.Location = new System.Drawing.Point(661, 14);
             this.buttonDevView.Name = "buttonDevView";
-            this.buttonDevView.Size = new System.Drawing.Size(173, 56);
+            this.buttonDevView.Size = new System.Drawing.Size(66, 33);
             this.buttonDevView.TabIndex = 7;
-            this.buttonDevView.Text = "Dev Window";
+            this.buttonDevView.Text = "Dev";
             this.buttonDevView.UseVisualStyleBackColor = true;
             this.buttonDevView.Visible = false;
             this.buttonDevView.Click += new System.EventHandler(this.buttonDevView_Click);
@@ -156,7 +161,7 @@ namespace Thio_Background_App_Notifier
             this.panelHeaderDivider.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelHeaderDivider.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.panelHeaderDivider.Location = new System.Drawing.Point(23, 176);
+            this.panelHeaderDivider.Location = new System.Drawing.Point(24, 218);
             this.panelHeaderDivider.Name = "panelHeaderDivider";
             this.panelHeaderDivider.Size = new System.Drawing.Size(1513, 2);
             this.panelHeaderDivider.TabIndex = 22;
@@ -169,7 +174,7 @@ namespace Thio_Background_App_Notifier
             this.panelStatus.Controls.Add(this.labelTrackedCount);
             this.panelStatus.Controls.Add(this.labelStatusDetail);
             this.panelStatus.Controls.Add(this.labelStatusValue);
-            this.panelStatus.Location = new System.Drawing.Point(23, 191);
+            this.panelStatus.Location = new System.Drawing.Point(24, 233);
             this.panelStatus.Name = "panelStatus";
             this.panelStatus.Size = new System.Drawing.Size(704, 163);
             this.panelStatus.TabIndex = 23;
@@ -221,7 +226,7 @@ namespace Thio_Background_App_Notifier
             this.panelWinNotify.Controls.Add(this.labelWinNotifyHint);
             this.panelWinNotify.Controls.Add(this.labelWinNotifyValue);
             this.panelWinNotify.Controls.Add(this.buttonWinNotify);
-            this.panelWinNotify.Location = new System.Drawing.Point(942, 191);
+            this.panelWinNotify.Location = new System.Drawing.Point(943, 233);
             this.panelWinNotify.Name = "panelWinNotify";
             this.panelWinNotify.Size = new System.Drawing.Size(594, 163);
             this.panelWinNotify.TabIndex = 24;
@@ -275,7 +280,7 @@ namespace Thio_Background_App_Notifier
             // 
             this.labelMainListTitle.AutoSize = true;
             this.labelMainListTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelMainListTitle.Location = new System.Drawing.Point(23, 371);
+            this.labelMainListTitle.Location = new System.Drawing.Point(24, 413);
             this.labelMainListTitle.Name = "labelMainListTitle";
             this.labelMainListTitle.Size = new System.Drawing.Size(440, 32);
             this.labelMainListTitle.TabIndex = 25;
@@ -288,12 +293,34 @@ namespace Thio_Background_App_Notifier
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelPlaceholder.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.labelPlaceholder.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelPlaceholder.Location = new System.Drawing.Point(24, 422);
+            this.labelPlaceholder.Location = new System.Drawing.Point(24, 448);
             this.labelPlaceholder.Name = "labelPlaceholder";
-            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 432);
+            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 554);
             this.labelPlaceholder.TabIndex = 26;
             this.labelPlaceholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.labelPlaceholder.Visible = false;
+            // 
+            // labelRecheckSubtitle
+            // 
+            this.labelRecheckSubtitle.AutoSize = true;
+            this.labelRecheckSubtitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.labelRecheckSubtitle.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelRecheckSubtitle.Location = new System.Drawing.Point(13, 55);
+            this.labelRecheckSubtitle.Name = "labelRecheckSubtitle";
+            this.labelRecheckSubtitle.Size = new System.Drawing.Size(377, 22);
+            this.labelRecheckSubtitle.TabIndex = 27;
+            this.labelRecheckSubtitle.Text = "(Shows a message box only if new one found)";
+            // 
+            // groupBoxStartup
+            // 
+            this.groupBoxStartup.Controls.Add(this.checkBoxRunAtStartup);
+            this.groupBoxStartup.Controls.Add(this.labelRecheckSubtitle);
+            this.groupBoxStartup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxStartup.Location = new System.Drawing.Point(24, 108);
+            this.groupBoxStartup.Name = "groupBoxStartup";
+            this.groupBoxStartup.Size = new System.Drawing.Size(402, 92);
+            this.groupBoxStartup.TabIndex = 28;
+            this.groupBoxStartup.TabStop = false;
             // 
             // listViewItems
             // 
@@ -311,9 +338,9 @@ namespace Thio_Background_App_Notifier
             this.listViewItems.FullRowSelect = true;
             this.listViewItems.GridLines = true;
             this.listViewItems.HideSelection = false;
-            this.listViewItems.Location = new System.Drawing.Point(24, 422);
+            this.listViewItems.Location = new System.Drawing.Point(24, 448);
             this.listViewItems.Name = "listViewItems";
-            this.listViewItems.Size = new System.Drawing.Size(1513, 432);
+            this.listViewItems.Size = new System.Drawing.Size(1513, 554);
             this.listViewItems.TabIndex = 5;
             this.listViewItems.UseCompatibleStateImageBehavior = false;
             this.listViewItems.View = System.Windows.Forms.View.Details;
@@ -358,7 +385,8 @@ namespace Thio_Background_App_Notifier
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1561, 878);
+            this.ClientSize = new System.Drawing.Size(1561, 1026);
+            this.Controls.Add(this.groupBoxStartup);
             this.Controls.Add(this.panelStatus);
             this.Controls.Add(this.panelWinNotify);
             this.Controls.Add(this.labelAppTitle);
@@ -367,7 +395,6 @@ namespace Thio_Background_App_Notifier
             this.Controls.Add(this.buttonRescan);
             this.Controls.Add(this.buttonAllStartupServices);
             this.Controls.Add(this.buttonAllStartupTasks);
-            this.Controls.Add(this.checkBoxRunAtStartup);
             this.Controls.Add(this.panelHeaderDivider);
             this.Controls.Add(this.labelMainListTitle);
             this.Controls.Add(this.labelPlaceholder);
@@ -380,6 +407,8 @@ namespace Thio_Background_App_Notifier
             this.panelStatus.ResumeLayout(false);
             this.panelWinNotify.ResumeLayout(false);
             this.panelWinNotify.PerformLayout();
+            this.groupBoxStartup.ResumeLayout(false);
+            this.groupBoxStartup.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -416,5 +445,7 @@ namespace Thio_Background_App_Notifier
         private System.Windows.Forms.ColumnHeader colFirstDetected;
         private System.Windows.Forms.ColumnHeader colPath;
         private System.Windows.Forms.Label labelMainListTitle;
+        private System.Windows.Forms.Label labelRecheckSubtitle;
+        private System.Windows.Forms.GroupBox groupBoxStartup;
     }
 }

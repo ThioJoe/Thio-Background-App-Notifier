@@ -20,9 +20,7 @@ namespace Thio_Background_App_Notifier
         [DllImport("user32.dll", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private static extern bool SetProcessDpiAwarenessContext(IntPtr dpiFlag);
 
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
+        /// <summary> The main entry point for the application. </summary>
         [STAThread]
         static void Main(string[] args)
         {
@@ -37,7 +35,6 @@ namespace Thio_Background_App_Notifier
             catch (EntryPointNotFoundException) // Fails gracefully on Windows versions older than Windows 10 Anniversary Update
             { Debug.WriteLine("SetProcessDpiAwarenessContext not available on this Windows version"); }
             
-
             // Continue on to normally included setup
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

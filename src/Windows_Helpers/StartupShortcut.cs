@@ -16,7 +16,7 @@ namespace Thio_Background_App_Notifier;
 /// </summary>
 internal static class StartupShortcut
 {
-    private const string ShortcutFileName = $"{AppName}.lnk";
+    private const string ShortcutFileName = $"{StartupShortcutName}.lnk";
 
     /// <summary>Argument the startup shortcut passes so the launch is quiet.</summary>
     public const string QuietArgument = "-quiet";

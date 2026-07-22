@@ -124,10 +124,14 @@
                             />
                 <?endif?>
 				
-                <!-- Arguments must match StartupShortcut.QuietArgument ("-quiet") so the logon launch
-                     is silent, same as the shortcut the app creates itself. -->
+                <!-- This must match the app's own StartupShortcut (StartupShortcut.cs / MyStrings) so the
+                     installer and the in-app "run at startup" toggle manage the same .lnk:
+                       - Name  = MyStrings.StartupShortcutName  ("... (Quiet Mode)"); the suffix signals the
+                                 silent logon launch so users don't think the startup entry is broken.
+                       - Arguments = StartupShortcut.QuietArgument ("-quiet") so the launch is silent. -->
                 <Shortcut Id="StartupShortcut"
-                        Name="Thio's Background App Notifier"
+                        Name="Thio's Background App Notifier (Quiet Mode)"
+                        Description="Quietly checks for new startup services and scheduled tasks at logon."
                         Directory="StartupFolder"
                         Target="[#File_64bit]"
                         Arguments="-quiet"

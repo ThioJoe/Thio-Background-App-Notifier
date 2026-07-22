@@ -186,4 +186,16 @@ internal static class UiHelpers
             // The clipboard can occasionally be locked by another process; ignore rather than crash.
         }
     }
+
+    // Resizes the column to fit its content, but never smaller than its header text requires.
+    public static void AutoResizeColumnToLargerOfHeaderOrContent(BufferedListView listViewItems, ColumnHeader column, int padding = 0)
+    {
+        listViewItems.AutoResizeColumn(column.Index, ColumnHeaderAutoResizeStyle.ColumnContent);
+        int contentWidth = column.Width;
+
+        listViewItems.AutoResizeColumn(column.Index, ColumnHeaderAutoResizeStyle.HeaderSize);
+        int headerWidth = column.Width;
+
+        column.Width = Math.Max(contentWidth, headerWidth) + padding;
+    }
 }

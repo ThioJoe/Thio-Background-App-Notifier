@@ -156,6 +156,19 @@ namespace Thio_Background_App_Notifier
 
                     listViewItems.Items.Add(row);
                 }
+
+                // Auto-size certain columns to fit their content so long values aren't truncated.
+                if (listViewItems.Items.Count > 0) // Only can do this if there's actual content to base it off of
+                {
+                    int colPadding = 25;
+                    // The columns are all defined in the designer sheet so we can reference their indexes directly.
+                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colNew, colPadding);
+                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colFirstDetected, colPadding);
+                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colType, colPadding);
+                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colStarts, colPadding);
+                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colSource, colPadding);
+                }
+
             }
             finally
             {
@@ -341,9 +354,9 @@ namespace Thio_Background_App_Notifier
             const string repoUrl = "https://github.com/ThioJoe/New-Startup-App-Notifier";
 
             string tips =
-                "Watches for new background services and scheduled tasks that are set to run at startup, and points out anything that appeared since you last checked.\r\n\r\n"
+                "Checks for new background services and scheduled tasks that are set to run at startup, and points out anything that appeared since you last checked.\r\n\r\n"
                 + "Tips:\r\n"
-                + "•  It doesn't run in the background - open it to scan (or choose to run once each startup).\r\n"
+                + "•  It doesn't run in the background continuously - open it to scan (or choose to run once each startup).\r\n"
                 + "•  Use “All Startup Services” / “All Startup Tasks” to browse everything currently set to run.\r\n"
                 + "•  New items are highlighted. Double-click any row for full details.\r\n"
                 + "•  Keep Windows' own \"Startup App Notifications\" turned On so Windows alerts you about \"regular\" startup apps.\r\n\r\n"

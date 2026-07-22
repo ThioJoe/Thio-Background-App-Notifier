@@ -86,6 +86,7 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonAbout
             // 
+            this.buttonAbout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonAbout.Location = new System.Drawing.Point(1397, 28);
             this.buttonAbout.Name = "buttonAbout";
             this.buttonAbout.Size = new System.Drawing.Size(140, 41);
@@ -97,7 +98,6 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonRescan
             // 
-            this.buttonRescan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRescan.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonRescan.Location = new System.Drawing.Point(24, 112);
             this.buttonRescan.Name = "buttonRescan";
@@ -109,7 +109,6 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonAllStartupServices
             // 
-            this.buttonAllStartupServices.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonAllStartupServices.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonAllStartupServices.Location = new System.Drawing.Point(346, 112);
             this.buttonAllStartupServices.Name = "buttonAllStartupServices";
@@ -121,7 +120,6 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonAllStartupTasks
             // 
-            this.buttonAllStartupTasks.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonAllStartupTasks.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonAllStartupTasks.Location = new System.Drawing.Point(346, 164);
             this.buttonAllStartupTasks.Name = "buttonAllStartupTasks";
@@ -312,6 +310,7 @@ namespace Thio_Background_App_Notifier
             // 
             // groupBoxStartup
             // 
+            this.groupBoxStartup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxStartup.Controls.Add(this.checkBoxRunAtStartup);
             this.groupBoxStartup.Controls.Add(this.labelRecheckSubtitle);
             this.groupBoxStartup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -334,6 +333,7 @@ namespace Thio_Background_App_Notifier
             this.colStarts,
             this.colSource,
             this.colPath});
+            this.listViewItems.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewItems.FullRowSelect = true;
             this.listViewItems.GridLines = true;
             this.listViewItems.HideSelection = false;

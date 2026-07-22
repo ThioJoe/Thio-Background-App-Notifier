@@ -1,5 +1,14 @@
 
-# Thio's Background App Notifier
+<h1 align = 'center'>
+    <img 
+        src="https://github.com/user-attachments/assets/eb4009d4-bb3f-4739-ad6f-93c0dd845439"
+        height = '100' 
+        width = '100' 
+        alt = "Thio's Background App Notifier Icon"
+    >
+    <br>
+    Thio's Background App Notifier
+</h1>
 
 ### A lightweight Windows tool that notifies you about new startup background services and scheduled tasks, which Windows does not tell you about.
 

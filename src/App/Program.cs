@@ -23,6 +23,14 @@ namespace Thio_Background_App_Notifier
 
             AppOptions options = AppOptions.Parse(args);
 
+            // Elevated helper mode: we were relaunched (via UAC) solely to delete the all-users startup
+            // shortcut. Remove it and exit before any scanning or UI.
+            if (options.RemoveMachineStartupShortcut)
+            {
+                StartupShortcut.RemoveMachineShortcut(out _);
+                return;
+            }
+
             // Do the scan up front (it needs no UI). This compares against the on-disk log but does
             // NOT persist yet — the log is only committed once the results are actually surfaced.
             ScanResult result = DetectionStore.PerformScan();

@@ -15,6 +15,13 @@ public class AppOptions
     /// </summary>
     public bool QuietMode { get; private set; }
 
+    /// <summary>
+    /// Internal mode: the app was relaunched elevated purely to delete the all-users startup shortcut.
+    /// When set, the app removes that shortcut and exits immediately, without scanning or showing UI.
+    /// Matches StartupShortcut.RemoveMachineStartupArgument.
+    /// </summary>
+    public bool RemoveMachineStartupShortcut { get; private set; }
+
     public static AppOptions Parse(string[]? args)
     {
         var options = new AppOptions();
@@ -33,6 +40,10 @@ public class AppOptions
                 case "quiet":
                 case "q":
                     options.QuietMode = true;
+                    break;
+
+                case "remove-machine-startup":
+                    options.RemoveMachineStartupShortcut = true;
                     break;
             }
         }

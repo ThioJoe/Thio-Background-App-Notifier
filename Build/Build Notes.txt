@@ -37,8 +37,11 @@ Per-user vs per-machine install (WiX 6, Package Scope="perUserOrMachine")
 		Per-machine:  msiexec /i "Thio...msi" /qn ALLUSERS=1     (must run from an elevated prompt)
 
 	Notes:
-	- Only the install *location* of the .exe changes. The app's own data folder is unchanged:
-	  DetectionStore still uses %APPDATA%\Thio's Background App Notifier (no "ThioJoe" subfolder).
+	- The app always stores its detection log in %APPDATA%\ThioJoe\Thio's Background App Notifier
+	  (DetectionStore.StoreDirectory), regardless of whether the exe was installed per-user or
+	  per-machine. For a per-user install that folder is also where the exe lives; for an all-users
+	  (Program Files) install the exe is elsewhere but the log still goes to AppData so no admin
+	  rights are needed to write it.
 	- ICE validation is not run by "wix build" (only by MSBuild), so the single-component layout is
 	  kept as-is. If you ever switch to MSBuild and want to silence per-user ICEs (ICE38/ICE43/ICE57),
 	  set <SuppressValidation>true</SuppressValidation> or add an HKCU registry KeyPath to the component.

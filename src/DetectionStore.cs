@@ -137,8 +137,16 @@ namespace Thio_Background_App_Notifier
 
         // ---- Locations ----
 
+        /// <summary>
+        /// Directory that holds the detection log. It always lives in the current user's roaming
+        /// AppData, under the same "group" folder the installer uses: %APPDATA%\ThioJoe\&lt;AppName&gt;.
+        /// Keeping it in AppData rather than next to the exe means it works without admin rights even
+        /// when the app itself was installed for all users under Program Files.
+        /// </summary>
         public static string StoreDirectory =>
-            Path.Combine( Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppName);
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                DefaultRelativeInstallPath);
 
         public static string StorePath => Path.Combine(StoreDirectory, "detections.json");
 

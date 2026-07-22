@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
+#nullable enable
+
 namespace Thio_Background_App_Notifier;
 
 /// <summary>

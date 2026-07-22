@@ -115,6 +115,7 @@ namespace Thio_Background_App_Notifier
 
         public string Name { get; set; }
         public string TaskSchedulerPath { get; set; }
+        public List<string> TriggerDescription { get; set; }
         public string TaskXml { get; init; } = string.Empty;
         public StartupItemType Type { get; } = StartupItemType.ScheduledTask;
         public bool IsFirstDetection { get; set; }
@@ -129,8 +130,8 @@ namespace Thio_Background_App_Notifier
         /// </summary>
         public string IdentityKey => "task:" + (TaskSchedulerPath ?? string.Empty).ToLowerInvariant();
 
-        public List<_TASK_TRIGGER_TYPE2> StartupTaskTypes { get; init; }
-        public ITriggerCollection Triggers { get; init; }
+        public List<string> StartupTaskTypes { get; init; }
+        public List<string> Triggers { get; init; }
         public List<IExecAction2> ExecActions { get; init; }
         public List<string> ExecActionPaths { get; init; }
         public List<string> ExecActionPathsWithArgs { get; init; }
@@ -144,22 +145,39 @@ namespace Thio_Background_App_Notifier
             _taskObj = task; // The original object
             _XmlObj = GetTaskXmlDocument(task.Xml);
 
+            (List<_TASK_TRIGGER_TYPE2> normalTypes, List<string> otherDescriptions) autoStartTypes = GetAutoStartTypes(task);
+
+            List<string> triggerStringList = [];
+            foreach (_TASK_TRIGGER_TYPE2 triggerType in autoStartTypes.normalTypes)
+            {
+                // Fetch the friendlyname
+                triggerStringList.Add(GetTriggerName(triggerType));
+            }
+
+            foreach (string otherDescription in autoStartTypes.otherDescriptions)
+            {
+                triggerStringList.Add(otherDescription);
+            }
+
             // Public
             Name = task.Name;
             TaskSchedulerPath = task.Path;
             TaskXml = task.Xml;
-            Triggers = task.Definition.Triggers;
-            StartupTaskTypes = GetAutoStartTypes(task);
+            Triggers = triggerStringList;
+            StartupTaskTypes = triggerStringList;
 
             List<IExecAction2> execActionsList = GetExecActions(task);
             ExecActions = execActionsList;
             ExecActionPaths = GetExecActionPaths(execActionsList, includeArgs: false);
             ExecActionPathsWithArgs = GetExecActionPaths(execActionsList, includeArgs: true);
 
+            TriggerDescription = autoStartTypes.otherDescriptions;
+
             // Creates a column for task scheduler path in the all autorun tasks form
             TypeSpecificDetails = [
                 new Dictionary<string, string> {
-                    ["Task Scheduler Path"] = TaskSchedulerPath
+                    ["Task Scheduler Path"] = TaskSchedulerPath,
+                    //["Special Triggers"] = string.Join(", ", TriggerDescription)
                 }
             ];
         }
@@ -185,6 +203,18 @@ namespace Thio_Background_App_Notifier
             catch
             {
                 return null;
+            }
+        }
+
+        private static string GetTriggerName(_TASK_TRIGGER_TYPE2 trigger)
+        {
+            switch (trigger)
+            {
+                case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_BOOT: return "At Boot";
+                case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_LOGON: return "At Logon";
+                case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_IDLE: return "Whenever Idle";
+                case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY: return "Daily Schedule";
+                default: return trigger.ToString();
             }
         }
 
@@ -246,17 +276,106 @@ namespace Thio_Background_App_Notifier
         /// </summary>
         /// <param name="task"></param>
         /// <returns>List of enabled triggers considered auto start</returns>
-        public static List<_TASK_TRIGGER_TYPE2> GetAutoStartTypes(IRegisteredTask task)
+        public static (List<_TASK_TRIGGER_TYPE2> normalTypes, List<string> otherDescriptions) GetAutoStartTypes(IRegisteredTask task)
         {
-            List<_TASK_TRIGGER_TYPE2> autoStartTypes = new List<_TASK_TRIGGER_TYPE2>();
+            List<_TASK_TRIGGER_TYPE2> normalAutoStartTypes = [];
+            List<string> otherTypeDescriptions = [];
+
             foreach (ITrigger trigger in task.Definition.Triggers)
             {
-                if (consideredAutostartTriggers.Contains(trigger.Type) && trigger.Enabled == true)
+                if (trigger.Enabled == true)
                 {
-                    autoStartTypes.Add(trigger.Type);
+                    if (consideredAutostartTriggers.Contains(trigger.Type))
+                    {
+                        normalAutoStartTypes.Add(trigger.Type);
+                    }
+                    else if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval)
+                    {
+                        
+                        otherTypeDescriptions.Add(MakeFriendlyRepeatString(repeatInterval));
+                    }
+                }                
+            }
+            return (normalAutoStartTypes, otherTypeDescriptions);
+        }
+
+        private static string MakeFriendlyRepeatString(TimeSpan interval)
+        {
+            string s = ""; // For pluralization
+
+            if (interval.TotalDays > 1) // If 24 hours or less use hours
+            {
+                if (interval.TotalDays != 1) { s = "s"; }
+                return $"Repeats every {interval.TotalDays} day{s}";
+            }
+            else if (interval.TotalHours >= 1)
+            {
+                if (interval.TotalHours != 1) { s = "s"; }
+                return $"Repeats every {interval.TotalHours} hour{s}";
+            }
+            else if (interval.TotalMinutes >= 1)
+            {
+                if (interval.TotalMinutes != 1) { s = "s"; }
+                return $"Repeats every {interval.TotalMinutes} minute{s}";
+            }
+            else
+            {
+                if (interval.TotalSeconds != 1) { s = "s"; }
+                return $"Repeats every {interval.TotalSeconds} second{s}";
+            }
+        }
+
+        /// <summary>
+        /// Other types of triggers can have "reptition" triggers tagged on and can repeat regardless of original type apparently. So need to check those too.
+        /// </summary>
+        /// <param name="trigger"></param>
+        /// <returns>A timespan for how often it repeats if it does, otherwise null</returns>
+        public static TimeSpan? CheckRepititionInteval(ITrigger trigger)
+        {
+            // Check if it contains reptition
+            if (trigger.Repetition == null)
+            {
+                return null;
+            }
+            else // It has repitition
+            {
+                // See for repitition patterns: https://learn.microsoft.com/en-us/windows/win32/taskschd/repetitionpattern-interval
+                string interval = trigger.Repetition.Interval;
+                string duration = trigger.Repetition.Duration;
+                bool durationStop = trigger.Repetition.StopAtDurationEnd;
+
+                // If there's an interval and it's less than 24 hours
+                if (string.IsNullOrEmpty(interval))
+                {
+                    return null;
+                }
+                else
+                {
+                    //// Handle durations later
+                    //if (!string.IsNullOrEmpty(duration))
+                    //{
+                    //    TimeSpan durationTimeSpan;
+                    //    durationTimeSpan = System.Xml.XmlConvert.ToTimeSpan(duration);
+                    //    if (durationTimeSpan.TotalSeconds > 0)
+                    //    {
+                    //        // Do something
+                    //    }
+                    //}
+
+                    TimeSpan intervalTimeSpan;
+
+                    try
+                    {
+                        // The string will look like "PT20M" or something but this converts it to time
+                        intervalTimeSpan = System.Xml.XmlConvert.ToTimeSpan(interval);
+                        return intervalTimeSpan;
+                    }
+                    catch
+                    {
+                        return null; // Invalid format
+                    }
                 }
             }
-            return autoStartTypes;
         }
 
     } // ---- End StartupTask Class ----
@@ -340,28 +459,61 @@ namespace Thio_Background_App_Notifier
             {
                 // Get tasks (1 = TASK_ENUM_HIDDEN)
                 IRegisteredTaskCollection tasks = folder.GetTasks(1);
+
+                #if DEBUG
+                // Create a list of the task objects thats easy to look through
+                List<IRegisteredTask> allTasksList = new();
+                foreach (IRegisteredTask task in tasks)
+                {
+                    allTasksList.Add(task);
+                }
+                #endif
+
                 foreach (IRegisteredTask task in tasks)
                 {
                     try
                     {
-                        if (StartupTask.GetAutoStartTypes(task).Count > 0)
+#if DEBUG
+                        //DEBUG
+                        if (task.Name.Contains("BackgroundDownload"))
                         {
-                            // Only include tasks that actually launch an executable, and add each such
-                            // task exactly once (a task can have multiple exec actions).
-                            bool hasExecAction = false;
-                            foreach (IAction action in task.Definition.Actions)
+                            ITriggerCollection triggers = task.Definition.Triggers;
+                            List<object?> triggerList = [];
+                            ITrigger testCast;
+                            foreach (object? trigger in triggers)
                             {
-                                // 0 = TASK_ACTION_EXEC
-                                if (action.Type == _TASK_ACTION_TYPE.TASK_ACTION_EXEC)
-                                {
-                                    hasExecAction = true;
-                                    break;
-                                }
+                                triggerList.Add(trigger);
+                                testCast = (ITrigger)trigger;
+                                string? interval = testCast.Repetition?.Interval;
+                                Console.WriteLine("Hello");
                             }
+                            Console.WriteLine("Hello");
+                        }
+#endif
 
-                            if (hasExecAction)
+                        if (task.Enabled == true)
+                        {
+                            var typesResult = StartupTask.GetAutoStartTypes(task);
+
+                            if (typesResult.normalTypes.Count > 0 || typesResult.otherDescriptions.Count > 0)
                             {
-                                taskItems.Add(new StartupTask(task)); // It sets its own path property
+                                // Only include tasks that actually launch an executable, and add each such
+                                // task exactly once (a task can have multiple exec actions).
+                                bool hasExecAction = false;
+                                foreach (IAction action in task.Definition.Actions)
+                                {
+                                    // 0 = TASK_ACTION_EXEC
+                                    if (action.Type == _TASK_ACTION_TYPE.TASK_ACTION_EXEC)
+                                    {
+                                        hasExecAction = true;
+                                        break;
+                                    }
+                                }
+
+                                if (hasExecAction)
+                                {
+                                    taskItems.Add(new StartupTask(task)); // It sets its own path property
+                                }
                             }
                         }
                     }

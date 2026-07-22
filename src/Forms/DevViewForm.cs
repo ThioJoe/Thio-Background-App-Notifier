@@ -104,6 +104,6 @@ public partial class DevViewForm : Form
 
         int buttonId = dialog.Show();
         bool open = buttonId == ModernTaskDialog.Template.ButtonIds.Yes;
-        (bool open, bool VerificationChecked) result = (open, dialog.VerificationChecked);
+        //(bool open, bool VerificationChecked) result = (open, dialog.VerificationChecked);
     }
 }

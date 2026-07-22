@@ -44,7 +44,7 @@ internal static class UiHelpers
             case StartupTask t:
                 if (t.StartupTaskTypes == null || t.StartupTaskTypes.Count == 0)
                     return "—"; // em dash
-                return string.Join(", ", t.StartupTaskTypes.Select(GetTriggerName).Distinct());
+                return string.Join(", ", t.StartupTaskTypes.Distinct());
 
             default:
                 return "—";
@@ -64,17 +64,7 @@ internal static class UiHelpers
         }
     }
 
-    public static string GetTriggerName(_TASK_TRIGGER_TYPE2 trigger)
-    {
-        switch (trigger)
-        {
-            case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_BOOT: return "Boot";
-            case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_LOGON: return "Logon";
-            case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_IDLE: return "Idle";
-            case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY: return "Daily";
-            default: return trigger.ToString();
-        }
-    }
+
 
     private static readonly string WindowsDir =
         Environment.GetFolderPath(Environment.SpecialFolder.Windows);

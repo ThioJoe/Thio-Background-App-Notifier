@@ -32,4 +32,13 @@ public partial class TrueTransparentLabel : Label
             return cp;
         }
     }
+
+    protected override void OnTextChanged(System.EventArgs e)
+    {
+        base.OnTextChanged(e);
+        if (this.Parent != null)
+        {
+            this.Parent.Invalidate(this.Bounds, true);
+        }
+    }
 }

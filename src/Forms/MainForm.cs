@@ -42,6 +42,8 @@ namespace Thio_Background_App_Notifier
                 hwndInput: this.Handle
             );
 
+            labelVersion.Text = "Version: " + MyStrings.VERSION;
+
             #if DEBUG
                 _devViewForm = new DevViewForm();
                 buttonDevView.Visible = true;
@@ -360,7 +362,7 @@ namespace Thio_Background_App_Notifier
                 + "•  Use “All Auto-Run Services” / “All Auto-Run Tasks” to browse everything currently set to run.\r\n"
                 + "•  New items are highlighted. Double-click any row for full details.\r\n"
                 + "•  Keep Windows' own \"Startup App Notifications\" turned On so Windows alerts you about \"regular\" startup apps.\r\n\r\n"
-                + "Created by ThioJoe";
+                + $"Created by ThioJoe. Version {VERSION}";
 
             try
             {

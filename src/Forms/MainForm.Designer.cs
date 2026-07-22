@@ -49,7 +49,7 @@ namespace Thio_Background_App_Notifier
             this.labelWinNotifyValue = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.buttonWinNotify = new System.Windows.Forms.Button();
             this.labelMainListTitle = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
-            this.labelPlaceholder = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
+            this.labelPlaceholder = new System.Windows.Forms.Label();
             this.labelRecheckSubtitle = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.groupBoxStartup = new System.Windows.Forms.GroupBox();
             this.listViewItems = new Thio_Background_App_Notifier.BufferedListView();
@@ -60,6 +60,7 @@ namespace Thio_Background_App_Notifier
             this.colStarts = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colSource = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.labelVersion = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.panelStatus.SuspendLayout();
             this.panelWinNotify.SuspendLayout();
             this.groupBoxStartup.SuspendLayout();
@@ -91,7 +92,7 @@ namespace Thio_Background_App_Notifier
             // buttonAbout
             // 
             this.buttonAbout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAbout.Location = new System.Drawing.Point(1397, 28);
+            this.buttonAbout.Location = new System.Drawing.Point(1397, 48);
             this.buttonAbout.Name = "buttonAbout";
             this.buttonAbout.Size = new System.Drawing.Size(140, 41);
             this.buttonAbout.TabIndex = 4;
@@ -148,7 +149,7 @@ namespace Thio_Background_App_Notifier
             // buttonDevView
             // 
             this.buttonDevView.Enabled = false;
-            this.buttonDevView.Location = new System.Drawing.Point(1314, 28);
+            this.buttonDevView.Location = new System.Drawing.Point(1314, 48);
             this.buttonDevView.Name = "buttonDevView";
             this.buttonDevView.Size = new System.Drawing.Size(66, 41);
             this.buttonDevView.TabIndex = 7;
@@ -303,7 +304,6 @@ namespace Thio_Background_App_Notifier
             this.labelPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelPlaceholder.BackColor = System.Drawing.Color.Transparent;
             this.labelPlaceholder.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.labelPlaceholder.ForeColor = System.Drawing.SystemColors.GrayText;
             this.labelPlaceholder.Location = new System.Drawing.Point(24, 448);
@@ -397,11 +397,25 @@ namespace Thio_Background_App_Notifier
             this.colPath.Text = "Path";
             this.colPath.Width = 460;
             // 
+            // labelVersion
+            // 
+            this.labelVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelVersion.AutoSize = true;
+            this.labelVersion.BackColor = System.Drawing.Color.Transparent;
+            this.labelVersion.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelVersion.Location = new System.Drawing.Point(1408, 14);
+            this.labelVersion.Margin = new System.Windows.Forms.Padding(0);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(138, 20);
+            this.labelVersion.TabIndex = 29;
+            this.labelVersion.Text = "Version: Unknown";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1561, 1026);
+            this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.groupBoxStartup);
             this.Controls.Add(this.panelStatus);
             this.Controls.Add(this.panelWinNotify);
@@ -450,7 +464,7 @@ namespace Thio_Background_App_Notifier
         private TrueTransparentLabel labelWinNotifyValue;
         private System.Windows.Forms.Button buttonWinNotify;
         private Thio_Background_App_Notifier.BufferedListView listViewItems;
-        private TrueTransparentLabel labelPlaceholder;
+        private System.Windows.Forms.Label labelPlaceholder;
         private System.Windows.Forms.ColumnHeader colNew;
         private System.Windows.Forms.ColumnHeader colType;
         private System.Windows.Forms.ColumnHeader colName;
@@ -463,5 +477,6 @@ namespace Thio_Background_App_Notifier
         private System.Windows.Forms.GroupBox groupBoxStartup;
         private TrueTransparentLabel labelStatusValue;
         private TrueTransparentLabel labelStatusDetail;
+        private TrueTransparentLabel labelVersion;
     }
 }

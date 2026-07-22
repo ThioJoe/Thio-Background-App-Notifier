@@ -80,24 +80,26 @@ namespace Thio_Background_App_Notifier
             labelTrackedCount.Text = result.AllItems.Count.ToString();
 
             string lastChecked = result.PreviousRunTimeLocal.HasValue
-                ? "Last checked " + result.PreviousRunTimeLocal.Value.ToString("g") + "."
+                ? "Last Checked: " + result.PreviousRunTimeLocal.Value.ToString("g") + "."
                 : "This is the first time it has run.";
 
             if (result.IsFirstRun)
             {
-                labelStatusValue.Text = $"First run — saved a baseline of startup items.";
+                labelStatusValue.Text = $"First run — saved a baseline of auto-running items.";
                 labelStatusValue.ForeColor = SystemColors.ControlText;
-                labelStatusDetail.Text = "From now on you'll be told which startup items are new.";
+                labelStatusDetail.Text = "From now on you'll be told which auto-run items are new.";
             }
             else if (result.HasNewItems)
             {
-                labelStatusValue.Text = $"{result.NewItems.Count} new startup item(s) since you last checked.";
+                string s = ""; if (result.NewItems.Count != 1) { s = "s"; }
+
+                labelStatusValue.Text = $"{result.NewItems.Count} new autorun item{s} since you last checked.";
                 labelStatusValue.ForeColor = Color.FromArgb(176, 0, 0);
-                labelStatusDetail.Text = "New items are highlighted below.   " + lastChecked;
+                labelStatusDetail.Text = lastChecked;
             }
             else
             {
-                labelStatusValue.Text = "No new startup items since you last checked.";
+                labelStatusValue.Text = "No new autorun items since you last checked.";
                 labelStatusValue.ForeColor = Color.FromArgb(0, 120, 0);
                 labelStatusDetail.Text = lastChecked;
             }
@@ -183,11 +185,11 @@ namespace Thio_Background_App_Notifier
             if (isEmpty)
             {
                 string lead = result.IsFirstRun
-                    ? "No new startup apps yet — this first run just recorded what's already set to run."
-                    : "No new startup apps have appeared since the baseline was recorded.";
+                    ? "No new auto-run apps yet — this first run just recorded what's already set to run."
+                    : "No new auto-run apps have appeared since the baseline was recorded.";
 
                 labelPlaceholder.Text = lead + "\r\n\r\n"
-                    + "Use “All Startup Services” or “All Startup Tasks” above to see everything currently set to run.";
+                    + "Use “All Auto-Run Services” or “All Auto-Run Tasks” above to see everything currently set to run.";
                 labelPlaceholder.Visible = true;
                 labelPlaceholder.BringToFront();
             }
@@ -226,13 +228,13 @@ namespace Thio_Background_App_Notifier
         private void buttonAllStartupServices_Click(object sender, EventArgs e)
         {
             _servicesForm = ShowOrFocus(_servicesForm,
-                "All Startup Services (" + _result.Services.Count + ")", _result.Services);
+                "All Auto-Run Services (" + _result.Services.Count + ")", _result.Services);
         }
 
         private void buttonAllStartupTasks_Click(object sender, EventArgs e)
         {
             _tasksForm = ShowOrFocus(_tasksForm,
-                "All Startup Tasks (" + _result.Tasks.Count + ")", _result.Tasks);
+                "All Auto-Run Tasks (" + _result.Tasks.Count + ")", _result.Tasks);
         }
 
         // Shows the list window non-modally (so the main window stays usable). If one is already
@@ -354,10 +356,10 @@ namespace Thio_Background_App_Notifier
             const string repoUrl = "https://github.com/ThioJoe/New-Startup-App-Notifier";
 
             string tips =
-                "Checks for new background services and scheduled tasks that are set to run at startup, and points out anything that appeared since you last checked.\r\n\r\n"
+                "Checks for new background services and scheduled tasks that are set to automatically run either at startup or daily, and points out anything that appeared since you last checked.\r\n\r\n"
                 + "Tips:\r\n"
                 + "•  It doesn't run in the background continuously - open it to scan (or choose to run once each startup).\r\n"
-                + "•  Use “All Startup Services” / “All Startup Tasks” to browse everything currently set to run.\r\n"
+                + "•  Use “All Auto-Run Services” / “All Auto-Run Tasks” to browse everything currently set to run.\r\n"
                 + "•  New items are highlighted. Double-click any row for full details.\r\n"
                 + "•  Keep Windows' own \"Startup App Notifications\" turned On so Windows alerts you about \"regular\" startup apps.\r\n\r\n"
                 + "Created by ThioJoe";

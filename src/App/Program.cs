@@ -90,8 +90,8 @@ namespace Thio_Background_App_Notifier
         {
             int count = result.UnalertedItems.Count;
             string headline = count == 1
-                ? "1 new startup item detected:"
-                : count + " new startup items detected:";
+                ? "1 new autorun item detected:"
+                : count + " new autorun items detected:";
 
             // List a few of the names so the user knows what turned up.
             const int maxNames = 5;

@@ -85,7 +85,8 @@ namespace Thio_Background_App_Notifier
             this.labelAppSubtitle.Name = "labelAppSubtitle";
             this.labelAppSubtitle.Size = new System.Drawing.Size(760, 40);
             this.labelAppSubtitle.TabIndex = 21;
-            this.labelAppSubtitle.Text = "Tracks new background services and scheduled tasks set to run at startup.";
+            this.labelAppSubtitle.Text = "Tracks new background services and scheduled tasks that are set to automatically " +
+    "run\r\n\r\n.";
             // 
             // buttonAbout
             // 
@@ -101,7 +102,7 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonRescan
             // 
-            this.buttonRescan.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonRescan.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
             this.buttonRescan.Location = new System.Drawing.Point(24, 112);
             this.buttonRescan.Name = "buttonRescan";
             this.buttonRescan.Size = new System.Drawing.Size(294, 98);
@@ -115,9 +116,9 @@ namespace Thio_Background_App_Notifier
             this.buttonAllStartupServices.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonAllStartupServices.Location = new System.Drawing.Point(346, 112);
             this.buttonAllStartupServices.Name = "buttonAllStartupServices";
-            this.buttonAllStartupServices.Size = new System.Drawing.Size(201, 46);
+            this.buttonAllStartupServices.Size = new System.Drawing.Size(221, 46);
             this.buttonAllStartupServices.TabIndex = 1;
-            this.buttonAllStartupServices.Text = "All Startup Services";
+            this.buttonAllStartupServices.Text = "All Auto-Run Services";
             this.buttonAllStartupServices.UseVisualStyleBackColor = true;
             this.buttonAllStartupServices.Click += new System.EventHandler(this.buttonAllStartupServices_Click);
             // 
@@ -126,9 +127,9 @@ namespace Thio_Background_App_Notifier
             this.buttonAllStartupTasks.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonAllStartupTasks.Location = new System.Drawing.Point(346, 164);
             this.buttonAllStartupTasks.Name = "buttonAllStartupTasks";
-            this.buttonAllStartupTasks.Size = new System.Drawing.Size(201, 46);
+            this.buttonAllStartupTasks.Size = new System.Drawing.Size(221, 46);
             this.buttonAllStartupTasks.TabIndex = 2;
-            this.buttonAllStartupTasks.Text = "All Startup Tasks";
+            this.buttonAllStartupTasks.Text = "All Auto-Run Tasks";
             this.buttonAllStartupTasks.UseVisualStyleBackColor = true;
             this.buttonAllStartupTasks.Click += new System.EventHandler(this.buttonAllStartupTasks_Click);
             // 
@@ -221,7 +222,7 @@ namespace Thio_Background_App_Notifier
             this.labelStatusValue.Name = "labelStatusValue";
             this.labelStatusValue.Size = new System.Drawing.Size(684, 41);
             this.labelStatusValue.TabIndex = 0;
-            this.labelStatusValue.Text = "Fetching startup items...";
+            this.labelStatusValue.Text = "Fetching auto-starting items...";
             // 
             // panelWinNotify
             // 
@@ -260,7 +261,8 @@ namespace Thio_Background_App_Notifier
             this.labelWinNotifyHint.Name = "labelWinNotifyHint";
             this.labelWinNotifyHint.Size = new System.Drawing.Size(440, 50);
             this.labelWinNotifyHint.TabIndex = 1;
-            this.labelWinNotifyHint.Text = "Windows\' own alert when a new startup app is added.\r\nRecommended you turn On.";
+            this.labelWinNotifyHint.Text = "Windows\' own alert when a new startup app is added.\r\nRecommended you turn this On" +
+    ".";
             // 
             // labelWinNotifyValue
             // 
@@ -292,9 +294,9 @@ namespace Thio_Background_App_Notifier
             this.labelMainListTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMainListTitle.Location = new System.Drawing.Point(24, 413);
             this.labelMainListTitle.Name = "labelMainListTitle";
-            this.labelMainListTitle.Size = new System.Drawing.Size(440, 32);
+            this.labelMainListTitle.Size = new System.Drawing.Size(559, 32);
             this.labelMainListTitle.TabIndex = 25;
-            this.labelMainListTitle.Text = "New startup items since your last check:";
+            this.labelMainListTitle.Text = "New automatic starting items since your last check:";
             // 
             // labelPlaceholder
             // 

@@ -1,3 +1,4 @@
+
 # Thio's Background App Notifier
 
 ### A lightweight Windows tool that notifies you about new startup background services and scheduled tasks, which Windows does not tell you about.
@@ -8,8 +9,7 @@ It does **not** run continuously, it's not a hypocrite. But you _can_ set it to 
 
 <p align="center"><img width="800" src="https://github.com/user-attachments/assets/0e0f32c3-77fb-4c6c-8d5e-fe1d87c2e1bb" /></p>
 
-<p align="center"><img width="600" src="https://github.com/user-attachments/assets/86b9548e-2ed1-4c97-9665-b0ee24900b77" /></p>
-
+<p align="center"><img width="550" src="https://github.com/user-attachments/assets/c3c2de80-f96e-4ef4-86b1-194c7e5d489d" /></p>
 
 # What It Does (And Why?)
 

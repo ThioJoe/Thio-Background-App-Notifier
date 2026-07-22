@@ -95,7 +95,6 @@
 
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Thio's Background App Notifier" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
-        <Property Id="WixShellExecTarget" Value="[#File_64bit]" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="Open the app to select the option to run a check at each startup." />
 
         <Feature Id="ProductFeature" Title="Thio's Background App Notifier">
@@ -178,7 +177,17 @@
             <Custom Action="SetAppFolderPerMachine" After="SetAppFolderPerUser" Condition="ACTION=&quot;INSTALL&quot; AND APPLICATIONFOLDER=&quot;&quot; AND (ALLUSERS=1 OR (ALLUSERS=2 AND Privileged))" />
         </InstallUISequence>
 
-        <CustomAction Id="LaunchApplication" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" />
+        <!-- Launch the app after install via explorer.exe rather than WixShellExec. On a per-machine
+             install run elevated, WixShellExec would try to start the app from the installer's elevated
+             context and it often doesn't appear. Going through explorer.exe hands the launch to the
+             logged-on user's shell, so the app starts in their session at normal (non-elevated)
+             integrity and is actually visible. Works the same for a per-user install. -->
+        <CustomAction Id="LaunchApplication"
+                Directory="APPLICATIONFOLDER"
+                ExeCommand="[WindowsFolder]explorer.exe &quot;[#File_64bit]&quot;"
+                Impersonate="yes"
+                Execute="immediate"
+                Return="asyncNoWait" />
 
         <util:CloseApplication Id="CloseMyApp" Target="Thio-Background-App-Notifier.exe" CloseMessage="no" RebootPrompt="no" TerminateProcess="1" />
 

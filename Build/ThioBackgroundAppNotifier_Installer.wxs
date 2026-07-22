@@ -4,6 +4,10 @@
     <!-- GUIDs -->
     <?define UpgradeCodeGuid = "c0de4349-0f65-45b6-a53d-ee0c1b1c8de0" ?>
     <?define ComponentGuidX64 = "4b47810d-b002-4ffa-bf28-01c24d70ba8f" ?>
+    <!-- Own GUID for the (optional) startup-shortcut component, split out from the main component so
+         it can be conditionally installed via the "Run at startup" checkbox. Only x64 is built today,
+         so a single GUID is used (mirroring how ComponentGuidArm64 is not defined either). -->
+    <?define ComponentGuidStartupShortcut = "8a44dcc5-2d4b-494b-bc82-a49cf8fc19b8" ?>
 
     <!-- Set variables depending on specific 64 bit architecture -->
     <?if $(sys.BUILDARCH) = x64 ?>
@@ -70,7 +74,11 @@
             <DialogRef Id="ResumeDlg" />
             <DialogRef Id="UserExit" />
             <DialogRef Id="WelcomeDlg" />
-            <DialogRef Id="InstallScopeDlg" />
+            <!-- The stock InstallScopeDlg is intentionally NOT referenced anywhere: the navigation below
+                 goes to our own InstallScopeStartupDlg (a copy of it with the "Run at startup" checkbox
+                 added), defined further down in this same <UI> block. It needs a DIFFERENT Id because in
+                 WiX v6 an authored dialog cannot override a library dialog of the same Id; any reference
+                 to "InstallScopeDlg" (even a NewDialog value) pulls the stock one and it collides. -->
 
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication" Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed" />
             <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
@@ -83,31 +91,76 @@
             <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg" />
 
             <!-- Fresh install flow: Welcome -> InstallScope (choose all-users / just-me) -> VerifyReady -->
-            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallScopeDlg" Condition="NOT Installed" />
+            <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallScopeStartupDlg" Condition="NOT Installed" />
 
-            <Publish Dialog="InstallScopeDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" />
             <!-- A standard (non-elevated) user can't install per-machine, so force the per-user choice for them. -->
-            <Publish Dialog="InstallScopeDlg" Control="Next" Property="WixAppFolder" Value="WixPerUserFolder" Order="1" Condition="!(wix.WixUISupportPerUser) AND NOT Privileged" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Property="WixAppFolder" Value="WixPerUserFolder" Order="1" Condition="!(wix.WixUISupportPerUser) AND NOT Privileged" />
             <!-- Set ALLUSERS and the install folder to match the selected scope. -->
-            <Publish Dialog="InstallScopeDlg" Control="Next" Property="ALLUSERS" Value="{}" Order="2" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
-            <Publish Dialog="InstallScopeDlg" Control="Next" Property="ALLUSERS" Value="1" Order="3" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
-            <Publish Dialog="InstallScopeDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerUserFolder]" Order="4" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
-            <Publish Dialog="InstallScopeDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerMachineFolder]" Order="5" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Property="ALLUSERS" Value="{}" Order="2" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Property="ALLUSERS" Value="1" Order="3" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerUserFolder]" Order="4" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerMachineFolder]" Order="5" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
             <!-- Set the "launch after install" target from the plain WixPer*Folder properties (computed
                  client-side by the folder custom actions), NOT [#File_64bit]. On a per-machine install the
                  retargeted APPLICATIONFOLDER directory is resolved server-side, so [#File_64bit] comes back
                  empty at the ExitDialog and the launch does nothing (or explorer opens Documents). These
                  properties are always available in the UI process, so the ExitDialog gets a real path. -->
-            <Publish Dialog="InstallScopeDlg" Control="Next" Property="WixShellExecTarget" Value="[WixPerUserFolder]\Thio-Background-App-Notifier.exe" Order="6" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
-            <Publish Dialog="InstallScopeDlg" Control="Next" Property="WixShellExecTarget" Value="[WixPerMachineFolder]\Thio-Background-App-Notifier.exe" Order="7" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
-            <Publish Dialog="InstallScopeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="8" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Property="WixShellExecTarget" Value="[WixPerUserFolder]\Thio-Background-App-Notifier.exe" Order="6" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Property="WixShellExecTarget" Value="[WixPerMachineFolder]\Thio-Background-App-Notifier.exe" Order="7" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
+            <Publish Dialog="InstallScopeStartupDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="8" />
 
-            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="InstallScopeDlg" Order="2" Condition="NOT Installed" />
+            <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="InstallScopeStartupDlg" Order="2" Condition="NOT Installed" />
 
             <Property Id="ARPNOMODIFY" Value="1" />
-       
+
+            <!-- ================ InstallScopeStartupDlg: InstallScopeDlg + startup checkbox ================
+                 A copy of the stock InstallScopeDlg from WixToolset.UI.wixext under a new Id (v6 won't let an
+                 authored dialog reuse a library dialog's Id). The control Ids and !(loc.InstallScopeDlg*)
+                 strings are kept as-is so the scope radios/descriptions look and behave exactly as before
+                 (those loc strings are independent of the dialog's own Id). The ONLY additions are the
+                 RunAtStartupCheckBox + its description, which set the RUNATSTARTUP property. Because this page
+                 runs BEFORE the install executes, that property can cleanly gate the Component_StartupShortcut
+                 below (proper install / skip / uninstall / repair), unlike a checkbox on the final ExitDialog
+                 which appears only after everything is already on disk.
+                 The Back/Next navigation and scope-setting Publish events for this dialog live in the block
+                 above (they are authored externally, exactly as the stock dialog set expects). -->
+            <Dialog Id="InstallScopeStartupDlg" Width="370" Height="270" Title="!(loc.InstallScopeDlg_Title)" KeepModeless="yes">
+                <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallScopeDlgBannerBitmap)" />
+                <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="373" Height="0" />
+                <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="373" Height="0" />
+                <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="20" Transparent="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgDescription)" />
+                <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgTitle)" />
+                <Control Id="BothScopes" Type="RadioButtonGroup" X="20" Y="55" Width="330" Height="120" Property="WixAppFolder" Hidden="yes" ShowCondition="Privileged AND (!(wix.WixUISupportPerUser) AND !(wix.WixUISupportPerMachine))">
+                    <RadioButtonGroup Property="WixAppFolder">
+                        <RadioButton Value="WixPerUserFolder" X="0" Y="0" Width="295" Height="16" Text="!(loc.InstallScopeDlgPerUser)" />
+                        <RadioButton Value="WixPerMachineFolder" X="0" Y="60" Width="295" Height="16" Text="!(loc.InstallScopeDlgPerMachine)" />
+                    </RadioButtonGroup>
+                </Control>
+                <Control Id="PerUserDescription" Type="Text" X="33" Y="70" Width="300" Height="36" Hidden="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgPerUserDescription)" ShowCondition="!(wix.WixUISupportPerUser)" />
+                <Control Id="NoPerUserDescription" Type="Text" X="33" Y="70" Width="300" Height="36" Hidden="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgNoPerUserDescription)" ShowCondition="NOT !(wix.WixUISupportPerUser)" />
+                <Control Id="PerMachineDescription" Type="Text" X="33" Y="131" Width="300" Height="36" Hidden="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgPerMachineDescription)" ShowCondition="Privileged" />
+
+                <!-- Added: startup opt-in. CheckBoxValue="1" + default Property RUNATSTARTUP="1" => checked by
+                     default; unchecking clears the property (null), which the component condition treats as off. -->
+                <Control Id="RunAtStartupCheckBox" Type="CheckBox" X="20" Y="180" Width="335" Height="17" Property="RUNATSTARTUP" CheckBoxValue="1" Text="!(loc.InstallScopeDlgRunAtStartup)" />
+                <Control Id="RunAtStartupDescription" Type="Text" X="33" Y="197" Width="315" Height="30" Transparent="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgRunAtStartupDescription)" />
+
+                <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
+                <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
+                <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">
+                    <Publish Event="SpawnDialog" Value="CancelDlg" />
+                </Control>
+            </Dialog>
+
         </UI>
         <UIRef Id="WixUI_Common" />
+
+        <!-- Drives whether the optional "run at startup" Component_StartupShortcut is installed. Set by the
+             RunAtStartupCheckBox on InstallScopeDlg above; defaults to 1 (checked). Secure="yes" adds it to
+             SecureCustomProperties so the value chosen in the unelevated UI is carried into the elevated
+             execute sequence on a per-machine (all-users) install; without it the choice would be lost there. -->
+        <Property Id="RUNATSTARTUP" Value="1" Secure="yes" />
 
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Thio's Background App Notifier" />
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
@@ -139,6 +192,30 @@
                             />
                 <?endif?>
 				
+                <!-- Start Menu launcher so the app shows up when searched. Normal launch (no -quiet),
+                     no pinning, no desktop shortcut. ProgramMenuFolder is the All-Users Start Menu for an
+                     all-users install and the current user's Start Menu for a per-user install. -->
+                <Shortcut Id="StartMenuShortcut"
+                        Name="Thio's Background App Notifier"
+                        Description="Check for newly added startup services and scheduled tasks."
+                        Directory="ProgramMenuFolder"
+                        Target="[#File_64bit]"
+                        WorkingDirectory="APPLICATIONFOLDER" />
+
+            </Component>
+
+            <!-- ===================== Optional "run at startup" shortcut (own component) =====================
+                 Split into its own component so it can be conditionally installed: Condition="RUNATSTARTUP = 1"
+                 is set from the checkbox on InstallScopeDlg (default checked). MSI properly creates or skips it
+                 and removes it on uninstall; a component keeps the decision recorded, so a Repair honors it too.
+                 A registry value is used as the KeyPath because a component's key path must be a file or registry
+                 entry (a shortcut cannot be one). Root="HKMU" follows the install scope (HKCU per-user / HKLM
+                 all-users) so the same keypath works for both, matching the exe component's dual-scope behavior.
+                 The Shortcut itself is unchanged from before (same Name / -quiet argument / StartupFolder) so it
+                 stays in sync with the app's own StartupShortcut.cs, which manages the identical .lnk. -->
+            <Component Id="Component_StartupShortcut" Guid="$(var.ComponentGuidStartupShortcut)" Bitness="always64" Directory="StartupFolder" Condition="RUNATSTARTUP = &quot;1&quot;">
+                <RegistryValue Root="HKMU" Key="Software\ThioJoe\Thio's Background App Notifier" Name="StartupShortcut" Type="integer" Value="1" KeyPath="yes" />
+
                 <!-- This must match the app's own StartupShortcut (StartupShortcut.cs / MyStrings) so the
                      installer and the in-app "run at startup" toggle manage the same .lnk:
                        - Name  = MyStrings.StartupShortcutName  ("... (Quiet Mode)"); the suffix signals the
@@ -151,19 +228,8 @@
                         Target="[#File_64bit]"
                         Arguments="-quiet"
                         WorkingDirectory="APPLICATIONFOLDER" />
-
-                <!-- Start Menu launcher so the app shows up when searched. Normal launch (no -quiet),
-                     no pinning, no desktop shortcut. ProgramMenuFolder is the All-Users Start Menu for an
-                     all-users install and the current user's Start Menu for a per-user install. -->
-                <Shortcut Id="StartMenuShortcut"
-                        Name="Thio's Background App Notifier"
-                        Description="Check for newly added startup services and scheduled tasks."
-                        Directory="ProgramMenuFolder"
-                        Target="[#File_64bit]"
-                        WorkingDirectory="APPLICATIONFOLDER" />
-
             </Component>
-			
+
         </Feature>
 		
     </Package>

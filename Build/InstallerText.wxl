@@ -28,4 +28,9 @@
     <String Id="InstallScopeDlgPerUserDescription" Value="Installs to your account only. No administrator rights needed." />
     <String Id="InstallScopeDlgPerMachineDescription" Value="Installs for everyone on this PC. Requires administrator rights." />
 
+    <!-- "Run at startup" checkbox added to the InstallScopeDlg (see the .wxs). Toggling it sets the
+         RUNATSTARTUP property, which decides whether the Startup shortcut component gets installed. -->
+    <String Id="InstallScopeDlgRunAtStartup" Value="Run automatically at startup (recommended)" />
+    <String Id="InstallScopeDlgRunAtStartupDescription" Value="Quietly checks for newly added startup services and scheduled tasks each time you sign in. You can turn this off anytime from within the app." />
+
 </WixLocalization>

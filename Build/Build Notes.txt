@@ -22,6 +22,8 @@ GUIDS used by the MSI Installer and DLL
 	- Used only by MSI Installer:
 		UpgradeCode GUID: 		c0de4349-0f65-45b6-a53d-ee0c1b1c8de0
 		x64 Component GUID:		4b47810d-b002-4ffa-bf28-01c24d70ba8f
+		Startup Shortcut Component GUID:	8a44dcc5-2d4b-494b-bc82-a49cf8fc19b8
+			(Optional "run at startup" component, gated by the RUNATSTARTUP checkbox on the install-scope page.)
 
 
 Per-user vs per-machine install (WiX 6, Package Scope="perUserOrMachine")

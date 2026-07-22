@@ -291,8 +291,11 @@ namespace Thio_Background_App_Notifier
                     }
                     else if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval)
                     {
-                        
-                        otherTypeDescriptions.Add(MakeFriendlyRepeatString(repeatInterval));
+                        // Check if it's 26 hours or less
+                        if (repeatInterval.TotalHours <= 26)
+                        {
+                            otherTypeDescriptions.Add(MakeFriendlyRepeatString(repeatInterval));
+                        }
                     }
                 }                
             }

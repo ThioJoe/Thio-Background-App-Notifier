@@ -143,8 +143,8 @@
 
                 <!-- Added: startup opt-in. CheckBoxValue="1" + default Property RUNATSTARTUP="1" => checked by
                      default; unchecking clears the property (null), which the component condition treats as off. -->
-                <Control Id="RunAtStartupCheckBox" Type="CheckBox" X="20" Y="180" Width="335" Height="17" Property="RUNATSTARTUP" CheckBoxValue="1" Text="!(loc.InstallScopeDlgRunAtStartup)" />
-                <Control Id="RunAtStartupDescription" Type="Text" X="33" Y="197" Width="315" Height="30" Transparent="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgRunAtStartupDescription)" />
+                <Control Id="RunAtStartupCheckBox" Type="CheckBox" X="20" Y="172" Width="335" Height="17" Property="RUNATSTARTUP" CheckBoxValue="1" Text="!(loc.InstallScopeDlgRunAtStartup)" />
+                <Control Id="RunAtStartupDescription" Type="Text" X="33" Y="189" Width="315" Height="44" Transparent="yes" NoPrefix="yes" Text="!(loc.InstallScopeDlgRunAtStartupDescription)" />
 
                 <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
                 <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />

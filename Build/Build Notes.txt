@@ -1,8 +1,5 @@
 Command:
-	wix build ThioBackgroundAppNotifier_Installer.wxs -d ProductVersion="1.0.0.0" -arch x64 -loc InstallerText.wxl -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext 
-	
-	Output name can be set with -o like:
-	-o "Thio-Background-App-Notifier_Installer_1.0.1.msi"
+	wix build ThioBackgroundAppNotifier_Installer.wxs -d ProductVersion="1.0.0.0" -arch x64 -loc InstallerText.wxl -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -o "Thio-Background-App-Notifier_Installer.msi"
 	
 	(-loc InstallerText.wxl overrides the built-in WixUI wording on the install-scope page.
 	 If you drop that flag the installer still builds, but reverts to WiX's default obtuse text.)

@@ -16,9 +16,9 @@ It does **not** run continuously, it's not a hypocrite. But you _can_ set it to 
 
 ## Screenshots
 
-<p align="center"><img width="800" src="https://github.com/user-attachments/assets/0e0f32c3-77fb-4c6c-8d5e-fe1d87c2e1bb" /></p>
+<p align="center"><img width="800" src="https://github.com/user-attachments/assets/3d829488-c3ed-4139-8aca-58feeef7ed52" /></p>
 
-<p align="center"><img width="550" src="https://github.com/user-attachments/assets/c3c2de80-f96e-4ef4-86b1-194c7e5d489d" /></p>
+<p align="center"><img width="550" src="https://github.com/user-attachments/assets/a2840cd3-d516-4c35-9b52-65d73e660dea" /></p>
 
 # What It Does (And Why?)
 

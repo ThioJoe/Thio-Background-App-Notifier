@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Overrides the built-in WixUI text on the "installation scope" page so the choice reads in
+    plain English instead of the obtuse stock wording.
+
+    These string Ids come from WixToolset.UI.wixext (WixUI_en-us.wxl) and are all marked
+    Overridable="yes", so defining them here replaces the defaults. This file must be passed to
+    the build with:  -loc InstallerText.wxl   (see Build Notes.txt).
+
+    Notes:
+      - [LogonUser] expands to the current Windows user name at run time (e.g. "Joe").
+      - {\WixUI_Font_Emphasized} / {\WixUI_Font_Title} are the stock WixUI text styles, kept so the
+        labels look the same as the rest of the wizard.
+      - The radio choices only appear when the installer is run elevated; a non-elevated run just
+        installs for the current user (and shows the per-user description).
+-->
+<WixLocalization Culture="en-US" Codepage="1252" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+    <!-- Heading + subtitle at the top of the page -->
+    <String Id="InstallScopeDlgTitle" Value="{\WixUI_Font_Title}Choose who to install for" />
+    <String Id="InstallScopeDlgDescription" Value="Install just for you, or for everyone who uses this PC." />
+
+    <!-- The two radio choices (shown when the installer is run as administrator) -->
+    <String Id="InstallScopeDlgPerUser" Value="{\WixUI_Font_Emphasized}Install just for you ([LogonUser])" />
+    <String Id="InstallScopeDlgPerMachine" Value="{\WixUI_Font_Emphasized}Install for all users (Requires Admin)" />
+
+    <!-- Short, plain-English descriptions under each choice -->
+    <String Id="InstallScopeDlgPerUserDescription" Value="Installs to your account only. No administrator rights needed." />
+    <String Id="InstallScopeDlgPerMachineDescription" Value="Installs for everyone on this PC. Requires administrator rights." />
+
+</WixLocalization>

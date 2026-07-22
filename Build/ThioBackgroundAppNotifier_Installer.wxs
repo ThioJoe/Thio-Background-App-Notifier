@@ -143,6 +143,16 @@
                         Arguments="-quiet"
                         WorkingDirectory="APPLICATIONFOLDER" />
 
+                <!-- Start Menu launcher so the app shows up when searched. Normal launch (no -quiet),
+                     no pinning, no desktop shortcut. ProgramMenuFolder is the All-Users Start Menu for an
+                     all-users install and the current user's Start Menu for a per-user install. -->
+                <Shortcut Id="StartMenuShortcut"
+                        Name="Thio's Background App Notifier"
+                        Description="Check for newly added startup services and scheduled tasks."
+                        Directory="ProgramMenuFolder"
+                        Target="[#File_64bit]"
+                        WorkingDirectory="APPLICATIONFOLDER" />
+
             </Component>
 			
         </Feature>
@@ -151,6 +161,8 @@
 
     <Fragment>
 		<StandardDirectory Id="StartupFolder" />
+		<!-- Start Menu \ Programs (per-user or All-Users, matching the install scope). -->
+		<StandardDirectory Id="ProgramMenuFolder" />
 		<!-- Roaming %APPDATA% root, used for the per-user install location. -->
 		<StandardDirectory Id="AppDataFolder" />
         <!-- APPLICATIONFOLDER is retargeted at runtime by the custom actions below (Program Files for

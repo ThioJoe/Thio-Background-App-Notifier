@@ -124,10 +124,13 @@
                             />
                 <?endif?>
 				
+                <!-- Arguments must match StartupShortcut.QuietArgument ("-quiet") so the logon launch
+                     is silent, same as the shortcut the app creates itself. -->
                 <Shortcut Id="StartupShortcut"
                         Name="Thio's Background App Notifier"
                         Directory="StartupFolder"
                         Target="[#File_64bit]"
+                        Arguments="-quiet"
                         WorkingDirectory="APPLICATIONFOLDER" />
 
             </Component>

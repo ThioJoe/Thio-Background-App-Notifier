@@ -84,7 +84,14 @@
             <Publish Dialog="InstallScopeDlg" Control="Next" Property="ALLUSERS" Value="1" Order="3" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
             <Publish Dialog="InstallScopeDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerUserFolder]" Order="4" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
             <Publish Dialog="InstallScopeDlg" Control="Next" Property="APPLICATIONFOLDER" Value="[WixPerMachineFolder]" Order="5" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
-            <Publish Dialog="InstallScopeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="6" />
+            <!-- Set the "launch after install" target from the plain WixPer*Folder properties (computed
+                 client-side by the folder custom actions), NOT [#File_64bit]. On a per-machine install the
+                 retargeted APPLICATIONFOLDER directory is resolved server-side, so [#File_64bit] comes back
+                 empty at the ExitDialog and the launch does nothing (or explorer opens Documents). These
+                 properties are always available in the UI process, so the ExitDialog gets a real path. -->
+            <Publish Dialog="InstallScopeDlg" Control="Next" Property="WixShellExecTarget" Value="[WixPerUserFolder]\Thio-Background-App-Notifier.exe" Order="6" Condition="WixAppFolder = &quot;WixPerUserFolder&quot;" />
+            <Publish Dialog="InstallScopeDlg" Control="Next" Property="WixShellExecTarget" Value="[WixPerMachineFolder]\Thio-Background-App-Notifier.exe" Order="7" Condition="WixAppFolder = &quot;WixPerMachineFolder&quot;" />
+            <Publish Dialog="InstallScopeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Order="8" />
 
             <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="InstallScopeDlg" Order="2" Condition="NOT Installed" />
 
@@ -177,17 +184,10 @@
             <Custom Action="SetAppFolderPerMachine" After="SetAppFolderPerUser" Condition="ACTION=&quot;INSTALL&quot; AND APPLICATIONFOLDER=&quot;&quot; AND (ALLUSERS=1 OR (ALLUSERS=2 AND Privileged))" />
         </InstallUISequence>
 
-        <!-- Launch the app after install via explorer.exe rather than WixShellExec. On a per-machine
-             install run elevated, WixShellExec would try to start the app from the installer's elevated
-             context and it often doesn't appear. Going through explorer.exe hands the launch to the
-             logged-on user's shell, so the app starts in their session at normal (non-elevated)
-             integrity and is actually visible. Works the same for a per-user install. -->
-        <CustomAction Id="LaunchApplication"
-                Directory="APPLICATIONFOLDER"
-                ExeCommand="[WindowsFolder]explorer.exe &quot;[#File_64bit]&quot;"
-                Impersonate="yes"
-                Execute="immediate"
-                Return="asyncNoWait" />
+        <!-- Launch the app after install. WixShellExec does a ShellExecute on [WixShellExecTarget]
+             (set by the InstallScopeDlg above to the full exe path), so it handles the spaces/apostrophe
+             in the path correctly. Impersonate="yes" runs it as the installing user. -->
+        <CustomAction Id="LaunchApplication" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" />
 
         <util:CloseApplication Id="CloseMyApp" Target="Thio-Background-App-Notifier.exe" CloseMessage="no" RebootPrompt="no" TerminateProcess="1" />
 

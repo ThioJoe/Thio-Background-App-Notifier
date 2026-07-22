@@ -1,18 +1,15 @@
-<h1 align = 'center'>
-    <img 
-        src = '.github/assets/Icon.png' 
-        height = '100' 
-        width = '100' 
-        alt = 'Thio Background App Notifier Icon' 
-    >
-    <br>
-    Thio's Background App Notifier
-    <br>
-</h1>
+# Thio's Background App Notifier
 
-### A lightweight Windows tool that tells you when an app quietly adds a new startup scheduled task or background service.
+### A lightweight Windows tool that notifies you about new startup background services and scheduled tasks, which Windows does not tell you about.
 
 It does **not** run continuously. You can set it to quietly run once at each Windows startup, and it will show a message box if any new startup items are found. If not, it just closes.
+
+## Screenshots
+
+<p align="center"><img width="800" src="https://github.com/user-attachments/assets/0e0f32c3-77fb-4c6c-8d5e-fe1d87c2e1bb" /></p>
+
+<p align="center"><img width="600" src="https://github.com/user-attachments/assets/86b9548e-2ed1-4c97-9665-b0ee24900b77" /></p>
+
 
 # What It Does (And Why?)
 
@@ -24,11 +21,15 @@ It is **fully portable** (just one exe), but there is an _optional_ `.msi` insta
 
 ## What It Does _NOT_ Track (On Purpose)
 
-It does **not** track "regular" startup apps — the ones that add themselves to your **Startup folder** or the **Run** registry keys. That's not an oversight:
+It does **not** track "regular" startup apps, like ones that add themselves to your **Startup folder** or the **Run** registry keys. Because:
 
-* **Windows already notifies you about those** via its built-in *"Startup app notifications"* setting (Settings ▸ System ▸ Notifications ▸ Startup app notifications).
+* **Windows already notifies you about those** via its built-in *"Startup app notifications"* setting. Recommended you turn this ON.
+<p align="center"><img width="400" src="https://github.com/user-attachments/assets/dd93079f-b39c-488f-b68a-f8af612ca6ce" /></p>
+<p align="center">Settings ▸ System ▸ Notifications ▸ Startup app notifications</p>
+
 * This app focuses on the categories Windows _doesn't_ warn you about, so the two complement each other.
-* It even shows you whether that Windows setting is currently On, and can turn it on for you — so you're covered for **both** kinds of startup items.
+* However, this app _can_ show you whether that Windows setting is currently On, and can even turn it on for you.
+
 
 ## It's Not a Background Process
 

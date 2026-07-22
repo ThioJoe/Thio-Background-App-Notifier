@@ -32,7 +32,9 @@ It is **fully portable** (just one exe), but there is an _optional_ `.msi` insta
 
 It does **not** track "regular" startup apps, like ones that add themselves to your **Startup folder** or the **Run** registry keys. Because:
 
-* **Windows already notifies you about those** via its built-in *"Startup app notifications"* setting. Recommended you turn this ON.
+* **Windows already notifies you about those** via its built-in *"Startup app notifications"* setting.
+
+   Recommended you turn this ON:
 <p align="center"><img width="400" src="https://github.com/user-attachments/assets/dd93079f-b39c-488f-b68a-f8af612ca6ce" /></p>
 <p align="center">Settings ▸ System ▸ Notifications ▸ Startup app notifications</p>
 

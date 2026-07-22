@@ -22,6 +22,15 @@
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
         <Media Id="1" Cabinet="cab1.cab" EmbedCab="yes" />
 
+        <!-- MSI Summary Information (shown on the file's Details tab in Explorer). Overrides WiX's
+             default "This installer database contains the logic and data required to install ..."
+             comment and folds in the build version. $(var.ProductVersion) is the same value passed to
+             the build via -d ProductVersion=... The "Title" field ("Installation Database") is a fixed
+             MSI convention that WiX writes and does not expose, so it can't be changed here. -->
+        <SummaryInformation
+            Comments="Installs Thio's Background App Notifier $(var.ProductVersion)."
+            Keywords="ThioJoe, startup, notifier, installer" />
+
 			<!-- Define custom banner and dialog bitmaps for the installer -->
 		<WixVariable Id="WixUIDialogBmp" Overridable="yes" Value="Resources\Dialog.png" />
 		<WixVariable Id="WixUIBannerBmp" Overridable="yes" Value="Resources\Banner.png" />

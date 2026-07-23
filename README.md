@@ -14,6 +14,9 @@
 
 It does **not** run continuously, it's not a hypocrite. But you _can_ set it to quietly run once at each Windows startup, and it will show a message box if any new auto running items are found since last check. If not, it just closes.
 
+> [!NOTE]
+> This is not meant for security purposes or detecting apps actively trying to hide, nor does it determine whether an app is "good" or "bad". It just makes you *more* aware than before.
+
 ## Screenshots
 
 <p align="center"><img width="800" src="https://github.com/user-attachments/assets/3d829488-c3ed-4139-8aca-58feeef7ed52" /></p>

@@ -5,7 +5,8 @@ setlocal enabledelayedexpansion
 set "BASE_NAME=Thio-Background-App-Notifier"
 set "EXE_NAME=%BASE_NAME%.exe"
 :: Update this if your WiX command outputs a different default MSI name
-set "MSI_NAME=%BASE_NAME%.msi" 
+set "MSI_BASE=%BASE_NAME%_Installer" 
+set "MSI_NAME=%MSI_BASE%.msi"
 
 :: Set signtool command and parameters. Put it in the next line after the = and before the last quote. Do NOT include file name/path which will be added automatically
 set "SIGNTOOL_CMD=signtool.exe sign /v /debug /fd SHA256 /tr "http://timestamp.acs.microsoft.com" /WHATEVER-OTHER-PARAMS"
@@ -61,7 +62,7 @@ if not exist "Out\%MSI_NAME%" (
 )
 
 :: 3. Rename the MSI
-set "NEW_MSI_NAME=%BASE_NAME%_%SHORT_VER%.msi"
+set "NEW_MSI_NAME=%MSI_BASE%_%SHORT_VER%.msi"
 echo Renaming %MSI_NAME% to %NEW_MSI_NAME%...
 ren "Out\%MSI_NAME%" "%NEW_MSI_NAME%"
 

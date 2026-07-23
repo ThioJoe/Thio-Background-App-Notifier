@@ -268,14 +268,6 @@ namespace Thio_Background_App_Notifier
             }
         }
 
-        private void listViewItems_DoubleClick(object sender, EventArgs e)
-        {
-            if (listViewItems.SelectedItems.Count == 0)
-                return;
-            if (listViewItems.SelectedItems[0].Tag is IStartupItem item)
-                UiHelpers.ShowDetails(this, item);
-        }
-
         // ---------------------------------------------------------------------
         // Run-at-startup toggle
         // ---------------------------------------------------------------------

@@ -7,12 +7,15 @@ namespace Thio_Background_App_Notifier
     /// <summary>
     /// A <see cref="ListView"/> with double buffering enabled so it doesn't flicker while
     /// redrawing (most noticeably when dragging column widths). Also comes with a built-in
-    /// right-click "Copy" context menu (and Ctrl+C support) that copies the selected rows to the
-    /// clipboard as tab-separated text, so every list in the app gets this for free.
+    /// right-click "Copy"/"Details" context menu (and Ctrl+C support) that copies the selected
+    /// rows to the clipboard as tab-separated text or shows the item's details dialog, plus a
+    /// double-click shortcut to the same details dialog, so every list in the app gets this for
+    /// free.
     /// </summary>
     public class BufferedListView : ListView
     {
         private readonly ToolStripMenuItem _copyMenuItem;
+        private readonly ToolStripMenuItem _detailsMenuItem;
 
         public BufferedListView()
         {
@@ -23,11 +26,18 @@ namespace Thio_Background_App_Notifier
             //---- Context Menu Stuff -------
             _copyMenuItem = new ToolStripMenuItem("Copy") { ShortcutKeyDisplayString = "Ctrl+C" };
             _copyMenuItem.Click += (s, e) => UiHelpers.CopySelectedRows(this);
+
+            _detailsMenuItem = new ToolStripMenuItem("Details");
+            _detailsMenuItem.Click += (s, e) => ShowSelectedItemDetails();
+
             ContextMenuStrip menu = new();
             menu.Items.Add(_copyMenuItem);
+            menu.Items.Add(_detailsMenuItem);
             menu.Opening += (s, e) => e.Cancel = SelectedItems.Count == 0; // Only offer the menu when at least one row is selected.
             ContextMenuStrip = menu;
             // ------------------------------
+
+            DoubleClick += (s, e) => ShowSelectedItemDetails();
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -39,6 +49,16 @@ namespace Thio_Background_App_Notifier
                 UiHelpers.CopySelectedRows(this);
                 e.Handled = true;
             }
+        }
+
+        // Shows the details dialog for the first selected row, if its Tag is an IStartupItem.
+        // Used by both double-click and the "Details" context menu item.
+        private void ShowSelectedItemDetails()
+        {
+            if (SelectedItems.Count == 0)
+                return;
+            if (SelectedItems[0].Tag is IStartupItem item)
+                UiHelpers.ShowDetails(FindForm(), item);
         }
 
         protected override void OnHandleCreated(EventArgs e)

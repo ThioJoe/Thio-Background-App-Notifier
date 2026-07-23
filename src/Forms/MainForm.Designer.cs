@@ -360,7 +360,6 @@ namespace Thio_Background_App_Notifier
             this.listViewItems.TabIndex = 5;
             this.listViewItems.UseCompatibleStateImageBehavior = false;
             this.listViewItems.View = System.Windows.Forms.View.Details;
-            this.listViewItems.DoubleClick += new System.EventHandler(this.listViewItems_DoubleClick);
             // 
             // colNew
             // 

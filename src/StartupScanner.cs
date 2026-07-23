@@ -464,35 +464,34 @@ namespace Thio_Background_App_Notifier
                 IRegisteredTaskCollection tasks = folder.GetTasks(1);
 
                 #if DEBUG
-                // Create a list of the task objects thats easy to look through
-                List<IRegisteredTask> allTasksList = new();
-                foreach (IRegisteredTask task in tasks)
-                {
-                    allTasksList.Add(task);
-                }
+                    // Create a list of the task objects thats easy to look through
+                    List<IRegisteredTask> allTasksList = new();
+                    foreach (IRegisteredTask task in tasks)
+                    {
+                        allTasksList.Add(task);
+                    }
                 #endif
 
                 foreach (IRegisteredTask task in tasks)
                 {
                     try
                     {
-#if DEBUG
-                        //DEBUG
-                        if (task.Name.Contains("BackgroundDownload"))
-                        {
-                            ITriggerCollection triggers = task.Definition.Triggers;
-                            List<object?> triggerList = [];
-                            ITrigger testCast;
-                            foreach (object? trigger in triggers)
+                        #if DEBUG
+                            if (task.Name.Contains("BackgroundDownload"))
                             {
-                                triggerList.Add(trigger);
-                                testCast = (ITrigger)trigger;
-                                string? interval = testCast.Repetition?.Interval;
+                                ITriggerCollection triggers = task.Definition.Triggers;
+                                List<object?> triggerList = [];
+                                ITrigger testCast;
+                                foreach (object? trigger in triggers)
+                                {
+                                    triggerList.Add(trigger);
+                                    testCast = (ITrigger)trigger;
+                                    string? interval = testCast.Repetition?.Interval;
+                                    Console.WriteLine("Hello");
+                                }
                                 Console.WriteLine("Hello");
                             }
-                            Console.WriteLine("Hello");
-                        }
-#endif
+                        #endif
 
                         if (task.Enabled == true)
                         {

@@ -149,14 +149,6 @@ public partial class ItemListForm : BaseForm
         }
     }
 
-    private void listView_DoubleClick(object sender, EventArgs e)
-    {
-        if (listView.SelectedItems.Count == 0)
-            return;
-        if (listView.SelectedItems[0].Tag is IStartupItem item)
-            UiHelpers.ShowDetails(this, item);
-    }
-
     private void buttonClose_Click(object sender, EventArgs e)
     {
         this.Close();

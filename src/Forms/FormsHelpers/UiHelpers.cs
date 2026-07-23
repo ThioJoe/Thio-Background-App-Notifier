@@ -110,8 +110,13 @@ internal static class UiHelpers
         else if (item is StartupTask task)
             details += "\r\n\r\nTask Scheduler path:\r\n  " + task.TaskSchedulerPath;
 
-        MessageBox.Show(owner, details, "Startup Item Details",
-            MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show(
+            owner: owner,
+            text: details,
+            caption: "Startup Item Details",
+            buttons: MessageBoxButtons.OK,
+            icon: MessageBoxIcon.None
+        );
     }
 
     /// <summary>

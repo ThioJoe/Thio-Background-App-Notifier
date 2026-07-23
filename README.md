@@ -20,6 +20,13 @@ It does **not** run continuously, it's not a hypocrite. But you _can_ set it to 
 
 <p align="center"><img width="550" src="https://github.com/user-attachments/assets/a2840cd3-d516-4c35-9b52-65d73e660dea" /></p>
 
+# How to Download
+
+1. Go to the [Releases](https://github.com/ThioJoe/Thio-Background-App-Notifier/releases) page.
+2. For the latest release, look under `Assets` and grab either:
+    - **Installer**: The `.msi` — installs per-user or for all users. This will also allow it to be updated via `winget` later.
+    - **Portable**: The standalone `Thio-Background-App-Notifier_*.exe` -- just run it, no install needed.
+
 # What It Does (And Why?)
 
 Many programs set themselves to launch at startup or daily without ever showing up in the normal Startup apps list. They register a **Windows Service** or a **Scheduled Task** instead, which run silently in the background and are easy to miss.
@@ -56,16 +63,6 @@ It scans silently and only pops up a notification **if** something new actually 
 
 --------
 
-# How to Download
-
-1. Go to the [Releases](https://github.com/ThioJoe/Thio-Background-App-Notifier/releases) page.
-2. For the latest release, look under `Assets` and grab either:
-    - **Installer**: The `.msi` — installs per-user or for all users. This will also allow it to be updated via `winget` later.
-    - **Portable**: The standalone `Thio-Background-App-Notifier_*.exe` -- just run it, no install needed.
-
-> **Requirements:** Windows with **.NET Framework 4.8** (already included on Windows 10/11). No admin rights are needed for normal use.
-
---------
 
 # How to Use
 

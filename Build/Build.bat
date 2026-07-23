@@ -34,6 +34,9 @@ echo.
 
 :: 2. Build the MSI with WiX
 echo Building MSI...
+
+if not exist "Out" mkdir "Out"
+
 :: ====================================================================================
 :: UPDATE THE VARIABLES BELOW FOR THE WIX COMMAND.
 :: You'll need to replace the paths with the actual locations on your system. See build notes file for more details on wix.
@@ -47,12 +50,12 @@ set "WIX_EXE=C:\WHATEVER-PATH-TO-TOOLSET-V6\wix.exe"
 set "WIX_UI_EXT=C:\WHATEVER-PATH-TO-EXTENSIONS\WixToolset.UI.wixext.dll"
 set "WIX_UTIL_EXT=C:\WHATEVER-PATH-TO-EXTENSIONS\WixToolset.Util.wixext.dll"
 
-"%WIX_EXE%" build ThioBackgroundAppNotifier_Installer.wxs -arch x64 -loc InstallerText.wxl -ext "%WIX_UI_EXT%" -ext "%WIX_UTIL_EXT%" -o "%MSI_NAME%" -d ProductVersion="%FULL_VER%"
+"%WIX_EXE%" build ThioBackgroundAppNotifier_Installer.wxs -arch x64 -loc InstallerText.wxl -ext "%WIX_UI_EXT%" -ext "%WIX_UTIL_EXT%" -o "Out\%MSI_NAME%" -d ProductVersion="%FULL_VER%" -pdbtype none
 
 :: Verify the MSI was actually created before continuing
-if not exist "%MSI_NAME%" (
+if not exist "Out\%MSI_NAME%" (
     echo.
-    echo Error: %MSI_NAME% was not found. The WiX build may have failed.
+    echo Error: Out\%MSI_NAME% was not found. The WiX build may have failed.
     pause
     exit /b 1
 )
@@ -60,16 +63,19 @@ if not exist "%MSI_NAME%" (
 :: 3. Rename the MSI
 set "NEW_MSI_NAME=%BASE_NAME%_%SHORT_VER%.msi"
 echo Renaming %MSI_NAME% to %NEW_MSI_NAME%...
-ren "%MSI_NAME%" "%NEW_MSI_NAME%"
+ren "Out\%MSI_NAME%" "%NEW_MSI_NAME%"
 
 :: 4. Sign the MSI
 echo Signing %NEW_MSI_NAME%...
-%SIGNTOOL_CMD% "%NEW_MSI_NAME%"
+%SIGNTOOL_CMD% "Out\%NEW_MSI_NAME%"
 
-:: 5. Rename the signed EXE
+:: 5. Rename the signed EXE and move it
 set "NEW_EXE_NAME=%BASE_NAME%_%SHORT_VER%.exe"
 echo Renaming %EXE_NAME% to %NEW_EXE_NAME%...
 ren "%EXE_NAME%" "%NEW_EXE_NAME%"
+
+echo Moving %NEW_EXE_NAME% to Out folder...
+move "%NEW_EXE_NAME%" "Out\"
 
 echo.
 echo Build and sign workflow complete!

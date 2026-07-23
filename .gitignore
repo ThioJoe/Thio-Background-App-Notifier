@@ -12,6 +12,7 @@
 *.wixpdb
 *.exe
 *.msi
+Build/Out
 ####################################
 
 # User-specific files

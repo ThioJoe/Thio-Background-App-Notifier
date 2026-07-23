@@ -3,13 +3,16 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-## ---- Mine ----
+############### Mine ###############
 *.local.txt
 *.local.bat
 *.bak*
 
-## --------------
-
+### Build ###
+*.wixpdb
+*.exe
+*.msi
+####################################
 
 # User-specific files
 *.rsuser

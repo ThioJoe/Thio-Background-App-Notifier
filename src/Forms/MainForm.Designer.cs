@@ -296,9 +296,9 @@ namespace Thio_Background_App_Notifier
             this.labelMainListTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelMainListTitle.Location = new System.Drawing.Point(24, 413);
             this.labelMainListTitle.Name = "labelMainListTitle";
-            this.labelMainListTitle.Size = new System.Drawing.Size(559, 32);
+            this.labelMainListTitle.Size = new System.Drawing.Size(447, 32);
             this.labelMainListTitle.TabIndex = 25;
-            this.labelMainListTitle.Text = "New automatic starting items since your last check:";
+            this.labelMainListTitle.Text = "Latest detected automatic starting items:";
             // 
             // labelPlaceholder
             // 
@@ -307,9 +307,9 @@ namespace Thio_Background_App_Notifier
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelPlaceholder.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.labelPlaceholder.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelPlaceholder.Location = new System.Drawing.Point(24, 534);
+            this.labelPlaceholder.Location = new System.Drawing.Point(24, 448);
             this.labelPlaceholder.Name = "labelPlaceholder";
-            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 468);
+            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 554);
             this.labelPlaceholder.TabIndex = 26;
             this.labelPlaceholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.labelPlaceholder.Visible = false;

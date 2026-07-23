@@ -53,7 +53,6 @@ namespace Thio_Background_App_Notifier
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            UiHelpers.AttachCopyContextMenu(listViewItems);
             RefreshStartupCheckbox();
             RefreshWindowsNotificationState();
             DisplayResult(_result);

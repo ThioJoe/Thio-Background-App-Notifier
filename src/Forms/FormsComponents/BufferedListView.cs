@@ -6,16 +6,39 @@ namespace Thio_Background_App_Notifier
 {
     /// <summary>
     /// A <see cref="ListView"/> with double buffering enabled so it doesn't flicker while
-    /// redrawing (most noticeably when dragging column widths). Behaves like a normal ListView
-    /// in every other respect.
+    /// redrawing (most noticeably when dragging column widths). Also comes with a built-in
+    /// right-click "Copy" context menu (and Ctrl+C support) that copies the selected rows to the
+    /// clipboard as tab-separated text, so every list in the app gets this for free.
     /// </summary>
     public class BufferedListView : ListView
     {
+        private readonly ToolStripMenuItem _copyMenuItem;
+
         public BufferedListView()
         {
             // Managed double buffering.
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
             DoubleBuffered = true;
+
+            //---- Context Menu Stuff -------
+            _copyMenuItem = new ToolStripMenuItem("Copy") { ShortcutKeyDisplayString = "Ctrl+C" };
+            _copyMenuItem.Click += (s, e) => UiHelpers.CopySelectedRows(this);
+            ContextMenuStrip menu = new();
+            menu.Items.Add(_copyMenuItem);
+            menu.Opening += (s, e) => e.Cancel = SelectedItems.Count == 0; // Only offer the menu when at least one row is selected.
+            ContextMenuStrip = menu;
+            // ------------------------------
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                UiHelpers.CopySelectedRows(this);
+                e.Handled = true;
+            }
         }
 
         protected override void OnHandleCreated(EventArgs e)

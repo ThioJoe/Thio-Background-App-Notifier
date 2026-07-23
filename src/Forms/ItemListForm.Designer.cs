@@ -23,6 +23,7 @@ partial class ItemListForm
 
     private void InitializeComponent()
     {
+            this.components = new System.ComponentModel.Container();
             this.labelTitle = new System.Windows.Forms.Label();
             this.listView = new Thio_Background_App_Notifier.BufferedListView();
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));

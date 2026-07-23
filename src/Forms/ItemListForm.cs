@@ -39,7 +39,6 @@ public partial class ItemListForm : BaseForm
             _baseHeaderText[i] = listView.Columns[i].Text;
         }
 
-        UiHelpers.AttachCopyContextMenu(listView);
         listView.ListViewItemSorter = _sorter;
         listView.ColumnClick += listView_ColumnClick;
 
@@ -162,4 +161,5 @@ public partial class ItemListForm : BaseForm
     {
         this.Close();
     }
-}
+
+    }

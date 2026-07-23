@@ -122,34 +122,6 @@ internal static class UiHelpers
         => when.ToShortDateString() + "     " + when.ToShortTimeString();
 
     /// <summary>
-    /// Attaches a right-click "Copy" context menu (and Ctrl+C support) that copies the selected
-    /// rows to the clipboard as tab-separated text. Reusable across every list in the app.
-    /// </summary>
-    public static void AttachCopyContextMenu(ListView listView)
-    {
-        var menu = new ContextMenuStrip();
-        var copyItem = new ToolStripMenuItem("Copy")
-        {
-            ShortcutKeyDisplayString = "Ctrl+C"
-        };
-        copyItem.Click += (s, e) => CopySelectedRows(listView);
-        menu.Items.Add(copyItem);
-
-        // Only offer the menu when at least one row is selected.
-        menu.Opening += (s, e) => e.Cancel = listView.SelectedItems.Count == 0;
-        listView.ContextMenuStrip = menu;
-
-        listView.KeyDown += (s, e) =>
-        {
-            if (e.Control && e.KeyCode == Keys.C)
-            {
-                CopySelectedRows(listView);
-                e.Handled = true;
-            }
-        };
-    }
-
-    /// <summary>
     /// Copies the currently selected rows (all their columns) to the clipboard as tab-separated
     /// lines, in the order they appear in the list.
     /// </summary>

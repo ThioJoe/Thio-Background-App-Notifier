@@ -133,13 +133,12 @@ namespace Thio_Background_App_Notifier
 
                 foreach (IStartupItem item in ordered)
                 {
-                    // Columns: New, First Detected, Type, Name, Starts, Source, Path
+                    // Columns: New, First Detected, Type, Name, Starts, Path
                     var row = new ListViewItem(item.IsFirstDetection ? "NEW" : string.Empty);
                     row.SubItems.Add(UiHelpers.FormatDetected(item.FirstDetectionTime));
                     row.SubItems.Add(UiHelpers.GetTypeLabel(item));
                     row.SubItems.Add(UiHelpers.GetDisplayName(item));
                     row.SubItems.Add(UiHelpers.GetDetail(item));
-                    row.SubItems.Add(UiHelpers.GetSourceHint(item));
                     row.SubItems.Add(item.Path);
                     row.Tag = item;
 
@@ -170,7 +169,6 @@ namespace Thio_Background_App_Notifier
                     UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colFirstDetected, colPadding);
                     UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colType, colPadding);
                     UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colStarts, colPadding);
-                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colSource, colPadding);
                 }
 
             }

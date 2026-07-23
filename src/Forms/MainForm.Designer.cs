@@ -58,7 +58,6 @@ namespace Thio_Background_App_Notifier
             this.colType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colStarts = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colSource = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.labelVersion = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.panelStatus.SuspendLayout();
@@ -308,9 +307,9 @@ namespace Thio_Background_App_Notifier
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelPlaceholder.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.labelPlaceholder.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelPlaceholder.Location = new System.Drawing.Point(24, 448);
+            this.labelPlaceholder.Location = new System.Drawing.Point(24, 534);
             this.labelPlaceholder.Name = "labelPlaceholder";
-            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 554);
+            this.labelPlaceholder.Size = new System.Drawing.Size(1513, 468);
             this.labelPlaceholder.TabIndex = 26;
             this.labelPlaceholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.labelPlaceholder.Visible = false;
@@ -350,7 +349,6 @@ namespace Thio_Background_App_Notifier
             this.colType,
             this.colName,
             this.colStarts,
-            this.colSource,
             this.colPath});
             this.listViewItems.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listViewItems.FullRowSelect = true;
@@ -388,11 +386,6 @@ namespace Thio_Background_App_Notifier
             // 
             this.colStarts.Text = "Starts";
             this.colStarts.Width = 130;
-            // 
-            // colSource
-            // 
-            this.colSource.Text = "Source";
-            this.colSource.Width = 110;
             // 
             // colPath
             // 
@@ -472,7 +465,6 @@ namespace Thio_Background_App_Notifier
         private System.Windows.Forms.ColumnHeader colType;
         private System.Windows.Forms.ColumnHeader colName;
         private System.Windows.Forms.ColumnHeader colStarts;
-        private System.Windows.Forms.ColumnHeader colSource;
         private System.Windows.Forms.ColumnHeader colFirstDetected;
         private System.Windows.Forms.ColumnHeader colPath;
         private TrueTransparentLabel labelMainListTitle;

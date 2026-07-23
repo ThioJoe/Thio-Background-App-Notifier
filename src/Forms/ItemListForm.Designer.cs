@@ -57,7 +57,7 @@ partial class ItemListForm
             this.listView.HideSelection = false;
             this.listView.Location = new System.Drawing.Point(16, 58);
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1000, 512);
+            this.listView.Size = new System.Drawing.Size(1527, 643);
             this.listView.TabIndex = 1;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -71,12 +71,12 @@ partial class ItemListForm
             // colStarts
             // 
             this.colStarts.Text = "Starts";
-            this.colStarts.Width = 120;
+            this.colStarts.Width = 125;
             // 
             // colSource
             // 
-            this.colSource.Text = "Source";
-            this.colSource.Width = 110;
+            this.colSource.Text = "Source (guess)";
+            this.colSource.Width = 120;
             // 
             // colFirstDetected
             // 
@@ -92,7 +92,7 @@ partial class ItemListForm
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonClose.Location = new System.Drawing.Point(872, 584);
+            this.buttonClose.Location = new System.Drawing.Point(1399, 715);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(144, 46);
             this.buttonClose.TabIndex = 2;
@@ -106,7 +106,7 @@ partial class ItemListForm
             this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.buttonClose;
-            this.ClientSize = new System.Drawing.Size(1032, 648);
+            this.ClientSize = new System.Drawing.Size(1559, 779);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.labelTitle);

@@ -4,6 +4,29 @@ Command:
 	(-loc InstallerText.wxl overrides the built-in WixUI wording on the install-scope page.
 	 If you drop that flag the installer still builds, but reverts to WiX's default obtuse text.)
 
+
+
+To get Wix:
+	- You can get the wix toolset from this repo's releases: https://github.com/wixtoolset/wix
+	- You can install it, or just download the "artifacts.zip" and extract the nupkg files and it will run portably
+
+========== To use Wix portably without needing to install ===========
+	
+	1. Download artifacts.zip from the github repo linked above. Get the latest V6 one.
+
+	2. Look for the "main" nupkg based on the version name, for example for v6.0.2 it's "wix.6.0.2.nupkg"
+
+	3. Extract with 7-zip or something. The actual program files we need (such as wix.exe) are at "tools\net6.0\any"
+		- Copy the entire "any" folder somewhere more convenient and rename it to whatever you want.
+		- Then instead of running the command like "wix build whatever" you could do:   "C:\whatever path\wix.exe" build whatever
+		
+	4. For the extensions, back in artifacts.zip look for the ".wixext." nupkg files and extract the ones for the needed extensions
+		- After extracting, find the dll for the extension. For V6 they are probably in the "wixext6" folder. There should only be one dll per extension.
+			- You can put the dll next to the wix.exe you got before.
+		- To use the extensions, for each "-ext" parameter in the build command, you need to use the full path to the extension dll even if they are right next to wix.exe
+
+========== Notes for installed version of wix ==============
+
 Check wix version
 	wix --version
 
@@ -15,6 +38,11 @@ Install specific extension versions via:
 Install extensions in general via:
 	wix extension add -g WixToolset.UI.wixext
 	wix extension add -g WixToolset.Util.wixext
+
+
+=================================================
+============== GENERAL BUILD NOTES ==============
+=================================================
 
 GUIDS used by the MSI Installer and DLL
 	- If using an AI to work on the WXS file, make sure it doesn't make a mistake when writing these

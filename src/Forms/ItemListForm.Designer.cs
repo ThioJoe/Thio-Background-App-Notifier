@@ -54,11 +54,12 @@ partial class ItemListForm
             this.colSource,
             this.colFirstDetected,
             this.colPath});
+            this.listView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             this.listView.FullRowSelect = true;
             this.listView.GridLines = true;
             this.listView.HideSelection = false;
             this.listView.Location = new System.Drawing.Point(11, 39);
-            this.listView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.listView.Margin = new System.Windows.Forms.Padding(2);
             this.listView.Name = "listView";
             this.listView.Size = new System.Drawing.Size(1019, 430);
             this.listView.TabIndex = 1;
@@ -94,8 +95,9 @@ partial class ItemListForm
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.buttonClose.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             this.buttonClose.Location = new System.Drawing.Point(933, 477);
-            this.buttonClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(96, 31);
             this.buttonClose.TabIndex = 2;
@@ -113,7 +115,7 @@ partial class ItemListForm
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.labelTitle);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(472, 293);
             this.Name = "ItemListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

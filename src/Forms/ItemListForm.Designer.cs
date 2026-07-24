@@ -37,9 +37,10 @@ partial class ItemListForm
             // labelTitle
             // 
             this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.labelTitle.Location = new System.Drawing.Point(16, 14);
+            this.labelTitle.Location = new System.Drawing.Point(11, 9);
+            this.labelTitle.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelTitle.Name = "labelTitle";
-            this.labelTitle.Size = new System.Drawing.Size(1000, 34);
+            this.labelTitle.Size = new System.Drawing.Size(667, 23);
             this.labelTitle.TabIndex = 0;
             // 
             // listView
@@ -56,9 +57,10 @@ partial class ItemListForm
             this.listView.FullRowSelect = true;
             this.listView.GridLines = true;
             this.listView.HideSelection = false;
-            this.listView.Location = new System.Drawing.Point(16, 58);
+            this.listView.Location = new System.Drawing.Point(11, 39);
+            this.listView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1527, 643);
+            this.listView.Size = new System.Drawing.Size(1019, 430);
             this.listView.TabIndex = 1;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -86,15 +88,16 @@ partial class ItemListForm
             // colPath
             // 
             this.colPath.Text = "Path";
-            this.colPath.Width = 460;
+            this.colPath.Width = 788;
             // 
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonClose.Location = new System.Drawing.Point(1399, 715);
+            this.buttonClose.Location = new System.Drawing.Point(933, 477);
+            this.buttonClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(144, 46);
+            this.buttonClose.Size = new System.Drawing.Size(96, 31);
             this.buttonClose.TabIndex = 2;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
@@ -103,14 +106,15 @@ partial class ItemListForm
             // ItemListForm
             // 
             this.AcceptButton = this.buttonClose;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.buttonClose;
-            this.ClientSize = new System.Drawing.Size(1559, 779);
+            this.ClientSize = new System.Drawing.Size(1039, 519);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.labelTitle);
-            this.MinimumSize = new System.Drawing.Size(700, 420);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MinimumSize = new System.Drawing.Size(472, 293);
             this.Name = "ItemListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Startup Items";

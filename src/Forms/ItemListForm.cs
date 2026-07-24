@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Management;
 using System.Windows.Forms;
 
 #nullable enable
@@ -44,8 +45,22 @@ public partial class ItemListForm : BaseForm
 
         Populate(itemList);
 
+        AutoSizeColumns();
+
         // The list starts sorted by the first column ascending; show that.
         UpdateSortIndicators();
+    }
+
+    private int colPadding = 25;
+
+    private void AutoSizeColumns()
+    {
+        
+        // The columns are all defined in the designer sheet so we can reference their indexes directly.
+        UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listView, colName, colPadding, 20);
+        UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listView, colSource, colPadding);
+        UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listView, colFirstDetected, colPadding);
+        UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listView, colStarts, colPadding, 20);
     }
 
     // Adds one ListView column per distinct key found across all items' TypeSpecificDetails,
@@ -71,6 +86,7 @@ public partial class ItemListForm : BaseForm
             var header = new ColumnHeader { Text = key, Width = 150 };
             listView.Columns.Insert(insertIndex, header);
             insertIndex++;
+            UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listView, header, colPadding, 15);
         }
     }
 

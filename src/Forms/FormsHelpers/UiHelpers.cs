@@ -155,7 +155,7 @@ internal static class UiHelpers
     }
 
     // Resizes the column to fit its content, but never smaller than its header text requires.
-    public static void AutoResizeColumnToLargerOfHeaderOrContent(BufferedListView listViewItems, ColumnHeader column, int padding = 0)
+    public static void AutoResizeColumnToLargerOfHeaderOrContent(BufferedListView listViewItems, ColumnHeader column, int padding = 0, int maxPercentWidth = 0)
     {
         listViewItems.AutoResizeColumn(column.Index, ColumnHeaderAutoResizeStyle.ColumnContent);
         int contentWidth = column.Width;
@@ -163,6 +163,16 @@ internal static class UiHelpers
         listViewItems.AutoResizeColumn(column.Index, ColumnHeaderAutoResizeStyle.HeaderSize);
         int headerWidth = column.Width;
 
-        column.Width = Math.Max(contentWidth, headerWidth) + padding;
+        int neededWidth = Math.Max(contentWidth, headerWidth);
+
+        if (maxPercentWidth <= 0) // Treat 0 and negative as no max width
+        {
+            column.Width = neededWidth + padding;
+        }
+        else 
+        { 
+            int maxWidth = (maxPercentWidth * listViewItems.ClientSize.Width) / 100;
+            column.Width = Math.Min(neededWidth + padding, maxWidth);
+        }
     }
 }

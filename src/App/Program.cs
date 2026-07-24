@@ -111,7 +111,7 @@ namespace Thio_Background_App_Notifier
                     MainInstruction = headline,
                     Content = body,
                     VerificationText = "Remind me again at next startup",
-                    MainIcon = ModernTaskDialog.TaskDialogIcon.Warning,
+                    MainIcon = ModernTaskDialog.TaskDialogIcon.Information,
 
                     CommonButtons = TaskDialogCommonButtonFlags.TDCBF_YES_BUTTON |
                                     TaskDialogCommonButtonFlags.TDCBF_NO_BUTTON,

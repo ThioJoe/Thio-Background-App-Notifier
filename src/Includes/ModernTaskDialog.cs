@@ -1,9 +1,16 @@
-﻿using System;
+﻿// ModernTaskDialog.cs - Part of the ThioWinUtils Library
+// Project URL: https://github.com/ThioJoe/Thio-WinUtils-Library
+// See LICENSE.txt at the root of the above repository for license information.
+// 
+// Copyright (C) 2026 ThioJoe
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ThioWinUtils;
 
@@ -37,6 +44,22 @@ public class ModernTaskDialog
     public TaskDialogIcon MainIcon { get; set; } = TaskDialogIcon.None;
     public TaskDialogIcon FooterIcon { get; set; } = TaskDialogIcon.None;
     public TaskDialogBarColor Coloredbar { get; set; } = TaskDialogBarColor.Default;
+
+    /// <summary>
+    /// Works around an apparent comctl32 issue where TDM_UPDATE_ICON fails to
+    /// update the client-area main icon when the task dialog window is
+    /// per-monitor DPI aware (the caption icon updates, but the header icon
+    /// silently keeps the image from the original TASKDIALOGCONFIG). The
+    /// colored bar feature depends on that icon swap, so when this is true
+    /// (the default) and a colored bar is used, the dialog window is created
+    /// as a SYSTEM-DPI-aware window even in per-monitor-DPI-aware processes
+    /// (DPI awareness is per-window since Windows 10 1607).
+    /// Cost: on monitors whose DPI differs from the system DPI, the dialog is
+    /// bitmap-scaled by DWM instead of rendering natively (slightly soft).
+    /// No effect in non-per-monitor-aware processes or on Windows versions
+    /// without SetThreadDpiAwarenessContext.
+    /// </summary>
+    public bool WorkAroundPerMonitorDpiIconBug { get; set; } = true;
 
     /// <summary>
     /// Set this to a valid HICON handle to use a custom icon. 
@@ -86,6 +109,19 @@ public class ModernTaskDialog
     private IntPtr _activeDialogWindowHandle = IntPtr.Zero;
     private EventHandler<TaskDialogCreatedEventArgs> _coloredBarIconSwapHandler;
     private TASKDIALOGCONFIG _lastDialogConfig = new();
+
+    // Subclass procedure used to guard the colored-bar icon swap against
+    // re-layouts (DPI change, theme change) that reload the main icon from the
+    // original TASKDIALOGCONFIG. Kept in a field so the GC cannot collect the
+    // delegate while the native side still holds the function pointer.
+    private SUBCLASSPROC _iconGuardProc;
+
+    private const uint WM_THEMECHANGED = 0x031A;
+    private const uint WM_DPICHANGED = 0x02E0;
+
+    // Thread DPI awareness context override (colored-bar icon-swap workaround)
+    private IntPtr _previousThreadDpiContext = IntPtr.Zero;
+    private bool _threadDpiContextRestorePending = false;
 
     // State preservation for TDM_NAVIGATE_PAGE
     private bool _preserveVerificationState = false;
@@ -140,6 +176,12 @@ public class ModernTaskDialog
         // ---- Handle colored bar setup before populating icon config ----
         if (this.Coloredbar != TaskDialogBarColor.Default)
             SetupIconWithColoredBar(MainIcon, this.Coloredbar);
+        else
+            // Initialize the "icon currently on screen" tracker for dialogs that
+            // start without a colored bar, so that a colored bar added later via
+            // UpdateColoredBar() restores the correct icon after navigation.
+            // (SetupIconWithColoredBar initializes it for the colored-bar case.)
+            _preservedMainIcon = MainIcon;
 
         // Strings
         config.pszWindowTitle = Title;
@@ -201,6 +243,17 @@ public class ModernTaskDialog
             // Actually show the dialog
             try
             {
+                // Colored-bar dialogs must not be created as per-monitor-DPI-aware
+                // windows, because TDM_UPDATE_ICON (used to swap the shield for the
+                // real icon after creation) does not update the client-area icon in
+                // per-monitor-aware task dialog windows. Temporarily switch this
+                // thread to the system-aware context so the window is created with
+                // it; restored in the finally block after the modal call returns.
+                // (Restoring earlier, e.g. inside the callback, would be undone by
+                // the system's automatic per-window context switching during
+                // message delivery.)
+                EnterSystemDpiContextIfNeeded();
+
                 _lastDialogConfig = config; // Store it in case we want to refresh it fully with TDM_NAVIGATE_PAGE
                 result = TaskDialogIndirect(ref config, out buttonPressed, out radioButtonPressed, out verificationChecked);
             }
@@ -237,6 +290,7 @@ public class ModernTaskDialog
         }
         finally
         {
+            RestoreThreadDpiContext();
             if (pButtons != IntPtr.Zero) Marshal.FreeHGlobal(pButtons);
             if (pRadioButtons != IntPtr.Zero) Marshal.FreeHGlobal(pRadioButtons);
             _activeDialogWindowHandle = IntPtr.Zero; // Ensure cleared
@@ -247,14 +301,32 @@ public class ModernTaskDialog
     // Interaction Methods (Send Messages)
     // -------------------------------------------------------------------------
 
+    /// <summary>
+    /// True while the dialog window exists on screen (between Created and Destroyed).
+    /// Interaction methods (UpdateIcon, UpdateColoredBar, SetElementText, progress
+    /// bar methods, etc.) only work while this is true. Note that Show() is MODAL:
+    /// it does not return until the dialog closes, so interaction methods must be
+    /// called from event handlers (Created, ButtonClicked, Timer, ...) or other
+    /// code that runs while the modal message loop pumps - never from code placed
+    /// after the Show() call, which only runs once the dialog is already gone.
+    /// </summary>
+    public bool IsOpen => _activeDialogWindowHandle != IntPtr.Zero;
+
     // Check if dialog is active before sending messages
     private bool IsActive()
     {
-        // We will use to silently fail if not active, as these might be called before creation or after destruction in race conditions
+        // Silently fail if not active, as these might be called before creation or
+        // after destruction in race conditions. Emit a debug warning so the common
+        // mistake of calling interaction methods after the modal Show() call has
+        // returned is visible during development.
         if (_activeDialogWindowHandle != IntPtr.Zero)
             return true;
-        else
-            return false;
+
+        Debug.WriteLine(
+            "ModernTaskDialog: an interaction method was called while no dialog is open, so it was ignored. " +
+            "Show() is modal - call interaction methods from event handlers (Created, ButtonClicked, Timer, ...) " +
+            "instead of after Show() returns.");
+        return false;
     }
 
     // This effectively refreshes the page.
@@ -317,6 +389,12 @@ public class ModernTaskDialog
             newConfig.hMainIcon = (CustomMainIconHandle != IntPtr.Zero) ? CustomMainIconHandle : (IntPtr)currentIcon;
         }
 
+        // Refresh the footer icon from the current property so runtime footer
+        // icon changes are applied by (and survive) page navigation. Without
+        // this, navigation restores the creation-time footer icon from
+        // _lastDialogConfig.
+        newConfig.hFooterIcon = (CustomFooterIconHandle != IntPtr.Zero) ? CustomFooterIconHandle : (IntPtr)FooterIcon;
+
         // Navigate to the new page
         _lastDialogConfig = newConfig;
         RefreshPage(ref newConfig);
@@ -324,10 +402,26 @@ public class ModernTaskDialog
         // Icon restoration is handled in TDN_NAVIGATED callback
     }
 
-    /// <summary>Updates text elements of the dialog while it is open.</summary>
+    /// <summary>
+    /// Updates text elements of the dialog while it is open.
+    /// If called while no dialog is open, the text is stored in the matching
+    /// configuration property (Content, MainInstruction, Footer,
+    /// ExpandedInformation) and takes effect the next time Show() is called.
+    /// </summary>
     public void SetElementText(TaskDialogElements element, string text)
     {
-        if (!IsActive()) return;
+        if (!IsOpen)
+        {
+            switch (element)
+            {
+                case TaskDialogElements.Content: Content = text; break;
+                case TaskDialogElements.MainInstruction: MainInstruction = text; break;
+                case TaskDialogElements.Footer: Footer = text; break;
+                case TaskDialogElements.ExpandedInformation: ExpandedInformation = text; break;
+            }
+            return;
+        }
+
         SendMessage(_activeDialogWindowHandle, (uint)TaskDialogMessages.TDM_SET_ELEMENT_TEXT, (IntPtr)element, text);
 
         // Track dynamic text changes for state preservation
@@ -420,30 +514,72 @@ public class ModernTaskDialog
         _preserveMarqueeSpeed = animationSpeedMilliseconds;
     }
 
-    /// <summary>Updates the main or footer icon.</summary>
+    /// <summary>
+    /// Updates the main or footer icon.
+    /// If called while no dialog is open, the icon is stored in the matching
+    /// property (MainIcon / FooterIcon) and takes effect the next time Show()
+    /// is called.
+    /// </summary>
     public void UpdateIcon(TaskDialogIconElement element, TaskDialogIcon icon)
     {
-        if (!IsActive()) return;
+        if (!IsOpen)
+        {
+            if (element == TaskDialogIconElement.Main) MainIcon = icon;
+            else FooterIcon = icon;
+            return;
+        }
+
         SendMessage(_activeDialogWindowHandle, (uint)TaskDialogMessages.TDM_UPDATE_ICON, (IntPtr)element, (IntPtr)icon);
 
-        // Track main icon changes for preservation during colored bar updates
+        // Keep the properties and colored-bar preservation state coherent
         if (element == TaskDialogIconElement.Main)
         {
+            MainIcon = icon;
             _preservedMainIcon = icon;
+        }
+        else
+        {
+            FooterIcon = icon;
         }
     }
 
-    /// <summary>Updates the main or footer icon.</summary>
+    /// <summary>
+    /// Updates the main or footer icon to a shield-with-bar variant.
+    /// If called while no dialog is open, this sets the Coloredbar property
+    /// instead, which takes effect the next time Show() is called. Note that
+    /// while a dialog is open, this only changes the icon image - the bar
+    /// color itself is fixed at page creation; use UpdateColoredBar to change
+    /// the bar of an open dialog.
+    /// </summary>
     public void UpdateIcon(TaskDialogIconElement element, TaskDialogBarColor barColor)
     {
-        if (!IsActive()) return;
+        if (!IsOpen)
+        {
+            if (element == TaskDialogIconElement.Main) Coloredbar = barColor;
+            return;
+        }
+
         SendMessage(_activeDialogWindowHandle, (uint)TaskDialogMessages.TDM_UPDATE_ICON, (IntPtr)element, (IntPtr)barColor);
     }
 
-    /// <summary>Updates the main or footer icon using a handle.</summary>
+    /// <summary>
+    /// Updates the main or footer icon using a handle.
+    /// If called while no dialog is open, the handle is stored in the matching
+    /// property (CustomMainIconHandle / CustomFooterIconHandle) and takes
+    /// effect the next time Show() is called. While a dialog is open, this
+    /// only works if it was created with the corresponding TDF_USE_HICON_MAIN
+    /// or TDF_USE_HICON_FOOTER flag (set automatically when the handle
+    /// properties are non-zero at Show() time).
+    /// </summary>
     public void UpdateIcon(TaskDialogIconElement element, IntPtr iconHandle)
     {
-        if (!IsActive()) return;
+        if (!IsOpen)
+        {
+            if (element == TaskDialogIconElement.Main) CustomMainIconHandle = iconHandle;
+            else CustomFooterIconHandle = iconHandle;
+            return;
+        }
+
         SendMessage(_activeDialogWindowHandle, (uint)TaskDialogMessages.TDM_UPDATE_ICON, (IntPtr)element, iconHandle);
     }
 
@@ -462,19 +598,74 @@ public class ModernTaskDialog
 
     /// <summary>
     /// Updates the colored bar while preserving the icon (if one was set).
-    /// Can be called while the dialog is active.
-    /// This recreates the dialog using TDM_NAVIGATE_PAGE to change the colored bar.
+    /// If called while no dialog is open, this sets the Coloredbar property,
+    /// which takes effect the next time Show() is called. If called while the
+    /// dialog is open, it recreates the page using TDM_NAVIGATE_PAGE to change
+    /// the colored bar immediately.
     /// Note: User interaction state (checkboxes, radio buttons, expander, etc.) is preserved.
+    /// IMPORTANT: When calling this from a ButtonClicked handler, set
+    /// e.CancelClose = true in that handler FIRST. Navigating from within
+    /// TDN_BUTTON_CLICKED and returning S_OK is a documented native task dialog
+    /// bug that can cause an access violation; returning S_FALSE (which is what
+    /// CancelClose produces) avoids it.
+    /// Note for per-monitor-DPI-aware processes: the icon-restore step relies on
+    /// TDM_UPDATE_ICON, which is broken in per-monitor-aware dialog windows. The
+    /// window's DPI mode is fixed at creation, so if you plan to add or change a
+    /// colored bar at runtime, set Coloredbar before Show() so the dialog is
+    /// created with the system-DPI workaround engaged.
     /// </summary>
     /// <param name="color">The new bar color to display.</param>
     public void UpdateColoredBar(TaskDialogBarColor color)
     {
-        if (!IsActive()) return;
-
-        // Update the bar color property
+        // Update the bar color property. If no dialog is open yet, this is all
+        // that is needed - it takes effect the next time Show() is called.
         Coloredbar = color;
 
+        if (!IsOpen) return;
+
+        // Capture the icon to restore after navigation. MainIcon always holds the
+        // user's real icon while the dialog is open (the Created handler swaps it
+        // back from the shield variant), and capturing it here also covers dialogs
+        // that were shown without a colored bar initially, where _preservedMainIcon
+        // was never set during Show().
+        _preservedMainIcon = MainIcon;
+
         // Use the generic navigation method which handles all state preservation
+        NavigateWithStatePreservation();
+    }
+
+    /// <summary>
+    /// Updates the colored bar and optionally the main and footer icons in a
+    /// single page rebuild, avoiding the visible delay of calling UpdateIcon
+    /// and UpdateColoredBar back to back (each of which rebuilds the page).
+    /// If called while no dialog is open, the values are stored in the
+    /// matching properties and take effect the next time Show() is called.
+    /// IMPORTANT: When calling this from a ButtonClicked handler, set
+    /// e.CancelClose = true in that handler first (see UpdateColoredBar).
+    /// </summary>
+    /// <param name="newBarColor">The new bar color to display.</param>
+    /// <param name="newMainIcon">The new main icon to display (optional).</param>
+    /// <param name="newFooterIcon">The new footer icon to display (optional).</param>
+    public void UpdateIconAndColoredBar(TaskDialogBarColor newBarColor, TaskDialogIcon? newMainIcon = null, TaskDialogIcon? newFooterIcon = null)
+    {
+        // Update the properties. If no dialog is open, this is all that is
+        // needed - they take effect the next time Show() is called.
+        Coloredbar = newBarColor;
+        if (newMainIcon.HasValue)
+            MainIcon = newMainIcon.Value;
+        if (newFooterIcon.HasValue)
+            FooterIcon = newFooterIcon.Value;
+
+        if (!IsOpen) return;
+
+        // MainIcon now holds whichever icon should be on screen after the
+        // rebuild (the current one, or the newly requested one), so the
+        // post-navigation restore uses it. Keeping the property in sync also
+        // ensures later UpdateColoredBar calls don't revert to a stale icon.
+        _preservedMainIcon = MainIcon;
+
+        // Use the generic navigation method which handles all state
+        // preservation (it also refreshes the footer icon from FooterIcon).
         NavigateWithStatePreservation();
     }
 
@@ -500,10 +691,20 @@ public class ModernTaskDialog
         // Create and store new handler
         _coloredBarIconSwapHandler = (sender, e) =>
         {
-            // Restore the true icon immediately after creation
-            UpdateIcon(TaskDialogIconElement.Main, icon);
-            // Update the property to reflect the user's actual icon
+            // Restore the true icon once creation has FULLY completed.
+            //
+            // POSTED rather than sent: TDN_CREATED arrives while the dialog is
+            // still inside its initialization (WM_INITDIALOG processing, before
+            // the window is displayed). If the swap is sent synchronously here,
+            // any remaining first-time setup that rebuilds the main icon image
+            // from the original TASKDIALOGCONFIG - most notably the initial
+            // per-monitor DPI scaling pass in PMv2-aware processes - silently
+            // overwrites it and the shield icon comes back (while the caption
+            // icon, set separately via WM_SETICON, keeps the swapped icon).
+            // Posting queues the swap behind all creation-time work.
+            _preservedMainIcon = icon;
             MainIcon = icon;
+            PostMainIconUpdate(icon);
         };
 
         Created += _coloredBarIconSwapHandler;
@@ -542,8 +743,19 @@ public class ModernTaskDialog
                 }
 
                 // Track if dialog has a progress bar
-                _hasProgressBar = (Flags & TaskDialogFlags.TDF_SHOW_PROGRESS_BAR) != 0 || 
+                _hasProgressBar = (Flags & TaskDialogFlags.TDF_SHOW_PROGRESS_BAR) != 0 ||
                                   (Flags & TaskDialogFlags.TDF_SHOW_MARQUEE_PROGRESS_BAR) != 0;
+
+                // When a colored bar is in use, subclass the dialog window so we
+                // can re-apply the swapped icon whenever comctl32 rebuilds the
+                // main icon image from the original config (DPI change when the
+                // dialog is dragged to a monitor with different scaling, or a
+                // theme change while the dialog is open).
+                if (Coloredbar != TaskDialogBarColor.Default)
+                {
+                    _iconGuardProc ??= IconGuardProc;
+                    SetWindowSubclass(hwnd, _iconGuardProc, UIntPtr.Zero, UIntPtr.Zero);
+                }
 
                 Created?.Invoke(this, new TaskDialogCreatedEventArgs());
                 break;
@@ -594,10 +806,14 @@ public class ModernTaskDialog
                     SetElementText(kvp.Key, kvp.Value);
                 }
 
-                // Restore the main icon if using colored bar
+                // Restore the main icon if using colored bar.
+                // Posted for the same reason as the creation-time swap:
+                // TDN_NAVIGATED arrives during the new page's initialization,
+                // and a synchronous update can be overwritten by the remaining
+                // page setup (e.g. the DPI scaling pass in PMv2 processes).
                 if (Coloredbar != TaskDialogBarColor.Default)
                 {
-                    UpdateIcon(TaskDialogIconElement.Main, _preservedMainIcon);
+                    PostMainIconUpdate(_preservedMainIcon);
                 }
 
                 break;
@@ -639,6 +855,8 @@ public class ModernTaskDialog
                 break;
 
             case TaskDialogNotifications.TDN_DESTROYED:
+                if (_iconGuardProc != null)
+                    RemoveWindowSubclass(hwnd, _iconGuardProc, UIntPtr.Zero);
                 Destroyed?.Invoke(this, EventArgs.Empty);
                 break;
         }
@@ -649,6 +867,76 @@ public class ModernTaskDialog
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// If a colored bar is in use (and the workaround is enabled), switches the
+    /// calling thread to the system-DPI-aware context so the dialog window is
+    /// created with it. No-ops silently on Windows versions without
+    /// SetThreadDpiAwarenessContext (pre-10 1607), where per-monitor V2
+    /// awareness does not exist either.
+    /// </summary>
+    private void EnterSystemDpiContextIfNeeded()
+    {
+        if (!WorkAroundPerMonitorDpiIconBug || Coloredbar == TaskDialogBarColor.Default)
+            return;
+
+        try
+        {
+            IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+            if (previous != IntPtr.Zero)
+            {
+                _previousThreadDpiContext = previous;
+                _threadDpiContextRestorePending = true;
+            }
+        }
+        catch (EntryPointNotFoundException)
+        {
+            // Pre-Windows 10 1607: no per-monitor V2, nothing to work around.
+        }
+    }
+
+    /// <summary>Restores the thread DPI awareness context saved by <see cref="EnterSystemDpiContextIfNeeded"/>.</summary>
+    private void RestoreThreadDpiContext()
+    {
+        if (!_threadDpiContextRestorePending) return;
+        _threadDpiContextRestorePending = false;
+
+        try { SetThreadDpiAwarenessContext(_previousThreadDpiContext); }
+        catch (EntryPointNotFoundException) { }
+    }
+
+    /// <summary>
+    /// Posts (rather than sends) a TDM_UPDATE_ICON for the main icon, so the
+    /// update is processed by the dialog's modal loop after any in-progress
+    /// initialization/re-layout has finished. Safe to post because standard
+    /// icons are passed as integer resource IDs (MAKEINTRESOURCE), not pointers.
+    /// </summary>
+    private void PostMainIconUpdate(TaskDialogIcon icon)
+    {
+        if (!IsActive()) return;
+        PostMessage(_activeDialogWindowHandle, (uint)TaskDialogMessages.TDM_UPDATE_ICON,
+            (IntPtr)TaskDialogIconElement.Main, (IntPtr)icon);
+    }
+
+    /// <summary>
+    /// Subclass procedure installed on the dialog window when a colored bar is
+    /// active. After the dialog handles a DPI or theme change (both of which
+    /// cause comctl32 to reload the main icon image from the original
+    /// TASKDIALOGCONFIG, restoring the shield), re-apply the user's real icon.
+    /// </summary>
+    private IntPtr IconGuardProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam, UIntPtr uIdSubclass, UIntPtr dwRefData)
+    {
+        IntPtr result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+        if ((uMsg == WM_DPICHANGED || uMsg == WM_THEMECHANGED)
+            && Coloredbar != TaskDialogBarColor.Default
+            && _preservedMainIcon != TaskDialogIcon.None)
+        {
+            PostMainIconUpdate(_preservedMainIcon);
+        }
+
+        return result;
+    }
 
     private TaskDialogIcon BarColorToIcon(TaskDialogBarColor color)
     {
@@ -771,6 +1059,30 @@ public class ModernTaskDialog
     [DllImport("user32.dll", EntryPoint = "SendMessageW", CharSet = CharSet.Unicode), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, string lParam);
 
+    // Used to queue TDM_UPDATE_ICON behind in-progress dialog initialization
+    [DllImport("user32.dll", EntryPoint = "PostMessageW"), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+    // Per-window DPI awareness (Windows 10 1607+). Pseudo-handle values:
+    // https://learn.microsoft.com/en-us/windows/win32/hidpi/dpi-awareness-context
+    private static readonly IntPtr DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = new IntPtr(-2);
+
+    [DllImport("user32.dll", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    private static extern IntPtr SetThreadDpiAwarenessContext(IntPtr dpiContext);
+
+    // Window subclassing (comctl32 v6) - used to guard the colored-bar icon
+    // swap against DPI/theme re-layouts while the dialog is open
+    private delegate IntPtr SUBCLASSPROC(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam, UIntPtr uIdSubclass, UIntPtr dwRefData);
+
+    [DllImport("comctl32.dll", SetLastError = true), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    private static extern bool SetWindowSubclass(IntPtr hWnd, SUBCLASSPROC pfnSubclass, UIntPtr uIdSubclass, UIntPtr dwRefData);
+
+    [DllImport("comctl32.dll"), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    private static extern bool RemoveWindowSubclass(IntPtr hWnd, SUBCLASSPROC pfnSubclass, UIntPtr uIdSubclass);
+
+    [DllImport("comctl32.dll"), DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    private static extern IntPtr DefSubclassProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
+
     public delegate int TaskDialogCallbackProc(IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam, IntPtr lpRefData);
 
     // -------------------------------------------------------------------------
@@ -823,6 +1135,26 @@ public class ModernTaskDialog
         ShieldRedBar = 65529,
         ShieldGreenBar = 65528,
         ShieldGrayBar = 65527
+    }
+
+    /// <summary>
+    /// Additional potentially useful icon resource IDs. You can technically cast any int of an icon resource to TaskDialogIcon but see warning below.
+    /// 
+    /// CAUTION: plain integer IDs are resolved as icon resources from imageres.dll (when InstanceHandle is not set).
+    /// Unlike the official 65527-65535 values, these resource IDs are UNDOCUMENTED and have changed between
+    /// Windows versions, so a given ID may show a different image (or nothing) on other Windows releases -
+    /// test on every OS version you target before relying on one.
+    /// </summary>
+    public static class TaskDialogIconEx
+    {
+        /// <summary>
+        /// An invisible icon that still reserves the icon's layout space, so dialog contents keep the same position as with a real icon (unlike None, which shifts the contents left).
+        /// </summary>
+        public const TaskDialogIcon Blank = (TaskDialogIcon)17;
+        /// <summary> Standard white file icon </summary>
+        public const TaskDialogIcon File = (TaskDialogIcon)2;
+        /// <summary> Standard folder icon </summary>
+        public const TaskDialogIcon Folder = (TaskDialogIcon)3;
     }
 
     public enum TaskDialogBarColor : int
@@ -964,7 +1296,7 @@ public class ModernTaskDialog
                 MainInstruction = mainInstruction,
                 Content = content,
                 MainIcon = TaskDialogIcon.Information,
-                Flags = 
+                Flags =
                     ModernTaskDialog.TaskDialogFlags.TDF_ENABLE_HYPERLINKS |
                     ModernTaskDialog.TaskDialogFlags.TDF_ALLOW_DIALOG_CANCELLATION |
                     ModernTaskDialog.TaskDialogFlags.TDF_POSITION_RELATIVE_TO_WINDOW |

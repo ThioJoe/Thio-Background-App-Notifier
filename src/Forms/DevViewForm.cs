@@ -60,14 +60,6 @@ public partial class DevViewForm : Form
 
     private void buttonTestModernDialog_Click(object sender, EventArgs e)
     {
-        //ModernTaskDialog.Template.VerificationResult vr =
-        //            ModernTaskDialog.Template.ShowYesNoWithVerification(
-        //                title: AppName,
-        //                mainInstruction: "Main Instruction Headline",
-        //                content: "Body Content",
-        //                verificationText: "Remind me again at next startup",
-        //                icon: ModernTaskDialog.TaskDialogIcon.Information);
-
         int count = 2; // Dummy number
         string headline = count == 1
                 ? "1 new startup item detected:"
@@ -90,13 +82,13 @@ public partial class DevViewForm : Form
             MainInstruction = headline,
             Content = body,
             VerificationText = "Remind me again at next startup",
-            MainIcon = ModernTaskDialog.TaskDialogIcon.Warning,
+            MainIcon = ModernTaskDialog.TaskDialogIcon.Information,
 
             CommonButtons = TaskDialogCommonButtonFlags.TDCBF_YES_BUTTON |
-                                TaskDialogCommonButtonFlags.TDCBF_NO_BUTTON,
+                            TaskDialogCommonButtonFlags.TDCBF_NO_BUTTON,
             Flags = TaskDialogFlags.TDF_ALLOW_DIALOG_CANCELLATION |
-                        TaskDialogFlags.TDF_POSITION_RELATIVE_TO_WINDOW |
-                        TaskDialogFlags.TDF_SIZE_TO_CONTENT,
+                    TaskDialogFlags.TDF_POSITION_RELATIVE_TO_WINDOW |
+                    TaskDialogFlags.TDF_SIZE_TO_CONTENT,
             ParentWindowHandle = default,
             Coloredbar = TaskDialogBarColor.Yellow,
 

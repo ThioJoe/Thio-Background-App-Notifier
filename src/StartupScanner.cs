@@ -184,8 +184,8 @@ namespace Thio_Background_App_Notifier
         {
             _TASK_TRIGGER_TYPE2.TASK_TRIGGER_BOOT,
             _TASK_TRIGGER_TYPE2.TASK_TRIGGER_LOGON,
-            _TASK_TRIGGER_TYPE2.TASK_TRIGGER_IDLE,
-            _TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY
+            _TASK_TRIGGER_TYPE2.TASK_TRIGGER_IDLE
+            //_TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY // We handle this separately to determine how many days
 
             // TODO: Investigate TASK_TRIGGER_CUSTOM_TRIGGER_01
         };
@@ -288,8 +288,21 @@ namespace Thio_Background_App_Notifier
                 {
                     normalAutoStartTypes.Add(trigger.Type);
                 }
-                else if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval && repeatInterval.TotalHours <= 26)
+                // Check exactly how many days between
+                else if (trigger.Type == _TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY)
                 {
+                    IDailyTrigger dailyTrigger = (IDailyTrigger)trigger;
+                    short dayInterval = dailyTrigger.DaysInterval;
+
+                    if (dayInterval > 1)
+                        otherTypeDescriptions.Add($"Every {dayInterval} days");
+                    else
+                        normalAutoStartTypes.Add(trigger.Type); // Daily Schedule
+
+                }
+                else if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval 
+                    //&& repeatInterval.TotalHours <= 26 // Removing this for now, would rather user be aware of any repetition and let them decide what they care about
+                ){
                     otherTypeDescriptions.Add(MakeFriendlyRepeatString(repeatInterval));
                 }
             }

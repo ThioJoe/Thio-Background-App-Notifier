@@ -309,22 +309,22 @@ namespace Thio_Background_App_Notifier
             if (interval.TotalDays > 1) // If 24 hours or less use hours
             {
                 if (interval.TotalDays != 1) { s = "s"; }
-                return $"Repeats every {interval.TotalDays} day{s}";
+                return $"Repeats every {Math.Round(interval.TotalDays, 1)} day{s}";
             }
             else if (interval.TotalHours >= 1)
             {
                 if (interval.TotalHours != 1) { s = "s"; }
-                return $"Repeats every {interval.TotalHours} hour{s}";
+                return $"Repeats every {Math.Round(interval.TotalHours, 1)} hour{s}";
             }
             else if (interval.TotalMinutes >= 1)
             {
                 if (interval.TotalMinutes != 1) { s = "s"; }
-                return $"Repeats every {interval.TotalMinutes} minute{s}";
+                return $"Repeats every {Math.Round(interval.TotalMinutes, 1)} minute{s}";
             }
             else
             {
                 if (interval.TotalSeconds != 1) { s = "s"; }
-                return $"Repeats every {interval.TotalSeconds} second{s}";
+                return $"Repeats every {Math.Round(interval.TotalSeconds, 1)} second{s}";
             }
         }
 

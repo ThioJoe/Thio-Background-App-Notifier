@@ -1,0 +1,62 @@
+name: StartupScanner Trigger Detection Tests
+
+# Builds the app on a Windows runner, creates a controlled set of scheduled tasks that each
+# exercise one branch of the trigger-detection logic in src/StartupScanner.cs, runs the app in
+# --quiet baseline mode, and asserts against the detections.json it writes.
+#
+# See tests/StartupScanner/README.md for the full case matrix and how it maps to the code.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      # Only source changes (or the test harness / workflow itself) should burn a Windows runner.
+      # README / doc-only changes are deliberately excluded (no *.md here).
+      - 'src/**'
+      - 'tests/StartupScanner/*.ps1'
+      - '.github/workflows/startup-scanner-tests.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/StartupScanner/*.ps1'
+      - '.github/workflows/startup-scanner-tests.yml'
+
+jobs:
+  trigger-detection:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build (Release)
+        run: >
+          msbuild src\New-Startup-App-Notifier.csproj
+          /p:Configuration=Release
+          /p:Platform=AnyCPU
+          /nologo
+          /verbosity:minimal
+          /m
+
+      - name: Verify build output
+        shell: pwsh
+        run: |
+          $exe = 'src/bin/Release/Thio-Background-App-Notifier.exe'
+          if (-not (Test-Path $exe)) { throw "Build did not produce $exe" }
+          Write-Host "Built: $((Resolve-Path $exe).Path)"
+
+      - name: Run trigger detection tests
+        shell: pwsh
+        run: |
+          ./tests/StartupScanner/Run-TriggerDetectionTests.ps1 -ExePath 'src/bin/Release/Thio-Background-App-Notifier.exe'
+
+      - name: Upload detection log + results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: startup-scanner-test-artifacts
+          path: tests/StartupScanner/_artifacts/**
+          if-no-files-found: warn

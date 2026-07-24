@@ -210,7 +210,7 @@ namespace Thio_Background_App_Notifier
                 case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_BOOT: return "At Boot";
                 case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_LOGON: return "At Logon";
                 case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_IDLE: return "Whenever Idle";
-                case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY: return "Daily Schedule";
+                case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY: return "Daily";
                 default: return trigger.ToString();
             }
         }
@@ -298,9 +298,12 @@ namespace Thio_Background_App_Notifier
                         otherTypeDescriptions.Add($"Every {dayInterval} days");
                     else
                         normalAutoStartTypes.Add(trigger.Type); // Daily Schedule
-
                 }
-                else if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval 
+
+                // Repetitions are determined separately because they might be way more frequent than the base type suggests
+                // Even though the previous ones would always cause it to be added anyway, this way it will be more accurate
+                // For example Google Chrome update is on daily scheduled, but then repeats every single hour. Now shows daily schedule and the hourly repeat.
+                if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval 
                     //&& repeatInterval.TotalHours <= 26 // Removing this for now, would rather user be aware of any repetition and let them decide what they care about
                 ){
                     otherTypeDescriptions.Add(MakeFriendlyRepeatString(repeatInterval));

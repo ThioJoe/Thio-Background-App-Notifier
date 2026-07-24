@@ -3,14 +3,11 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Xml.Linq;
+using TaskScheduler;
 
 #nullable enable
-
-// Add using for TaskScheduler
-using TaskScheduler;
-using System.Linq;
 
 namespace Thio_Background_App_Notifier
 {
@@ -283,21 +280,18 @@ namespace Thio_Background_App_Notifier
 
             foreach (ITrigger trigger in task.Definition.Triggers)
             {
-                if (trigger.Enabled == true)
+                // Skip disabled and never-active-again triggers
+                if (trigger.Enabled != true) continue;
+                if (!IsTriggerLive(trigger)) continue;
+
+                if (consideredAutostartTriggers.Contains(trigger.Type))
                 {
-                    if (consideredAutostartTriggers.Contains(trigger.Type))
-                    {
-                        normalAutoStartTypes.Add(trigger.Type);
-                    }
-                    else if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval)
-                    {
-                        // Check if it's 26 hours or less
-                        if (repeatInterval.TotalHours <= 26)
-                        {
-                            otherTypeDescriptions.Add(MakeFriendlyRepeatString(repeatInterval));
-                        }
-                    }
-                }                
+                    normalAutoStartTypes.Add(trigger.Type);
+                }
+                else if (CheckRepititionInteval(trigger) is TimeSpan repeatInterval && repeatInterval.TotalHours <= 26)
+                {
+                    otherTypeDescriptions.Add(MakeFriendlyRepeatString(repeatInterval));
+                }
             }
             return (normalAutoStartTypes, otherTypeDescriptions);
         }
@@ -335,51 +329,123 @@ namespace Thio_Background_App_Notifier
         /// <returns>A timespan for how often it repeats if it does, otherwise null</returns>
         public static TimeSpan? CheckRepititionInteval(ITrigger trigger)
         {
-            // Check if it contains reptition
-            if (trigger.Repetition == null)
+            string interval;
+            string duration;
+
+            try
+            {
+                IRepetitionPattern repetition = trigger.Repetition;
+                if (repetition == null) 
+                    return null;
+
+                interval = repetition.Interval;
+                duration = repetition.Duration;
+            }
+            catch
             {
                 return null;
             }
-            else // It has repitition
+
+            // No usable interval means there is no repetition pattern to speak of.
+            if (!TryGetTimeSpan(interval, out TimeSpan intervalTimeSpan) || intervalTimeSpan <= TimeSpan.Zero)
+                return null;
+
+            // A duration confines repetition to a window that reopens each time the parent trigger fires.
+            // Absent or zero means "repeat indefinitely" - nothing can expire.
+            if (TryGetTimeSpan(duration, out TimeSpan durationTimeSpan) && durationTimeSpan > TimeSpan.Zero)
             {
-                // See for repitition patterns: https://learn.microsoft.com/en-us/windows/win32/taskschd/repetitionpattern-interval
-                string interval = trigger.Repetition.Interval;
-                string duration = trigger.Repetition.Duration;
-                bool durationStop = trigger.Repetition.StopAtDurationEnd;
-
-                // If there's an interval and it's less than 24 hours
-                if (string.IsNullOrEmpty(interval))
-                {
+                if (!IsRepetitionWindowLive(trigger, durationTimeSpan))
                     return null;
-                }
-                else
-                {
-                    //// Handle durations later
-                    //if (!string.IsNullOrEmpty(duration))
-                    //{
-                    //    TimeSpan durationTimeSpan;
-                    //    durationTimeSpan = System.Xml.XmlConvert.ToTimeSpan(duration);
-                    //    if (durationTimeSpan.TotalSeconds > 0)
-                    //    {
-                    //        // Do something
-                    //    }
-                    //}
 
-                    TimeSpan intervalTimeSpan;
-
-                    try
-                    {
-                        // The string will look like "PT20M" or something but this converts it to time
-                        intervalTimeSpan = System.Xml.XmlConvert.ToTimeSpan(interval);
-                        return intervalTimeSpan;
-                    }
-                    catch
-                    {
-                        return null; // Invalid format
-                    }
-                }
+                // The window must outlast the interval, or the trigger fires once and the window closes before a repeat ever comes due.
+                // Such as Interval PT1H / Duration PT30M.
+                if (durationTimeSpan < intervalTimeSpan)
+                    return null;
             }
+
+            return intervalTimeSpan;
         }
+
+        /// <summary>
+        /// Determines whether a trigger's repetition window can still occur now or in the future.
+        /// </summary>
+        private static bool IsRepetitionWindowLive(ITrigger trigger, TimeSpan duration)
+        {
+            // Retired trigger - dead regardless of type or repetition.
+            if (!IsTriggerLive(trigger)) 
+                return false;
+
+            // Any recurring/event trigger fires again, opening a fresh window each time.
+            if (trigger.Type != _TASK_TRIGGER_TYPE2.TASK_TRIGGER_TIME) 
+                return true;
+
+            // One-shot: the window is [StartBoundary, StartBoundary + Duration].
+            string startBoundary;
+            try 
+                { startBoundary = trigger.StartBoundary; }
+            catch 
+                { return true; }
+
+            if (!TryParseBoundary(startBoundary, out DateTime start)) 
+                return true;
+
+            return DateTime.Now <= start + duration; // ongoing OR not yet started
+        }
+
+        /// <summary>
+        /// Boundaries are ISO-8601 strings, usually local wall-clock with no offset, but they can carry a 'Z' or a +hh:mm offset.
+        /// </summary>
+        private static bool TryParseBoundary(string value, out DateTime localTime)
+        {
+            localTime = default;
+            if (string.IsNullOrWhiteSpace(value)) 
+                return false;
+
+            if (!DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime parsed))
+                return false;
+
+            localTime = parsed.Kind == DateTimeKind.Utc ? parsed.ToLocalTime()
+                      : parsed.Kind == DateTimeKind.Local ? parsed
+                      : DateTime.SpecifyKind(parsed, DateTimeKind.Local); // Unspecified = local
+            return true;
+        }
+
+        /// <summary>
+        /// Reads an ISO-8601 duration string ("PT20M") without throwing on malformed input.
+        /// </summary>
+        private static bool TryGetTimeSpan(string value, out TimeSpan result)
+        {
+            result = TimeSpan.Zero;
+            if (string.IsNullOrWhiteSpace(value)) 
+                return false;
+
+            try
+            {
+                result = System.Xml.XmlConvert.ToTimeSpan(value);
+                return true;
+            }
+            catch (FormatException) 
+                { return false; }
+            catch (OverflowException) 
+                { return false; }
+        }
+
+        /// <summary>
+        /// True if the trigger has not been retired by its EndBoundary.
+        /// Applies to every trigger type - a Logon or Boot trigger past its EndBoundary will never fire again either.
+        /// </summary>
+        public static bool IsTriggerLive(ITrigger trigger)
+        {
+            string endBoundary;
+            try 
+                { endBoundary = trigger.EndBoundary; }
+            catch 
+                { return true; } // Unreadable - assume live rather than dropping the task
+
+            return !(TryParseBoundary(endBoundary, out DateTime end) && end <= DateTime.Now);
+        }
+
+
 
     } // ---- End StartupTask Class ----
 

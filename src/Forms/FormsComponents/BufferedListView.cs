@@ -51,6 +51,29 @@ namespace Thio_Background_App_Notifier
             }
         }
 
+        // If the total width of the columns is less than the listview, we'll expand the width of the furthest-right column to fill it.
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e); // Raise the original event in case we need to use it elsewhere
+
+            // The new current width of the listview
+            int newWidth = ClientSize.Width;
+
+            // The sum total widths of all the columns
+            int totalColumnWidth = 0;
+            foreach (ColumnHeader column in Columns)
+            {
+                totalColumnWidth += column.Width;
+            }
+
+            if (totalColumnWidth < newWidth && Columns.Count > 0)
+            {
+                int smallBuffer = 10; // So the handle is still visible
+                ColumnHeader lastColumn = Columns[Columns.Count - 1];
+                lastColumn.Width += newWidth - totalColumnWidth - smallBuffer;
+            }
+        }
+
         // Shows the details dialog for the first selected row, if its Tag is an IStartupItem.
         // Used by both double-click and the "Details" context menu item.
         private void ShowSelectedItemDetails()

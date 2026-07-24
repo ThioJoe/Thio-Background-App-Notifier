@@ -31,7 +31,7 @@ public partial class ItemListForm : BaseForm
         labelTitle.Text = title;
 
         List<IStartupItem> itemList = items.ToList();
-        AddTypeSpecificColumns(itemList);
+        AddTypeSpecificColumns(itemList); // Extract out the "special" type specific data to add as extra columns if applicable
 
         _baseHeaderText = new string[listView.Columns.Count];
         for (int i = 0; i < listView.Columns.Count; i++)

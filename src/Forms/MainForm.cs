@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ThioWinUtils;
+using static System.Windows.Forms.ListViewItem;
 
 #nullable enable
 
@@ -126,19 +127,39 @@ namespace Thio_Background_App_Notifier
                 var groupsByDate = new Dictionary<DateTime, ListViewGroup>();
 
                 // Most-recently-detected first, so anything new floats to the top.
-                var ordered = items
+                IOrderedEnumerable<IStartupItem> ordered = items
                     .OrderByDescending(i => i.FirstDetectionTime)
                     .ThenBy(i => i.Name, StringComparer.OrdinalIgnoreCase);
 
                 foreach (IStartupItem item in ordered)
                 {
-                    // Columns: New, First Detected, Type, Name, Starts, Path
-                    var row = new ListViewItem(item.IsFirstDetection ? "NEW" : string.Empty);
-                    row.SubItems.Add(UiHelpers.FormatDetected(item.FirstDetectionTime));
-                    row.SubItems.Add(UiHelpers.GetTypeLabel(item));
-                    row.SubItems.Add(UiHelpers.GetDisplayName(item));
-                    row.SubItems.Add(UiHelpers.GetDetail(item));
-                    row.SubItems.Add(item.Path);
+                    // Insert by column index fetch for each thing. Not just by adding by order. So it's always correct.
+                    ListViewItem row = new();
+
+                    row.SubItems.Insert(
+                        index: colNew.Index,
+                        item: new ListViewSubItem(row, item.IsFirstDetection ? "NEW" : string.Empty)
+                    );
+                    row.SubItems.Insert(
+                        index: colFirstDetected.Index,
+                        item: new ListViewSubItem(row, UiHelpers.FormatDetected(item.FirstDetectionTime))
+                    );
+                    row.SubItems.Insert(
+                        index: colType.Index,
+                        item: new ListViewSubItem(row, UiHelpers.GetTypeLabel(item))
+                    );
+                    row.SubItems.Insert(
+                        index: colName.Index,  // Assuming you have a colName defined
+                        item: new ListViewSubItem(row, UiHelpers.GetDisplayName(item))
+                    );
+                    row.SubItems.Insert(
+                        index: colStarts.Index,
+                        item: new ListViewSubItem(row, UiHelpers.GetDetail(item))
+                    );
+                    row.SubItems.Insert(
+                        index: colPath.Index,  // Assuming you have a colPath defined
+                        item: new ListViewSubItem(row, item.Path)
+                    );
                     row.Tag = item;
 
                     if (item.IsFirstDetection)
@@ -226,14 +247,20 @@ namespace Thio_Background_App_Notifier
 
         private void buttonAllStartupServices_Click(object sender, EventArgs e)
         {
-            _servicesForm = ShowOrFocus(_servicesForm,
-                "All Auto-Run Services (" + _result.Services.Count + ")", _result.Services);
+            _servicesForm = ShowOrFocus(
+                existing: _servicesForm,
+                title: "All Auto-Run Services (" + _result.Services.Count + ")",
+                items: _result.Services
+            );
         }
 
         private void buttonAllStartupTasks_Click(object sender, EventArgs e)
         {
-            _tasksForm = ShowOrFocus(_tasksForm,
-                "All Auto-Run Tasks (" + _result.Tasks.Count + ")", _result.Tasks);
+            _tasksForm = ShowOrFocus(
+                existing: _tasksForm,
+                title: "All Auto-Run Tasks (" + _result.Tasks.Count + ")",
+                items: _result.Tasks
+            );
         }
 
         // Shows the list window non-modally (so the main window stays usable). If one is already

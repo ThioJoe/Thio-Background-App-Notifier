@@ -182,23 +182,19 @@ namespace Thio_Background_App_Notifier
 
             List<IExecAction2> execActionsList = GetExecActions(task);
 
-            // Use com objects
-            if (execActionsList.Count == 0 && comHandlerGroup != null)
-            {
-                ExecActions = execActionsList; // Empty
-                // Just use the com object path as the paths
-                ExecActionPaths = comHandlerGroup.UniqueExecutablePaths;
-                ExecActionPathsWithArgs = comHandlerGroup.UniqueExecutablePaths; // No args for com objects
+            List<string> combinedExecActionsPaths = GetExecActionPaths(execActionsList, includeArgs: false);
+            List<string> combinedExecActionPathsWithArgs = GetExecActionPaths(execActionsList, includeArgs: true);
 
+            // Add com objects if we have them
+            if (comHandlerGroup != null)
+            {
+                combinedExecActionsPaths.AddRange(comHandlerGroup.UniqueExecutablePaths);
+                combinedExecActionPathsWithArgs.AddRange(comHandlerGroup.UniqueExecutablePaths);
                 // TODO: Add extra details column for app name and stuff retrieved com object app name
             }
-            else
-            {
-                ExecActions = execActionsList;
-                ExecActionPaths = GetExecActionPaths(execActionsList, includeArgs: false);
-                ExecActionPathsWithArgs = GetExecActionPaths(execActionsList, includeArgs: true);
-            }
 
+            ExecActionPaths = combinedExecActionsPaths;
+            ExecActionPathsWithArgs = combinedExecActionPathsWithArgs;
 
 
             TriggerDescription = autoStartTypes.otherDescriptions;

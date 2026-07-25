@@ -19,9 +19,10 @@ It does **not** run continuously, it's not a hypocrite. But you _can_ set it to 
 
 ## Screenshots
 
-<p align="center"><img width="800" src="https://github.com/user-attachments/assets/3d829488-c3ed-4139-8aca-58feeef7ed52" /></p>
+<p align="center"><img width="800" src="https://github.com/user-attachments/assets/2bb9063e-92b9-467f-9555-96a48658c6c1" /></p>
 
-<p align="center"><img width="550" src="https://github.com/user-attachments/assets/a2840cd3-d516-4c35-9b52-65d73e660dea" /></p>
+<p align="center"><img width="550" src="https://github.com/user-attachments/assets/337a8d93-71cc-4181-9e66-8264e2247e46" /></p>
+
 
 # How to Download
 

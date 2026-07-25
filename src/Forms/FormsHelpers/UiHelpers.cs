@@ -106,9 +106,30 @@ internal static class UiHelpers
             "Path:\r\n  " + (string.IsNullOrEmpty(item.Path) ? "(none)" : item.Path);
 
         if (item is StartupService service)
-            details += "\r\n\r\nRegistry key:\r\n  " + service.RegPath;
-        else if (item is StartupTask task)
-            details += "\r\n\r\nTask Scheduler path:\r\n  " + task.TaskSchedulerPath;
+        {
+            details += "\r\n\r\nRegistry key:\r\n" + service.RegPath;
+        }
+            
+        else if (item is StartupTask task) {
+            details += "\r\n\r\nTask Scheduler path:\r\n" + task.TaskSchedulerPath;
+
+            if (task.ComHandlers != null)
+            {
+                List<string> comhandlerIds = [];
+                List<string> associatedRegKeys = [];
+
+                foreach (StartupTask.ComHandlerDetails handler in task.ComHandlers.Handlers)
+                {
+                    associatedRegKeys.AddRange(handler.AssociatedRegisteryPaths);
+                    comhandlerIds.Add(handler.ComClassID);
+                }
+
+                details += "\n\nCom Handler Class IDs:\n" + string.Join("\n", comhandlerIds);
+                details += "\n\nAssociated Registry Keys:\n" + string.Join("\n", associatedRegKeys);
+            }
+            
+        }
+            
 
         MessageBox.Show(
             owner: owner,

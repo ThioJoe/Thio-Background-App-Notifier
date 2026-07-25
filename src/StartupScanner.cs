@@ -716,14 +716,37 @@ namespace Thio_Background_App_Notifier
                 }
             }
 
-            #if DEBUG
-            // I don't have any examples of this, not sure applicable here. Possible TODO
+            // Also easier, probably contains direct executable path
             if (clsidSubkeys.Contains("LocalServer32", StringComparer.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"Found com task with LocalServer32: {comClass}");
-            }
-            #endif
+                using RegistryKey? serverKey = classIdkey?.OpenSubKey("LocalServer32");
 
+                if (serverKey != null)
+                {
+                    string pathToUse = "";
+
+                    // Apparently these might be the same but we'll check both: https://learn.microsoft.com/en-us/windows/win32/com/localserver32
+                    if (serverKey.GetValue("ServerExecutable") is string serverExecPath && serverExecPath != "")
+                        pathToUse = serverExecPath;
+                    else if (serverKey.GetValue("") is string serverDefaultPath && serverDefaultPath != "")
+                        pathToUse = serverDefaultPath;
+
+                    if (!string.IsNullOrWhiteSpace(pathToUse))
+                    {
+                        // We might not necessarily have the name but we'll have the path at least
+                        ComHandlerDetails comObj = new(
+                            comClassId: comClass,
+                            displayName: defaultName,
+                            executablePath: pathToUse,
+                            associatedRegisteryPaths: [ CLSIDPath, ]
+                        );
+                        comList.Add(comObj);
+                    }
+                }
+            }
+
+
+            // If it instead references an APP ID CLSID
             if (appID is string appIDValue)
             {
                 // Such as: HKEY_CLASSES_ROOT\CLSID\{D0582E3B-3126-4CAA-9155-AC37C912A489}
@@ -745,6 +768,10 @@ namespace Thio_Background_App_Notifier
                             localService = valueData;
                         }
                         else if (value == "DllSurrogate" && valueData != "")
+                        {
+                            dllPath = valueData;
+                        }
+                        else if (value == "DllSurrogateExecutable" && valueData != "")
                         {
                             dllPath = valueData;
                         }

@@ -187,8 +187,9 @@ namespace Thio_Background_App_Notifier
                     // The columns are all defined in the designer sheet so we can reference their indexes directly.
                     UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colNew, colPadding);
                     UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colFirstDetected, colPadding);
+                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colName, colPadding, 20);
                     UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colType, colPadding);
-                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colStarts, colPadding);
+                    UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listViewItems, colStarts, colPadding, 20);
                 }
 
             }

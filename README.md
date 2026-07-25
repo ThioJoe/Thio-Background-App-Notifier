@@ -86,6 +86,9 @@ It scans silently and only pops up a notification **if** something new actually 
 ### **Q:** Why doesn't it list my normal startup programs?
 **A:** Because Windows already warns you about "normal" startup apps via its built-in "Startup app notifications." This tool covers the categories Windows *doesn't* (background Services and Scheduled Tasks). There may be other categories added in the future, but these are the big ones.
 
+### **Q:** Why not just use Sysinternals Autoruns?
+**A:** The point of this app is the notifications it gives. If you just want to see a complete list of all of them, Autoruns is still more complete.
+
 ### **Q:** Does it need administrator rights?
 **A:** Not for normal scanning or the detection log. Some items you lack permission to read are simply skipped.
 

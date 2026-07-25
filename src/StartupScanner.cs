@@ -884,7 +884,6 @@ namespace Thio_Background_App_Notifier
                                     {
                                         execActions.Add((IExecAction2)action);
                                         hasActionToFlag = true;
-                                        break;
                                     }
                                     else if (action.Type == _TASK_ACTION_TYPE.TASK_ACTION_COM_HANDLER)
                                     {
@@ -904,7 +903,6 @@ namespace Thio_Background_App_Notifier
                                                 hasActionToFlag = true;
                                                 pendingHandlerGroups.Add(handlers);
                                                 comHandlerActions.Add(comAction);
-                                                break;
                                             }
                                         }
                                     }

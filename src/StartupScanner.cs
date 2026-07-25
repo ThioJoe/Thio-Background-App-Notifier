@@ -726,10 +726,10 @@ namespace Thio_Background_App_Notifier
                     string pathToUse = "";
 
                     // Apparently these might be the same but we'll check both: https://learn.microsoft.com/en-us/windows/win32/com/localserver32
-                    if (serverKey.GetValue("ServerExecutable") is string serverExecPath && serverExecPath != "")
-                        pathToUse = serverExecPath;
-                    else if (serverKey.GetValue("") is string serverDefaultPath && serverDefaultPath != "")
+                    if (serverKey.GetValue("") is string serverDefaultPath && serverDefaultPath != "")
                         pathToUse = serverDefaultPath;
+                    else if (serverKey.GetValue("ServerExecutable") is string serverExecPath && serverExecPath != "")
+                        pathToUse = serverExecPath;
 
                     if (!string.IsNullOrWhiteSpace(pathToUse))
                     {

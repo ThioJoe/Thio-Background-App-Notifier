@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using System.Collections.Generic;
 
 namespace Thio_Background_App_Notifier
 {
@@ -16,6 +18,7 @@ namespace Thio_Background_App_Notifier
     {
         private readonly ToolStripMenuItem _copyMenuItem;
         private readonly ToolStripMenuItem _detailsMenuItem;
+        private readonly ToolStripMenuItem _copyDetailsMenuItem;
 
         public BufferedListView()
         {
@@ -24,15 +27,19 @@ namespace Thio_Background_App_Notifier
             DoubleBuffered = true;
 
             //---- Context Menu Stuff -------
-            _copyMenuItem = new ToolStripMenuItem("Copy") { ShortcutKeyDisplayString = "Ctrl+C" };
+            _copyMenuItem = new ToolStripMenuItem("Copy Row") { ShortcutKeyDisplayString = "Ctrl+C" };
             _copyMenuItem.Click += (s, e) => UiHelpers.CopySelectedRows(this);
 
-            _detailsMenuItem = new ToolStripMenuItem("Details");
+            _detailsMenuItem = new ToolStripMenuItem("View Details");
             _detailsMenuItem.Click += (s, e) => ShowSelectedItemDetails();
+
+            _copyDetailsMenuItem = new ToolStripMenuItem("Copy Details");
+            _copyDetailsMenuItem.Click += (s, e) => CopyDetailsToClipboard();
 
             ContextMenuStrip menu = new();
             menu.Items.Add(_copyMenuItem);
             menu.Items.Add(_detailsMenuItem);
+            menu.Items.Add(_copyDetailsMenuItem);
             menu.Opening += (s, e) => e.Cancel = SelectedItems.Count == 0; // Only offer the menu when at least one row is selected.
             ContextMenuStrip = menu;
             // ------------------------------
@@ -80,8 +87,33 @@ namespace Thio_Background_App_Notifier
         {
             if (SelectedItems.Count == 0)
                 return;
+
             if (SelectedItems[0].Tag is IStartupItem item)
                 UiHelpers.ShowDetails(FindForm(), item);
+        }
+
+        private void CopyDetailsToClipboard()
+        {
+            if (SelectedItems.Count == 0)
+                return;
+
+            List<string> allDetails = [];
+            foreach (ListViewItem item in SelectedItems)
+            {
+                if (item.Tag is IStartupItem startupItem)
+                {
+                    allDetails.Add(UiHelpers.MakeDetailsString(startupItem));
+                }
+            }
+
+            string combinedDetails = string.Join("\n\n===============================================================================\n\n", allDetails);
+
+            // Should only be zero if something went wrong but still.
+            // Also check for empty string because the SetText method throws if it's empty apparently.
+            if (allDetails.Count > 0 && !string.IsNullOrWhiteSpace(combinedDetails))
+            {
+                Clipboard.SetText(combinedDetails);
+            }
         }
 
         protected override void OnHandleCreated(EventArgs e)

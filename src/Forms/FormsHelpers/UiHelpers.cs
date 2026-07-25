@@ -92,10 +92,7 @@ internal static class UiHelpers
         return "Third-party";
     }
 
-    /// <summary>
-    /// Shows a read-only details dialog for a single startup item.
-    /// </summary>
-    public static void ShowDetails(IWin32Window owner, IStartupItem item)
+    public static string MakeDetailsString(IStartupItem item)
     {
         string details =
             "Name:\r\n  " + GetDisplayName(item) + "\r\n\r\n" +
@@ -107,11 +104,12 @@ internal static class UiHelpers
 
         if (item is StartupService service)
         {
-            details += "\r\n\r\nRegistry key:\r\n" + service.RegPath;
+            details += "\n\nRegistry key:\n  " + service.RegPath;
         }
-            
-        else if (item is StartupTask task) {
-            details += "\r\n\r\nTask Scheduler path:\r\n" + task.TaskSchedulerPath;
+
+        else if (item is StartupTask task)
+        {
+            details += "\n\nTask Scheduler path:\n  " + task.TaskSchedulerPath;
 
             if (task.ComHandlers != null)
             {
@@ -124,12 +122,25 @@ internal static class UiHelpers
                     comhandlerIds.Add(handler.ComClassID);
                 }
 
-                details += "\n\nCom Handler Class IDs:\n" + string.Join("\n", comhandlerIds);
-                details += "\n\nAssociated Registry Keys:\n" + string.Join("\n", associatedRegKeys);
+                // Only unique items
+                comhandlerIds = comhandlerIds.Distinct().ToList();
+                associatedRegKeys = associatedRegKeys.Distinct().ToList();
+
+                details += "\n\nCom Handler Class IDs:\n  " + string.Join("\n  ", comhandlerIds);
+                details += "\n\nAssociated Registry Keys:\n  " + string.Join("\n  ", associatedRegKeys);
             }
-            
+
         }
-            
+
+        return details;
+    }
+
+    /// <summary>
+    /// Shows a read-only details dialog for a single startup item.
+    /// </summary>
+    public static void ShowDetails(IWin32Window owner, IStartupItem item)
+    {
+        string details = MakeDetailsString(item);
 
         MessageBox.Show(
             owner: owner,

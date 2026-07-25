@@ -16,6 +16,7 @@ namespace Thio_Background_App_Notifier
     /// </summary>
     public class BufferedListView : ListView
     {
+        private readonly ToolStripMenuItem _copyNameMenuItem;
         private readonly ToolStripMenuItem _copyMenuItem;
         private readonly ToolStripMenuItem _detailsMenuItem;
         private readonly ToolStripMenuItem _copyDetailsMenuItem;
@@ -27,6 +28,9 @@ namespace Thio_Background_App_Notifier
             DoubleBuffered = true;
 
             //---- Context Menu Stuff -------
+            _copyNameMenuItem = new ToolStripMenuItem("Copy Name");
+            _copyNameMenuItem.Click += (s, e) => CopyNamesToClipboard();
+
             _copyMenuItem = new ToolStripMenuItem("Copy Row") { ShortcutKeyDisplayString = "Ctrl+C" };
             _copyMenuItem.Click += (s, e) => UiHelpers.CopySelectedRows(this);
 
@@ -37,8 +41,10 @@ namespace Thio_Background_App_Notifier
             _copyDetailsMenuItem.Click += (s, e) => CopyDetailsToClipboard();
 
             ContextMenuStrip menu = new();
-            menu.Items.Add(_copyMenuItem);
             menu.Items.Add(_detailsMenuItem);
+            menu.Items.Add(new ToolStripSeparator());
+            menu.Items.Add(_copyNameMenuItem);
+            menu.Items.Add(_copyMenuItem);
             menu.Items.Add(_copyDetailsMenuItem);
             menu.Opening += (s, e) => e.Cancel = SelectedItems.Count == 0; // Only offer the menu when at least one row is selected.
             ContextMenuStrip = menu;
@@ -78,6 +84,30 @@ namespace Thio_Background_App_Notifier
                 int smallBuffer = 10; // So the handle is still visible
                 ColumnHeader lastColumn = Columns[Columns.Count - 1];
                 lastColumn.Width += newWidth - totalColumnWidth - smallBuffer;
+            }
+        }
+
+        private void CopyNamesToClipboard()
+        { 
+            if (SelectedItems.Count == 0)
+                return;
+
+            List<string> allNames = [];
+            foreach (ListViewItem item in SelectedItems)
+            {
+                if (item.Tag is IStartupItem startupItem)
+                {
+                    allNames.Add(startupItem.Name);
+                }
+            }
+
+            string combinedNames = string.Join("\n", allNames);
+
+            // Should only be zero if something went wrong but still.
+            // Also check for empty string because the SetText method throws if it's empty apparently.
+            if (allNames.Count > 0 && !string.IsNullOrWhiteSpace(combinedNames))
+            {
+                Clipboard.SetText(combinedNames);
             }
         }
 

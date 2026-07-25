@@ -4,8 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using TaskScheduler;
+using static Thio_Background_App_Notifier.StartupTask;
 
 #nullable enable
 
@@ -53,7 +56,7 @@ namespace Thio_Background_App_Notifier
         }
 
         public string Name { get; init; }
-        public string ServiceName { get; init; } // The (unique) registry key name of the service
+        public string ServiceName { get; init; } // The (unique) registry classIdkey name of the service
         public string ExecPath { get; init; }
         public string RegPath { get; init; }
         public int StartupType { get; init; }
@@ -78,7 +81,7 @@ namespace Thio_Background_App_Notifier
         /// <summary>
         /// Identify a service by its executable path (per the design notes: track the ImagePath,
         /// not just the service name, so re-registering apps aren't seen as new every boot).
-        /// Falls back to the registry key name if no path is available.
+        /// Falls back to the registry classIdkey name if no path is available.
         /// </summary>
         public string IdentityKey
         {
@@ -132,11 +135,14 @@ namespace Thio_Background_App_Notifier
         public List<IExecAction2> ExecActions { get; init; }
         public List<string> ExecActionPaths { get; init; }
         public List<string> ExecActionPathsWithArgs { get; init; }
+        public List<_TASK_ACTION_TYPE> ActionTypes { get; init; }
+        public List<IComHandlerAction> ComHandlerActions { get; init; } = [];
+        public ComHandlerGroup? ComHandlers { get; init; } = null;
 
         public List<Dictionary<string, string>> TypeSpecificDetails { get; set; } = [];
 
         // Constructor
-        public StartupTask(IRegisteredTask task)
+        public StartupTask(IRegisteredTask task, ComHandlerGroup? comHandlerGroup = null, List<IComHandlerAction>? comHandlerActions = null)
         {
             // Private
             _taskObj = task; // The original object
@@ -162,11 +168,38 @@ namespace Thio_Background_App_Notifier
             TaskXml = task.Xml;
             Triggers = triggerStringList;
             StartupTaskTypes = triggerStringList;
+            ActionTypes = GetActionTypes(task);
+
+            if (comHandlerGroup != null)
+            {
+                ComHandlers = comHandlerGroup;
+            }
+
+            if (comHandlerActions != null)
+            {
+                ComHandlerActions = comHandlerActions;
+            }
 
             List<IExecAction2> execActionsList = GetExecActions(task);
-            ExecActions = execActionsList;
-            ExecActionPaths = GetExecActionPaths(execActionsList, includeArgs: false);
-            ExecActionPathsWithArgs = GetExecActionPaths(execActionsList, includeArgs: true);
+
+            // Use com objects
+            if (execActionsList.Count == 0 && comHandlerGroup != null)
+            {
+                ExecActions = execActionsList; // Empty
+                // Just use the com object path as the paths
+                ExecActionPaths = comHandlerGroup.UniqueExecutablePaths;
+                ExecActionPathsWithArgs = comHandlerGroup.UniqueExecutablePaths; // No args for com objects
+
+                // TODO: Add extra details column for app name and stuff retrieved com object app name
+            }
+            else
+            {
+                ExecActions = execActionsList;
+                ExecActionPaths = GetExecActionPaths(execActionsList, includeArgs: false);
+                ExecActionPathsWithArgs = GetExecActionPaths(execActionsList, includeArgs: true);
+            }
+
+
 
             TriggerDescription = autoStartTypes.otherDescriptions;
 
@@ -203,6 +236,96 @@ namespace Thio_Background_App_Notifier
             }
         }
 
+        public class ComHandlerGroup
+        {
+            public List<ComHandlerDetails> Handlers;
+            public List<string> UniqueExecutablePaths;
+
+            public ComHandlerGroup(List<ComHandlerDetails> handlers)
+            {
+                Handlers = handlers;
+                UniqueExecutablePaths = GetUniqueExecutables(handlers);
+            }
+
+            // Constructor for a single handler item
+            public ComHandlerGroup(ComHandlerDetails handler)
+            {
+                Handlers = [handler];
+                UniqueExecutablePaths = [handler.Executable];
+            }
+
+            // Merge a list of groups
+            public ComHandlerGroup(List<ComHandlerGroup> existingGroups)
+            {
+                Handlers = new List<ComHandlerDetails>();
+                foreach (ComHandlerGroup group in existingGroups)
+                {
+                    Handlers.AddRange(group.Handlers);
+                }
+                UniqueExecutablePaths = GetUniqueExecutables(Handlers);
+            }
+
+
+            // ----------- Private Methods -----------
+            private List<string> GetUniqueExecutables(List<ComHandlerDetails> comList)
+            {
+                List<string> comExecutableList = [];
+                // Most of the com objects probably refer to the same executable so we'll use distinct
+                foreach (ComHandlerDetails comObj in comList)
+                {
+                    if (!comExecutableList.Contains(comObj.Executable))
+                    {
+                        comExecutableList.Add(comObj.Executable);
+                    }
+                }
+                return comExecutableList;
+            }
+        }
+
+        public class ComHandlerDetails
+        {
+            /// <summary>
+            /// Com server from the reference to the Class ID classIdkey within the matching subkey in HKEY_CLASSES_ROOT\PackagedCom\Package\
+            /// Example:  HKEY_CLASSES_ROOT\PackagedCom\Package\MicrosoftWindows.Client.CBS_1000.26100.344.0_x64__cw5n1h2txyewy\Class\{F576B2F9-7850-4226-ADB0-E5993FED4F02}
+            ///           HKEY_CLASSES_ROOT\PackagedCom\Package\MicrosoftWindows.Client.CBS_1000.26100.334.0_x64__cw5n1h2txyewy\Server\1
+            /// </summary>
+            /// <param name="serverRegKey"></param>
+            public ComHandlerDetails(RegistryKey serverRegKey)
+            {
+                // Get the values named ApplicationDisplayName, ApplicationId, DisplayName, and Executable
+                _applicationDisplayName = serverRegKey.GetValue("ApplicationDisplayName") as string ?? string.Empty;
+                ApplicationID = serverRegKey.GetValue("ApplicationId") as string ?? string.Empty;
+                DisplayName = serverRegKey.GetValue("DisplayName") as string ?? string.Empty;
+                Executable = serverRegKey.GetValue("Executable") as string ?? string.Empty;
+                
+                if (!String.IsNullOrEmpty(_applicationDisplayName))
+                    ApplicationDisplayName = WindowsUtils.ResolveIndirectString(_applicationDisplayName);
+                else
+                    ApplicationDisplayName = "Unknown Application Name";
+
+            }
+
+            public ComHandlerDetails(string? displayName, string executablePath)
+            {
+                if (displayName == null || displayName == "")
+                {
+                    displayName = "Unknown App";
+                }
+
+                ApplicationDisplayName = displayName;
+                Executable = executablePath;
+            }
+
+            private readonly string? _applicationDisplayName; // Resource string
+
+            public string? DisplayName;
+            
+            public string ApplicationDisplayName; // Resolved
+            public string? ApplicationID;
+            public string Executable;
+
+        }
+
         private static string GetTriggerName(_TASK_TRIGGER_TYPE2 trigger)
         {
             switch (trigger)
@@ -213,6 +336,20 @@ namespace Thio_Background_App_Notifier
                 case _TASK_TRIGGER_TYPE2.TASK_TRIGGER_DAILY: return "Daily";
                 default: return trigger.ToString();
             }
+        }
+
+        private List<_TASK_ACTION_TYPE> GetActionTypes(IRegisteredTask task)
+        {
+            IActionCollection actionCollection = task.Definition.Actions;
+            List<_TASK_ACTION_TYPE> actionTypes = [];
+            foreach (IAction action in actionCollection)
+            {
+                if (!actionTypes.Contains(action.Type)) // Make sure only one instance
+                {
+                    actionTypes.Add(action.Type);
+                }
+            }
+            return actionTypes;
         }
 
         // Get list of apps executed when the task runs
@@ -267,6 +404,7 @@ namespace Thio_Background_App_Notifier
 
             return actionPathList;
         }
+
         /// <summary>
         /// Checks for multiple types of "autostart" triggers. Not necessarily just at login or boot. Also for example daily on a timer, when system idle, etc.
         /// Does not include weekly, monthly, or single time scheduled tasks, etc.
@@ -469,6 +607,154 @@ namespace Thio_Background_App_Notifier
 
     public class StartupScanner
     {
+
+        /// <summary>
+        /// Opens a subkey under HKEY_CLASSES_ROOT, checking both the 64-bit and 32-bit registry views.
+        /// This is necessary because CLSID entries can be registered in only one view (e.g. a 64-bit COM
+        /// server's CLSID key won't be visible to a 32-bit process via the default Registry.ClassesRoot view),
+        /// and vice versa.
+        /// </summary>
+        private static RegistryKey? OpenClassesRootSubKey(string subKeyPath)
+        {
+            foreach (RegistryView view in new[] { RegistryView.Registry64, RegistryView.Registry32 })
+            {
+                using RegistryKey baseKey = RegistryKey.OpenBaseKey(RegistryHive.ClassesRoot, view);
+                RegistryKey? key = baseKey.OpenSubKey(subKeyPath);
+                if (key != null)
+                {
+                    return key;
+                }
+            }
+
+            return null;
+        }
+
+        private static ComHandlerGroup? FindComHandlerSource(string comClass)
+        {
+            List<ComHandlerDetails> comList = new();
+
+            string CLSIDPath = $@"CLSID\{comClass}";
+
+            // Get the list of subkeys in that classIdkey
+            List<string> clsidSubkeys = new List<string>();
+
+            using (RegistryKey? classIdkey = OpenClassesRootSubKey(CLSIDPath))
+            {
+                if (classIdkey != null)
+                {
+                    clsidSubkeys.AddRange(classIdkey.GetSubKeyNames());
+                }
+
+                string? defaultName = classIdkey?.GetValue("") as string;
+
+                // Easier. The InProcServer32 Default value is likely a dll path directly.
+                if (clsidSubkeys.Contains("InProcServer32", StringComparer.OrdinalIgnoreCase))
+                {
+                    using (RegistryKey? inProcKey = classIdkey?.OpenSubKey("InProcServer32"))
+                    {
+                        if (inProcKey != null)
+                        {
+                            string? inProcPath = inProcKey.GetValue("") as string;
+                            if (inProcPath != null && inProcPath != "")
+                            {
+                                // We might not necessarily have the name but we'll have the path at least
+                                ComHandlerDetails comObj = new(displayName: defaultName, executablePath: inProcPath);
+                                comList.Add(comObj);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ----- POSSIBLE EARLY RETURN IF ALREADY HAVE IT -----
+            if (comList.Count > 0)
+            {
+                return new ComHandlerGroup(comList);
+            }
+
+            // ---------- ADDITIONAL PROCESSING FOR CERTAIN TYPES WITH MULTIPLE REFERENCES -----------
+
+            // Check in HKEY_CLASSES_ROOT\PackagedCom\ClassIndex\
+            string registryPath = $@"PackagedCom\ClassIndex\{comClass}";
+
+            // Get the list of subkeys in that classIdkey
+            List<string> subkeys = new List<string>();
+
+            using (RegistryKey? classIdkey = OpenClassesRootSubKey(registryPath))
+            {
+                if (classIdkey != null)
+                {
+                    subkeys.AddRange(classIdkey.GetSubKeyNames());
+                }
+            }
+
+            //TODO - Need to be able to handle when there's no PackagedCom and there's a CLSID in AppID value
+            // Such as: HKEY_CLASSES_ROOT\CLSID\{D0582E3B-3126-4CAA-9155-AC37C912A489}
+
+            // Cross reference the subkey names with matching classIdkey names in HKEY_CLASSES_ROOT\PackagedCom\Package\
+            foreach (string subkey in subkeys)
+            {
+                string packagePath = $@"PackagedCom\Package\{subkey}";
+                using (RegistryKey? packageKey = OpenClassesRootSubKey(packagePath))
+                {
+                    string? serverId = null;
+
+                    if (packageKey != null)
+                    {
+                        // Dig into /Class/ then the comClass
+                        using (RegistryKey? classKey = packageKey.OpenSubKey("Class"))
+                        {
+                            if (classKey != null)
+                            {
+                                foreach (string classSubkey in classKey.GetSubKeyNames())
+                                {
+                                    if (string.Equals(classSubkey, comClass, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        // Get the "ServerId" value. It's probably a number like 0, 1, 2
+                                        // The value may be stored as REG_DWORD (int) or REG_SZ (string), so convert rather than casting.
+                                        object? serverIdValue = classKey.OpenSubKey(classSubkey)?.GetValue("ServerId");
+                                        serverId = serverIdValue != null ? Convert.ToString(serverIdValue) : string.Empty;
+
+                                        break; // Found a match, no need to check other class subkeys
+                                    }
+                                }
+                            }
+                        }
+
+                        // ------ Now look for the Server Subkey ------
+                        using (RegistryKey? serverGroupKey = packageKey.OpenSubKey("Server"))
+                        {
+                            // Server subkeys are also numbers like 0, 1, 2. 
+                            using (RegistryKey? matchingServerKey = serverGroupKey?.OpenSubKey(serverId))
+                            {
+                                if (matchingServerKey != null)
+                                {
+                                    ComHandlerDetails comHandlerItem = new(matchingServerKey);
+                                    comList.Add(comHandlerItem);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (comList.Count > 0)
+            {
+                // If all of the executable paths are empty just return null
+                bool allEmpty = comList.All(com => string.IsNullOrEmpty(com.Executable));
+                if (allEmpty)
+                    return null;
+                else
+                    return new ComHandlerGroup(comList);
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+
         public static List<StartupService> GetStartupServices()
         {
             var items = new List<StartupService>();
@@ -577,26 +863,68 @@ namespace Thio_Background_App_Notifier
 
                         if (task.Enabled == true)
                         {
-                            var typesResult = StartupTask.GetAutoStartTypes(task);
+                            (List<_TASK_TRIGGER_TYPE2> normalTypes, List<string> otherDescriptions) typesResult = StartupTask.GetAutoStartTypes(task);
 
                             if (typesResult.normalTypes.Count > 0 || typesResult.otherDescriptions.Count > 0)
                             {
-                                // Only include tasks that actually launch an executable, and add each such
-                                // task exactly once (a task can have multiple exec actions).
-                                bool hasExecAction = false;
+                                List<ComHandlerGroup> pendingHandlerGroups = []; // We'll merge this at the end
+                                List<IComHandlerAction> comHandlerActions = [];
+                                List<IExecAction2> execActions = [];
+
+                                // Add each such task exactly once (a task can have multiple exec actions).
+                                bool hasActionToFlag = false;
                                 foreach (IAction action in task.Definition.Actions)
                                 {
-                                    // 0 = TASK_ACTION_EXEC
+                                    #if DEBUG
+                                        if (task.Name == "SoftLandingCreativeManagementTask")
+                                            Console.WriteLine("Hello");
+                                    #endif
+
                                     if (action.Type == _TASK_ACTION_TYPE.TASK_ACTION_EXEC)
                                     {
-                                        hasExecAction = true;
+                                        execActions.Add((IExecAction2)action);
+                                        hasActionToFlag = true;
                                         break;
+                                    }
+                                    else if (action.Type == _TASK_ACTION_TYPE.TASK_ACTION_COM_HANDLER)
+                                    {
+                                        // Inspect the com class
+                                        IComHandlerAction comAction = (IComHandlerAction)action;
+                                        string comClass = comAction.ClassId;
+
+                                        // Check in HKEY_CLASSES_ROOT\PackagedCom\ClassIndex\
+                                        string registryPath = $@"PackagedCom\ClassIndex\{comClass}";
+
+                                        // Get the com handlers
+                                        ComHandlerGroup? comHandlersReturned = FindComHandlerSource(comClass);
+                                        if (comHandlersReturned is ComHandlerGroup handlers)
+                                        {
+                                            if (handlers.UniqueExecutablePaths.Count > 0)
+                                            {
+                                                hasActionToFlag = true;
+                                                pendingHandlerGroups.Add(handlers);
+                                                comHandlerActions.Add(comAction);
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
 
-                                if (hasExecAction)
+                                if (hasActionToFlag)
                                 {
-                                    taskItems.Add(new StartupTask(task)); // It sets its own path property
+
+                                    if (pendingHandlerGroups.Count > 0)
+                                    {
+
+                                        ComHandlerGroup handlerGroup = new(pendingHandlerGroups);
+                                        StartupTask taskToAdd = new StartupTask(task, handlerGroup, comHandlerActions);
+                                        taskItems.Add(taskToAdd); // It sets its own path property
+                                    } 
+                                    else
+                                    {
+                                        taskItems.Add(new StartupTask(task));
+                                    }
+
                                 }
                             }
                         }

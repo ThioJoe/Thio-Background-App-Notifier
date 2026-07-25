@@ -716,6 +716,14 @@ namespace Thio_Background_App_Notifier
                 }
             }
 
+            #if DEBUG
+            // I don't have any examples of this, not sure applicable here. Possible TODO
+            if (clsidSubkeys.Contains("LocalServer32", StringComparer.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"Found com task with LocalServer32: {comClass}");
+            }
+            #endif
+
             if (appID is string appIDValue)
             {
                 // Such as: HKEY_CLASSES_ROOT\CLSID\{D0582E3B-3126-4CAA-9155-AC37C912A489}

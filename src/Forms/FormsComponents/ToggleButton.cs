@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 #nullable enable
 
@@ -29,7 +30,7 @@ public partial class ToggleButton : Button
                 return;
 
             _pushed = value;
-            SetPushedStyle();
+            Invalidate();
         }
     }
 
@@ -37,10 +38,7 @@ public partial class ToggleButton : Button
     {
         InitializeComponent();
 
-        FlatStyle = FlatStyle.Flat;
-        FlatAppearance.BorderSize = 1;
-
-        SetPushedStyle();
+        FlatStyle = FlatStyle.Standard;
     }
 
     public ToggleButton(IContainer container)
@@ -49,26 +47,7 @@ public partial class ToggleButton : Button
 
         InitializeComponent();
 
-        FlatStyle = FlatStyle.Flat;
-        FlatAppearance.BorderSize = 1;
-
-        SetPushedStyle();
-    }
-
-    private void SetPushedStyle()
-    {
-        if (Pushed)
-        {
-            FlatAppearance.BorderSize = 2;
-            FlatAppearance.BorderColor = SystemColors.HotTrack;
-            BackColor = SystemColors.ControlLight;
-        }
-        else
-        {
-            FlatAppearance.BorderSize = 1;
-            FlatAppearance.BorderColor = SystemColors.ControlDark;
-            BackColor = SystemColors.Control;
-        }
+        FlatStyle = FlatStyle.Standard;
     }
 
     // Toggles the pushed state whenever the button is clicked.
@@ -79,5 +58,44 @@ public partial class ToggleButton : Button
     private void Toggle(object? sender, EventArgs e)
     {
         Toggle();
+    }
+
+    protected override void OnPaint(PaintEventArgs pevent)
+    {
+        // Only when pushed do we need to override the default rendering, to keep the
+        // button looking permanently "pressed in" using the native (standard) theme.
+        if (!Pushed)
+        {
+            base.OnPaint(pevent);
+            return;
+        }
+
+        // Draw just the pressed-in chrome (no text), then draw the text ourselves at a fixed
+        // position. ButtonRenderer.DrawButton's own text drawing shifts the text slightly for
+        // the pressed state, which made the label visibly jump when toggling.
+        //PushButtonState state = Enabled ? PushButtonState.Pressed : PushButtonState.Disabled;
+
+        PushButtonState state;
+        Font updatedFont;
+
+        if (this.Enabled == true)
+        {
+            state = PushButtonState.Pressed;
+            updatedFont = new(Font, FontStyle.Bold);
+        }
+        else
+        {
+            state = PushButtonState.Disabled;
+            updatedFont = new(Font, FontStyle.Regular);
+        }
+
+        ButtonRenderer.DrawButton(pevent.Graphics, ClientRectangle, state);
+        TextRenderer.DrawText(
+            dc: pevent.Graphics,
+            text: Text,
+            font: updatedFont,
+            bounds: ClientRectangle,
+            foreColor: Enabled ? ForeColor : SystemColors.GrayText,
+            flags: TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
     }
 }

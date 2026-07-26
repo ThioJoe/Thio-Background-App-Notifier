@@ -172,7 +172,7 @@ namespace Thio_Background_App_Notifier
                         row.UseItemStyleForSubItems = true;
                         row.BackColor = Color.FromArgb(255, 249, 196); // light yellow highlight
                     }
-                    else if (item is RememberedStartupItem)
+                    else if (item.OnlyVisibleWhenAdmin && !result.RanElevated)
                     {
                         // Only ever seen while elevated, and this run isn't, so its current state
                         // can't be verified — dim it rather than showing it as a live row.

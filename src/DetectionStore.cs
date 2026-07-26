@@ -70,6 +70,10 @@ namespace Thio_Background_App_Notifier
 
         public bool IsFirstDetection { get; set; }
         public DateTime FirstDetectionTime { get; set; }
+
+        // These stand-ins only ever exist for admin-only records, by definition.
+        public bool OnlyVisibleWhenAdmin { get; set; } = true;
+
         public List<Dictionary<string, string>> TypeSpecificDetails { get; set; } = [];
     }
 
@@ -309,6 +313,7 @@ namespace Thio_Background_App_Notifier
                     if (!isElevated)
                         existing.OnlyVisibleWhenElevated = false;
 
+                    item.OnlyVisibleWhenAdmin = existing.OnlyVisibleWhenElevated;
                     item.IsFirstDetection = false;
                     item.FirstDetectionTime = FromIso(existing.FirstDetectedUtc, nowLocal);
                     record = existing;
@@ -342,6 +347,7 @@ namespace Thio_Background_App_Notifier
                     _data.Items.Add(record);
                     _byKey[key] = record;
 
+                    item.OnlyVisibleWhenAdmin = record.OnlyVisibleWhenElevated;
                     item.FirstDetectionTime = nowLocal;
                     item.IsFirstDetection = !isFirstRun; // Highlight genuinely-new items in the UI.
 
@@ -365,8 +371,10 @@ namespace Thio_Background_App_Notifier
                 liveItems.Select(i => i.IdentityKey), StringComparer.OrdinalIgnoreCase);
 
             // On a non-elevated run, admin-only items can't be checked, so instead of treating them
-            // as gone, keep listing the post-baseline ones in the history as unverified leftovers
-            // (the main window grays these out). They aren't first detections and don't re-alert.
+            // as gone, keep listing them as unverified leftovers (the UI grays these out). They're
+            // presumed still present, so they join the full item lists and counts; post-baseline
+            // ones also stay in the main-window history. They aren't first detections and don't
+            // re-alert.
             if (!isElevated)
             {
                 foreach (KnownStartupItem record in _data.Items)
@@ -374,14 +382,16 @@ namespace Thio_Background_App_Notifier
                     if (!record.OnlyVisibleWhenElevated || liveKeys.Contains(record.IdentityKey))
                         continue;
 
-                    if (record.FirstDetectedUtc != baselineStamp)
+                    var remembered = new RememberedStartupItem(record)
                     {
-                        itemsSinceBaseline.Add(new RememberedStartupItem(record)
-                        {
-                            IsFirstDetection = false,
-                            FirstDetectionTime = FromIso(record.FirstDetectedUtc, nowLocal)
-                        });
-                    }
+                        IsFirstDetection = false,
+                        FirstDetectionTime = FromIso(record.FirstDetectedUtc, nowLocal)
+                    };
+
+                    liveItems.Add(remembered);
+
+                    if (record.FirstDetectedUtc != baselineStamp)
+                        itemsSinceBaseline.Add(remembered);
                 }
             }
 

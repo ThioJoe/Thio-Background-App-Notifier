@@ -98,7 +98,17 @@ internal static class UiHelpers
 
     public static string MakeDetailsString(IStartupItem item)
     {
-        string details =
+        string details = string.Empty;
+
+        // Without admin rights the item can't be checked, so everything below reflects the last
+        // elevated scan rather than the current state.
+        if (item.OnlyVisibleWhenAdmin && !WindowsUtils.IsRunningElevated)
+        {
+            details += "Note: This item is only visible when running as Administrator, so it can't be checked right now.\r\n"
+                     + "  The info below was saved the last time the app ran as admin, and may be out of date.\r\n\r\n";
+        }
+
+        details +=
             "Name:\r\n  " + GetDisplayName(item) + "\r\n\r\n" +
             "Type:\r\n  " + GetTypeLabel(item) + "\r\n\r\n" +
             "Starts:\r\n  " + GetDetail(item) + "\r\n\r\n" +

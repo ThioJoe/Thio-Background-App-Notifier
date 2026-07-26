@@ -25,6 +25,7 @@ partial class ItemListForm
     {
             this.components = new System.ComponentModel.Container();
             this.labelTitle = new System.Windows.Forms.Label();
+            this.labelElevationNote = new System.Windows.Forms.Label();
             this.listView = new Thio_Background_App_Notifier.BufferedListView();
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colStarts = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -42,6 +43,20 @@ partial class ItemListForm
             this.labelTitle.Name = "labelTitle";
             this.labelTitle.Size = new System.Drawing.Size(667, 23);
             this.labelTitle.TabIndex = 0;
+            // 
+            // labelElevationNote
+            // 
+            this.labelElevationNote.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelElevationNote.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelElevationNote.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelElevationNote.Location = new System.Drawing.Point(682, 15);
+            this.labelElevationNote.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelElevationNote.Name = "labelElevationNote";
+            this.labelElevationNote.Size = new System.Drawing.Size(348, 17);
+            this.labelElevationNote.TabIndex = 3;
+            this.labelElevationNote.Text = "*Grayed-out items are only updated when running as Administrator";
+            this.labelElevationNote.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.labelElevationNote.Visible = false;
             // 
             // listView
             // 
@@ -115,6 +130,7 @@ partial class ItemListForm
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.labelTitle);
+            this.Controls.Add(this.labelElevationNote);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(472, 293);
             this.Name = "ItemListForm";
@@ -127,6 +143,7 @@ partial class ItemListForm
     #endregion
 
     private System.Windows.Forms.Label labelTitle;
+    private System.Windows.Forms.Label labelElevationNote;
     private Thio_Background_App_Notifier.BufferedListView listView;
     private System.Windows.Forms.ColumnHeader colName;
     private System.Windows.Forms.ColumnHeader colStarts;

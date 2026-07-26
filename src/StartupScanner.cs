@@ -40,6 +40,12 @@ namespace Thio_Background_App_Notifier
         DateTime FirstDetectionTime { get; set; }
 
         /// <summary>
+        /// The item is only readable when running elevated, per the detection log. On non-elevated
+        /// runs such items can't be verified, so their displayed data may be out of date.
+        /// </summary>
+        bool OnlyVisibleWhenAdmin { get; set; }
+
+        /// <summary>
         /// A list of dictionaries, each representing a column header and contents, for additional columns and data to show for specific startup types.
         /// </summary>
         List<Dictionary<string, string>> TypeSpecificDetails { get; set; }
@@ -73,6 +79,7 @@ namespace Thio_Background_App_Notifier
 
         public bool IsFirstDetection { get; set; }
         public DateTime FirstDetectionTime { get; set; }
+        public bool OnlyVisibleWhenAdmin { get; set; }
 
         // Explicit interface implementation - maps to the existing ExecPath property
         string IStartupItem.Path => ExecPath;
@@ -121,6 +128,7 @@ namespace Thio_Background_App_Notifier
         public StartupItemType Type { get; } = StartupItemType.ScheduledTask;
         public bool IsFirstDetection { get; set; }
         public DateTime FirstDetectionTime { get; set; }
+        public bool OnlyVisibleWhenAdmin { get; set; }
 
         // Explicit interface implementation - joins the exec action paths (with args) used to start the task
         string IStartupItem.Path => string.Join("; ", ExecActionPathsWithArgs);

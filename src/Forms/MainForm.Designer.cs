@@ -149,6 +149,7 @@ namespace Thio_Background_App_Notifier
             // 
             // buttonDevView
             // 
+            this.buttonDevView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDevView.Enabled = false;
             this.buttonDevView.Location = new System.Drawing.Point(1314, 48);
             this.buttonDevView.Name = "buttonDevView";

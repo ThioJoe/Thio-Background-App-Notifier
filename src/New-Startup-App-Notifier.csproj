@@ -69,6 +69,12 @@
     <Compile Include="Forms\DevViewForm.Designer.cs">
       <DependentUpon>DevViewForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormsComponents\ToggleButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\FormsComponents\ToggleButton.Designer.cs">
+      <DependentUpon>ToggleButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FormsComponents\TrueTransparentLabel.cs">
       <SubType>Component</SubType>
     </Compile>

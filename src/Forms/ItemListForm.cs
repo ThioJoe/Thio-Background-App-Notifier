@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Management;
@@ -31,6 +32,8 @@ public partial class ItemListForm : BaseForm
     // Unfiltered original list
     private readonly ListViewItemCollection _unfilteredItemList;
     private readonly ListView _dummyListView = new ListView();
+
+    private bool _filterCaseSensitive => buttonToggleCaseSensitivity.Pushed;
 
     public ItemListForm(string title, IEnumerable<IStartupItem> startupItems)
     {
@@ -105,6 +108,18 @@ public partial class ItemListForm : BaseForm
             listView.Columns.Insert(insertIndex, header);
             insertIndex++;
             UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listView, header, colPadding, 15);
+
+            // Add a filter radio button for each new column too
+            RadioButton newRadioButton = new()
+            {
+                Text = $"{key}",
+                AutoSize = true,
+                Tag = header
+            };
+
+            newRadioButton.CheckedChanged += new System.EventHandler(this.onChangeFilterColumnRadioCheckChanged);
+
+            flowLayoutPanelFilterRadios.Controls.Add(newRadioButton);
         }
     }
 
@@ -260,6 +275,38 @@ public partial class ItemListForm : BaseForm
         labelElevationNote.Visible = unverifiedCount > 0;
     }
 
+    private RadioButton? GetWhichCheckedRadioButton()
+    {
+        foreach (object? control in flowLayoutPanelFilterRadios.Controls)
+        {
+            if (control is RadioButton radioToCheck && radioToCheck.Checked == true)
+            {
+                return radioToCheck;
+            }
+        }
+
+        return null;
+    }
+
+    private void RunFilter()
+    {
+        ColumnHeader? headerToFilter = null;
+        RadioButton checkedRadioButton = GetWhichCheckedRadioButton() ?? radioButtonFilterAll; // Default to 'All'
+
+        // If it's all just leave the header as null
+        if (checkedRadioButton != radioButtonFilterAll)
+        {
+            if (checkedRadioButton.Tag is ColumnHeader header)
+            {
+                headerToFilter = header;
+            }
+        }
+
+        FilterListForText(textBoxListFilter.Text, headerToFilter, _filterCaseSensitive);
+    }
+
+    // ---------------- Handlers -------------------
+
     private void buttonClose_Click(object sender, EventArgs e)
     {
         this.Close();
@@ -267,14 +314,26 @@ public partial class ItemListForm : BaseForm
 
     private void textBoxListFilter_TextChanged(object sender, EventArgs e)
     {
-        if (sender is TextBox textBox)
-        {
-            FilterListForText(textBox.Text);
-        }
+        RunFilter();
     }
 
     private void buttonClearFilter_Click(object sender, EventArgs e)
     {
         textBoxListFilter.Text = "";
+    }
+
+    private void buttonToggleCaseSensitivity_Click(object sender, EventArgs e)
+    {
+        RunFilter();
+    }
+
+    private void onChangeFilterColumnRadioCheckChanged(object sender, EventArgs e)
+    {
+        // Since multiple radio buttons are sharing this handler, it will fire twice when the check status changes
+        // So this filters out events from where the radio button is being unchecked, and only leaves the one being checked.
+        if (sender is RadioButton { Checked: false })
+            return;
+
+        RunFilter();
     }
 }

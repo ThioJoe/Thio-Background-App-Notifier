@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Security;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TaskScheduler;
@@ -657,23 +658,39 @@ namespace Thio_Background_App_Notifier
 
         private static string GetServiceExecutablePath(string serviceName)
         {
-            string registryPath = $@"SYSTEM\CurrentControlSet\Services\{serviceName}";
-            using RegistryKey? serviceKey = Registry.LocalMachine.OpenSubKey(registryPath);
+            try
+            {
+                string registryPath = $@"SYSTEM\CurrentControlSet\Services\{serviceName}";
+                using RegistryKey? serviceKey = Registry.LocalMachine.OpenSubKey(registryPath);
 
-            if (serviceKey == null) 
-                return string.Empty;
+                if (serviceKey == null)
+                    return string.Empty;
 
-            string? imagePath = serviceKey.GetValue("ImagePath") as string;
-            if (string.IsNullOrEmpty(imagePath)) 
-                return string.Empty;
+                string? imagePath = serviceKey.GetValue("ImagePath") as string;
+                if (string.IsNullOrEmpty(imagePath))
+                    return string.Empty;
 
-            // Expand environment variables in the path
-            string expandedPath = Environment.ExpandEnvironmentVariables(imagePath);
+                // Expand environment variables in the path
+                string expandedPath = Environment.ExpandEnvironmentVariables(imagePath);
 
-            // Remove quotes if present
-            expandedPath = expandedPath.Trim('"');
+                // Remove quotes if present
+                expandedPath = expandedPath.Trim('"');
 
-            return expandedPath;
+                return expandedPath;
+            }
+            catch (SecurityException)
+            {
+                return "[Access Denied]";
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return "[Access Denied]";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Unknown error fetching executable path for service - {serviceName}: {ex.Message}");
+                return "[Unknown Error]";
+            }
         }
 
         private static ComHandlerGroup? FindComHandlerSource(string comClass)
@@ -923,9 +940,12 @@ namespace Thio_Background_App_Notifier
 
                 foreach (string subKeyName in key.GetSubKeyNames())
                 {
-                    using (RegistryKey serviceKey = key.OpenSubKey(subKeyName))
+                    try
                     {
-                        if (serviceKey == null) continue;
+                        using RegistryKey serviceKey = key.OpenSubKey(subKeyName);
+
+                        if (serviceKey == null)
+                            continue;
 
                         object startValue = serviceKey.GetValue("Start");
                         if (startValue is int start)
@@ -951,6 +971,10 @@ namespace Thio_Background_App_Notifier
                             }
                         }
                     }
+                    catch(Exception ex)
+                    {
+                        Debug.WriteLine($"Error fetching startup service subkey {subKeyName}: " + ex.Message);
+                    }
                 }
             }
             return items;
@@ -975,7 +999,7 @@ namespace Thio_Background_App_Notifier
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error fetching scheduled tasks: " + ex.Message);
+                Debug.WriteLine("Error fetching scheduled tasks: " + ex.Message);
             }
 
             return taskItems;

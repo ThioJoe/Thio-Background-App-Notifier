@@ -46,6 +46,10 @@ internal static class UiHelpers
                     return "—"; // em dash
                 return string.Join(", ", t.StartupTaskTypes.Distinct());
 
+            case RememberedStartupItem r:
+                // Not live-scanned this run; use the description saved when it was last actually seen.
+                return string.IsNullOrEmpty(r.Detail) ? "—" : r.Detail;
+
             default:
                 return "—";
         }

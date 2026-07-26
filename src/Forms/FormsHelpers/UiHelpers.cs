@@ -46,6 +46,10 @@ internal static class UiHelpers
                     return "—"; // em dash
                 return string.Join(", ", t.StartupTaskTypes.Distinct());
 
+            case RememberedStartupItem r:
+                // Not live-scanned this run; use the description saved when it was last actually seen.
+                return string.IsNullOrEmpty(r.Detail) ? "—" : r.Detail;
+
             default:
                 return "—";
         }
@@ -94,7 +98,16 @@ internal static class UiHelpers
 
     public static string MakeDetailsString(IStartupItem item)
     {
-        string details =
+        string details = string.Empty;
+
+        // Without admin rights the item can't be checked, so everything below reflects the last
+        // elevated scan rather than the current state.
+        if (item.OnlyVisibleWhenElevated && !WindowsUtils.IsRunningElevated)
+        {
+            details += "Note: Viewing full & up-to-date details of this item require running as Administrator.\n\n";
+        }
+
+        details +=
             "Name:\r\n  " + GetDisplayName(item) + "\r\n\r\n" +
             "Type:\r\n  " + GetTypeLabel(item) + "\r\n\r\n" +
             "Starts:\r\n  " + GetDetail(item) + "\r\n\r\n" +

@@ -32,6 +32,49 @@ namespace Thio_Background_App_Notifier
 
         /// <summary>The user has actually viewed this item in the main window.</summary>
         [DataMember(Order = 8)] public bool SeenInWindow { get; set; }
+
+        /// <summary>
+        /// The item has only ever been detected while running elevated (some services and tasks
+        /// aren't readable without admin rights). Non-elevated scans must not treat it as gone just
+        /// because they can't see it; the flag is cleared if a non-elevated scan does see it, and
+        /// the record is only removed as "gone" by an elevated scan.
+        /// </summary>
+        [DataMember(Order = 9)] public bool OnlyVisibleWhenElevated { get; set; }
+    }
+
+    /// <summary>
+    /// A display-only stand-in for a remembered item that the current scan couldn't verify: it has
+    /// only ever been seen while running elevated, and this run isn't. Backed by the on-disk record
+    /// so the main window can keep listing it (grayed out) instead of it silently vanishing between
+    /// admin runs.
+    /// </summary>
+    public class RememberedStartupItem : IStartupItem
+    {
+        public RememberedStartupItem(KnownStartupItem record)
+        {
+            Record = record;
+            Type = record.ItemType == StartupItemType.ScheduledTask.ToString()
+                ? StartupItemType.ScheduledTask
+                : StartupItemType.Service;
+        }
+
+        public KnownStartupItem Record { get; }
+
+        public string Name => Record.Name;
+        public string Path => Record.Path;
+        public StartupItemType Type { get; }
+        public string IdentityKey => Record.IdentityKey;
+
+        /// <summary>The stored "Starts" description from when the item was last actually scanned.</summary>
+        public string Detail => Record.Detail;
+
+        public bool IsFirstDetection { get; set; }
+        public DateTime FirstDetectionTime { get; set; }
+
+        // These stand-ins only ever exist for admin-only records, by definition.
+        public bool OnlyVisibleWhenElevated { get; set; } = true;
+
+        public List<Dictionary<string, string>> TypeSpecificDetails { get; set; } = [];
     }
 
     /// <summary>
@@ -58,6 +101,12 @@ namespace Thio_Background_App_Notifier
     {
         /// <summary>True when this was the very first run (the baseline was just established).</summary>
         public bool IsFirstRun { get; set; }
+
+        /// <summary>
+        /// True when the scan behind this result ran elevated (as Administrator). Non-elevated
+        /// results may contain unverifiable admin-only leftovers (see <see cref="RememberedStartupItem"/>).
+        /// </summary>
+        public bool RanElevated { get; set; }
 
         public DateTime? PreviousRunTimeLocal { get; set; }
         public DateTime RunTimeLocal { get; set; }
@@ -164,7 +213,7 @@ namespace Thio_Background_App_Notifier
             liveItems.AddRange(StartupScanner.GetStartupScheduledTasks());
 
             DetectionStore store = Load();
-            return store.Apply(liveItems, DateTime.UtcNow);
+            return store.Apply(liveItems, DateTime.UtcNow, WindowsUtils.IsRunningElevated);
         }
 
         // ---- Load / Save ----
@@ -232,7 +281,7 @@ namespace Thio_Background_App_Notifier
 
         // ---- Comparison ----
 
-        private ScanResult Apply(List<IStartupItem> liveItems, DateTime nowUtc)
+        private ScanResult Apply(List<IStartupItem> liveItems, DateTime nowUtc, bool isElevated)
         {
             string isoNow = ToIso(nowUtc);
             DateTime nowLocal = nowUtc.ToLocalTime();
@@ -260,6 +309,11 @@ namespace Thio_Background_App_Notifier
                     existing.Path = item.Path;
                     existing.Detail = UiHelpers.GetDetail(item);
 
+                    // A non-elevated scan seeing the item proves it doesn't need admin rights after all.
+                    if (!isElevated)
+                        existing.OnlyVisibleWhenElevated = false;
+
+                    item.OnlyVisibleWhenElevated = existing.OnlyVisibleWhenElevated;
                     item.IsFirstDetection = false;
                     item.FirstDetectionTime = FromIso(existing.FirstDetectedUtc, nowLocal);
                     record = existing;
@@ -275,7 +329,11 @@ namespace Thio_Background_App_Notifier
                         Path = item.Path,
                         Detail = UiHelpers.GetDetail(item),
                         FirstDetectedUtc = isoNow,
-                        LastSeenUtc = isoNow
+                        LastSeenUtc = isoNow,
+
+                        // Anything first found while elevated is assumed to need admin rights to
+                        // see, until a non-elevated scan proves otherwise by finding it too.
+                        OnlyVisibleWhenElevated = isElevated
                     };
 
                     if (isFirstRun)
@@ -289,6 +347,7 @@ namespace Thio_Background_App_Notifier
                     _data.Items.Add(record);
                     _byKey[key] = record;
 
+                    item.OnlyVisibleWhenElevated = record.OnlyVisibleWhenElevated;
                     item.FirstDetectionTime = nowLocal;
                     item.IsFirstDetection = !isFirstRun; // Highlight genuinely-new items in the UI.
 
@@ -308,12 +367,41 @@ namespace Thio_Background_App_Notifier
                     itemsSinceBaseline.Add(item);
             }
 
-            // Forget items that are no longer present. If a startup item is deleted (or disabled so it
-            // no longer shows up) and later comes back, this ensures it's reported as new again rather
-            // than remembered as already-known.
             var liveKeys = new HashSet<string>(
                 liveItems.Select(i => i.IdentityKey), StringComparer.OrdinalIgnoreCase);
-            _data.Items.RemoveAll(r => !liveKeys.Contains(r.IdentityKey));
+
+            // On a non-elevated run, admin-only items can't be checked, so instead of treating them
+            // as gone, keep listing them as unverified leftovers (the UI grays these out). They're
+            // presumed still present, so they join the full item lists and counts; post-baseline
+            // ones also stay in the main-window history. They aren't first detections and don't
+            // re-alert.
+            if (!isElevated)
+            {
+                foreach (KnownStartupItem record in _data.Items)
+                {
+                    if (!record.OnlyVisibleWhenElevated || liveKeys.Contains(record.IdentityKey))
+                        continue;
+
+                    var remembered = new RememberedStartupItem(record)
+                    {
+                        IsFirstDetection = false,
+                        FirstDetectionTime = FromIso(record.FirstDetectedUtc, nowLocal)
+                    };
+
+                    liveItems.Add(remembered);
+
+                    if (record.FirstDetectedUtc != baselineStamp)
+                        itemsSinceBaseline.Add(remembered);
+                }
+            }
+
+            // Forget items that are no longer present. If a startup item is deleted (or disabled so it
+            // no longer shows up) and later comes back, this ensures it's reported as new again rather
+            // than remembered as already-known. Admin-only items are exempt on non-elevated runs,
+            // since those scans couldn't have seen them either way; only an elevated scan can
+            // confirm one is actually gone.
+            _data.Items.RemoveAll(r => !liveKeys.Contains(r.IdentityKey)
+                && (isElevated || !r.OnlyVisibleWhenElevated));
 
             DateTime? previousRunLocal = TryFromIso(_data.LastRunUtc);
 
@@ -324,6 +412,7 @@ namespace Thio_Background_App_Notifier
             return new ScanResult
             {
                 IsFirstRun = isFirstRun,
+                RanElevated = isElevated,
                 PreviousRunTimeLocal = previousRunLocal,
                 RunTimeLocal = nowLocal,
                 AllItems = liveItems,

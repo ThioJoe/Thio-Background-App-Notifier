@@ -24,6 +24,9 @@ public partial class ItemListForm : BaseForm
     // Keys (in first-seen order) of any type-specific detail columns (e.g. TaskSchedulerPath) to add for this item set.
     private readonly List<string> _extraColumnKeys = new List<string>();
 
+    // Italic variant of the list font, for admin-only items this (non-elevated) run couldn't verify.
+    private Font? _unverifiedItemFont;
+
     public ItemListForm(string title, IEnumerable<IStartupItem> items)
     {
         InitializeComponent();
@@ -121,6 +124,8 @@ public partial class ItemListForm : BaseForm
 
     private void Populate(IEnumerable<IStartupItem> items)
     {
+        int unverifiedCount = 0;
+
         listView.BeginUpdate();
         try
         {
@@ -155,6 +160,15 @@ public partial class ItemListForm : BaseForm
                     row.UseItemStyleForSubItems = true;
                     row.BackColor = Color.FromArgb(255, 249, 196); // light yellow highlight
                 }
+                else if (item.OnlyVisibleWhenElevated && !WindowsUtils.IsRunningElevated)
+                {
+                    // Only ever seen while elevated, and this run isn't, so its current state
+                    // can't be verified — dim it rather than showing it as a live row.
+                    unverifiedCount++;
+                    row.UseItemStyleForSubItems = true;
+                    row.ForeColor = SystemColors.GrayText;
+                    row.Font = _unverifiedItemFont ??= new Font(listView.Font, FontStyle.Italic);
+                }
 
                 listView.Items.Add(row);
             }
@@ -163,6 +177,8 @@ public partial class ItemListForm : BaseForm
         {
             listView.EndUpdate();
         }
+
+        labelElevationNote.Visible = unverifiedCount > 0;
     }
 
     private void buttonClose_Click(object sender, EventArgs e)

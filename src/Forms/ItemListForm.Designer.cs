@@ -25,6 +25,7 @@ partial class ItemListForm
     {
             this.components = new System.ComponentModel.Container();
             this.labelTitle = new System.Windows.Forms.Label();
+            this.labelElevationNote = new System.Windows.Forms.Label();
             this.listView = new Thio_Background_App_Notifier.BufferedListView();
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colStarts = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -37,11 +38,23 @@ partial class ItemListForm
             // labelTitle
             // 
             this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.labelTitle.Location = new System.Drawing.Point(11, 9);
-            this.labelTitle.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelTitle.Location = new System.Drawing.Point(16, 14);
             this.labelTitle.Name = "labelTitle";
-            this.labelTitle.Size = new System.Drawing.Size(667, 23);
+            this.labelTitle.Size = new System.Drawing.Size(1000, 34);
             this.labelTitle.TabIndex = 0;
+            // 
+            // labelElevationNote
+            // 
+            this.labelElevationNote.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelElevationNote.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelElevationNote.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelElevationNote.Location = new System.Drawing.Point(954, 22);
+            this.labelElevationNote.Name = "labelElevationNote";
+            this.labelElevationNote.Size = new System.Drawing.Size(591, 26);
+            this.labelElevationNote.TabIndex = 3;
+            this.labelElevationNote.Text = "*Grayed-out items are only updated when running as Administrator";
+            this.labelElevationNote.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.labelElevationNote.Visible = false;
             // 
             // listView
             // 
@@ -58,10 +71,9 @@ partial class ItemListForm
             this.listView.FullRowSelect = true;
             this.listView.GridLines = true;
             this.listView.HideSelection = false;
-            this.listView.Location = new System.Drawing.Point(11, 39);
-            this.listView.Margin = new System.Windows.Forms.Padding(2);
+            this.listView.Location = new System.Drawing.Point(16, 58);
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1019, 430);
+            this.listView.Size = new System.Drawing.Size(1526, 643);
             this.listView.TabIndex = 1;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -89,17 +101,16 @@ partial class ItemListForm
             // colPath
             // 
             this.colPath.Text = "Path";
-            this.colPath.Width = 788;
+            this.colPath.Width = 787;
             // 
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonClose.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.buttonClose.Location = new System.Drawing.Point(933, 477);
-            this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonClose.Location = new System.Drawing.Point(1400, 716);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(96, 31);
+            this.buttonClose.Size = new System.Drawing.Size(144, 46);
             this.buttonClose.TabIndex = 2;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
@@ -108,15 +119,15 @@ partial class ItemListForm
             // ItemListForm
             // 
             this.AcceptButton = this.buttonClose;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.buttonClose;
-            this.ClientSize = new System.Drawing.Size(1039, 519);
+            this.ClientSize = new System.Drawing.Size(1558, 778);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.labelTitle);
-            this.Margin = new System.Windows.Forms.Padding(2);
-            this.MinimumSize = new System.Drawing.Size(472, 293);
+            this.Controls.Add(this.labelElevationNote);
+            this.MinimumSize = new System.Drawing.Size(697, 412);
             this.Name = "ItemListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Startup Items";
@@ -127,6 +138,7 @@ partial class ItemListForm
     #endregion
 
     private System.Windows.Forms.Label labelTitle;
+    private System.Windows.Forms.Label labelElevationNote;
     private Thio_Background_App_Notifier.BufferedListView listView;
     private System.Windows.Forms.ColumnHeader colName;
     private System.Windows.Forms.ColumnHeader colStarts;

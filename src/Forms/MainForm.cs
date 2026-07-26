@@ -19,6 +19,9 @@ namespace Thio_Background_App_Notifier
         // Guards the "run at startup" checkbox so setting it in code doesn't trigger the toggle logic.
         private bool _updatingStartupCheckbox;
 
+        // Italic variant of the list font, for admin-only items this (non-elevated) run couldn't verify.
+        private Font? _unverifiedItemFont;
+
         private DevViewForm? _devViewForm = null;
 
         public MainForm(AppOptions options, ScanResult result)
@@ -115,6 +118,8 @@ namespace Thio_Background_App_Notifier
             // the items detected on this scan are highlighted below.
             var items = result.ItemsSinceBaseline;
 
+            int unverifiedCount = 0;
+
             listViewItems.BeginUpdate();
             try
             {
@@ -167,6 +172,15 @@ namespace Thio_Background_App_Notifier
                         row.UseItemStyleForSubItems = true;
                         row.BackColor = Color.FromArgb(255, 249, 196); // light yellow highlight
                     }
+                    else if (item.OnlyVisibleWhenElevated && !result.RanElevated)
+                    {
+                        // Only ever seen while elevated, and this run isn't, so its current state
+                        // can't be verified — dim it rather than showing it as a live row.
+                        unverifiedCount++;
+                        row.UseItemStyleForSubItems = true;
+                        row.ForeColor = SystemColors.GrayText;
+                        row.Font = _unverifiedItemFont ??= new Font(listViewItems.Font, FontStyle.Italic);
+                    }
 
                     DateTime day = item.FirstDetectionTime.Date;
                     if (!groupsByDate.TryGetValue(day, out ListViewGroup group))
@@ -197,6 +211,8 @@ namespace Thio_Background_App_Notifier
             {
                 listViewItems.EndUpdate();
             }
+
+            labelElevationNote.Visible = unverifiedCount > 0;
 
             UpdatePlaceholder(result, items.Count == 0);
         }

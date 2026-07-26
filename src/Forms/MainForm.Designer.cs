@@ -49,6 +49,7 @@ namespace Thio_Background_App_Notifier
             this.labelWinNotifyValue = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.buttonWinNotify = new System.Windows.Forms.Button();
             this.labelMainListTitle = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
+            this.labelElevationNote = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.labelPlaceholder = new System.Windows.Forms.Label();
             this.labelRecheckSubtitle = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.groupBoxStartup = new System.Windows.Forms.GroupBox();
@@ -320,6 +321,21 @@ namespace Thio_Background_App_Notifier
             this.labelMainListTitle.TabIndex = 25;
             this.labelMainListTitle.Text = "Latest detected automatic starting items:";
             // 
+            // labelElevationNote
+            // 
+            this.labelElevationNote.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelElevationNote.BackColor = System.Drawing.Color.Transparent;
+            this.labelElevationNote.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelElevationNote.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.labelElevationNote.Location = new System.Drawing.Point(556, 279);
+            this.labelElevationNote.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelElevationNote.Name = "labelElevationNote";
+            this.labelElevationNote.Size = new System.Drawing.Size(469, 17);
+            this.labelElevationNote.TabIndex = 30;
+            this.labelElevationNote.Text = "*Grayed-out items are only updated when running as Administrator";
+            this.labelElevationNote.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.labelElevationNote.Visible = false;
+            // 
             // labelPlaceholder
             // 
             this.labelPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -447,6 +463,7 @@ namespace Thio_Background_App_Notifier
             this.Controls.Add(this.buttonAllStartupTasks);
             this.Controls.Add(this.panelHeaderDivider);
             this.Controls.Add(this.labelMainListTitle);
+            this.Controls.Add(this.labelElevationNote);
             this.Controls.Add(this.labelPlaceholder);
             this.Controls.Add(this.listViewItems);
             this.Controls.Add(this.buttonDevView);
@@ -494,6 +511,7 @@ namespace Thio_Background_App_Notifier
         private System.Windows.Forms.ColumnHeader colFirstDetected;
         private System.Windows.Forms.ColumnHeader colPath;
         private TrueTransparentLabel labelMainListTitle;
+        private TrueTransparentLabel labelElevationNote;
         private TrueTransparentLabel labelRecheckSubtitle;
         private System.Windows.Forms.GroupBox groupBoxStartup;
         private TrueTransparentLabel labelStatusValue;

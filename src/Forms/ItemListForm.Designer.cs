@@ -24,8 +24,8 @@ partial class ItemListForm
     private void InitializeComponent()
     {
             this.components = new System.ComponentModel.Container();
-            this.labelTitle = new System.Windows.Forms.Label();
-            this.labelElevationNote = new System.Windows.Forms.Label();
+            this.labelTitle = new TrueTransparentLabel();
+            this.labelElevationNote = new TrueTransparentLabel();
             this.listView = new Thio_Background_App_Notifier.BufferedListView();
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colStarts = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -33,7 +33,7 @@ partial class ItemListForm
             this.colFirstDetected = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.textBoxListFilter = new System.Windows.Forms.TextBox();
-            this.labelFilter = new System.Windows.Forms.Label();
+            this.labelFilter = new TrueTransparentLabel();
             this.buttonClearFilter = new System.Windows.Forms.Button();
             this.radioButtonFilterAll = new System.Windows.Forms.RadioButton();
             this.radioButtonFilterName = new System.Windows.Forms.RadioButton();
@@ -41,7 +41,7 @@ partial class ItemListForm
             this.buttonToggleCaseSensitivity = new Thio_Background_App_Notifier.ToggleButton(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.flowLayoutPanelFilterRadios = new System.Windows.Forms.FlowLayoutPanel();
-            this.labelFilterColumnRadios = new System.Windows.Forms.Label();
+            this.labelFilterColumnRadios = new TrueTransparentLabel();
             this.flowLayoutPanelFilterRadios.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,6 +49,7 @@ partial class ItemListForm
             // 
             this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.labelTitle.Location = new System.Drawing.Point(16, 14);
+            this.labelTitle.BackColor = System.Drawing.Color.Transparent;
             this.labelTitle.Name = "labelTitle";
             this.labelTitle.Size = new System.Drawing.Size(1000, 34);
             this.labelTitle.TabIndex = 0;
@@ -56,11 +57,13 @@ partial class ItemListForm
             // labelElevationNote
             // 
             this.labelElevationNote.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelElevationNote.AutoSize = true;
             this.labelElevationNote.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelElevationNote.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelElevationNote.Location = new System.Drawing.Point(1229, 22);
+            this.labelElevationNote.BackColor = System.Drawing.Color.Transparent;
+            this.labelElevationNote.Location = new System.Drawing.Point(1275, 20);
             this.labelElevationNote.Name = "labelElevationNote";
-            this.labelElevationNote.Size = new System.Drawing.Size(591, 26);
+            this.labelElevationNote.Size = new System.Drawing.Size(542, 25);
             this.labelElevationNote.TabIndex = 3;
             this.labelElevationNote.Text = "*Grayed-out items are only updated when running as Administrator";
             this.labelElevationNote.TextAlign = System.Drawing.ContentAlignment.BottomRight;
@@ -127,6 +130,7 @@ partial class ItemListForm
             // 
             this.labelFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelFilter.AutoSize = true;
+            this.labelFilter.BackColor = System.Drawing.Color.Transparent;
             this.labelFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.labelFilter.Location = new System.Drawing.Point(14, 908);
             this.labelFilter.Name = "labelFilter";
@@ -222,6 +226,7 @@ partial class ItemListForm
             this.labelFilterColumnRadios.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelFilterColumnRadios.AutoSize = true;
+            this.labelFilterColumnRadios.BackColor = System.Drawing.Color.Transparent;
             this.labelFilterColumnRadios.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.labelFilterColumnRadios.Location = new System.Drawing.Point(609, 901);
             this.labelFilterColumnRadios.Name = "labelFilterColumnRadios";
@@ -256,8 +261,8 @@ partial class ItemListForm
 
     #endregion
 
-    private System.Windows.Forms.Label labelTitle;
-    private System.Windows.Forms.Label labelElevationNote;
+    private TrueTransparentLabel labelTitle;
+    private TrueTransparentLabel labelElevationNote;
     private Thio_Background_App_Notifier.BufferedListView listView;
     private System.Windows.Forms.ColumnHeader colName;
     private System.Windows.Forms.ColumnHeader colStarts;
@@ -265,7 +270,7 @@ partial class ItemListForm
     private System.Windows.Forms.ColumnHeader colFirstDetected;
     private System.Windows.Forms.ColumnHeader colPath;
     private System.Windows.Forms.TextBox textBoxListFilter;
-    private System.Windows.Forms.Label labelFilter;
+    private TrueTransparentLabel labelFilter;
     private System.Windows.Forms.Button buttonClearFilter;
     private System.Windows.Forms.RadioButton radioButtonFilterAll;
     private System.Windows.Forms.RadioButton radioButtonFilterName;
@@ -273,5 +278,5 @@ partial class ItemListForm
     private ToggleButton buttonToggleCaseSensitivity;
     private System.Windows.Forms.ToolTip toolTip1;
     private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelFilterRadios;
-    private System.Windows.Forms.Label labelFilterColumnRadios;
+    private TrueTransparentLabel labelFilterColumnRadios;
 }

@@ -33,6 +33,9 @@ partial class ItemListForm
             this.colFirstDetected = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.buttonClose = new System.Windows.Forms.Button();
+            this.textBoxListFilter = new System.Windows.Forms.TextBox();
+            this.labelFilter = new System.Windows.Forms.Label();
+            this.buttonClearFilter = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // labelTitle
@@ -116,6 +119,41 @@ partial class ItemListForm
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
+            // textBoxListFilter
+            // 
+            this.textBoxListFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBoxListFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.textBoxListFilter.Location = new System.Drawing.Point(98, 719);
+            this.textBoxListFilter.Name = "textBoxListFilter";
+            this.textBoxListFilter.Size = new System.Drawing.Size(420, 35);
+            this.textBoxListFilter.TabIndex = 4;
+            this.textBoxListFilter.TextChanged += new System.EventHandler(this.textBoxListFilter_TextChanged);
+            // 
+            // labelFilter
+            // 
+            this.labelFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelFilter.AutoSize = true;
+            this.labelFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.labelFilter.Location = new System.Drawing.Point(18, 720);
+            this.labelFilter.Name = "labelFilter";
+            this.labelFilter.Size = new System.Drawing.Size(74, 29);
+            this.labelFilter.TabIndex = 5;
+            this.labelFilter.Text = "Filter:";
+            // 
+            // buttonClearFilter
+            // 
+            this.buttonClearFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonClearFilter.BackColor = System.Drawing.SystemColors.Window;
+            this.buttonClearFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.5F);
+            this.buttonClearFilter.Location = new System.Drawing.Point(524, 725);
+            this.buttonClearFilter.Name = "buttonClearFilter";
+            this.buttonClearFilter.Size = new System.Drawing.Size(64, 28);
+            this.buttonClearFilter.TabIndex = 6;
+            this.buttonClearFilter.Text = "Clear";
+            this.buttonClearFilter.UseCompatibleTextRendering = true;
+            this.buttonClearFilter.UseVisualStyleBackColor = false;
+            this.buttonClearFilter.Click += new System.EventHandler(this.buttonClearFilter_Click);
+            // 
             // ItemListForm
             // 
             this.AcceptButton = this.buttonClose;
@@ -123,6 +161,9 @@ partial class ItemListForm
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.buttonClose;
             this.ClientSize = new System.Drawing.Size(1558, 778);
+            this.Controls.Add(this.buttonClearFilter);
+            this.Controls.Add(this.labelFilter);
+            this.Controls.Add(this.textBoxListFilter);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.labelTitle);
@@ -132,6 +173,7 @@ partial class ItemListForm
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Startup Items";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
     }
 
@@ -146,4 +188,7 @@ partial class ItemListForm
     private System.Windows.Forms.ColumnHeader colFirstDetected;
     private System.Windows.Forms.ColumnHeader colPath;
     private System.Windows.Forms.Button buttonClose;
+    private System.Windows.Forms.TextBox textBoxListFilter;
+    private System.Windows.Forms.Label labelFilter;
+    private System.Windows.Forms.Button buttonClearFilter;
 }

@@ -4,13 +4,14 @@ using System.Drawing;
 using System.Linq;
 using System.Management;
 using System.Windows.Forms;
+using static System.Windows.Forms.ListView;
 
 #nullable enable
 
 namespace Thio_Background_App_Notifier;
 
 /// <summary>
-/// A simple, reusable "see all" window that lists a set of startup items (services or tasks)
+/// A simple, reusable "see all" window that lists a set of startup startupItems (services or tasks)
 /// with their first-detection dates.
 /// </summary>
 public partial class ItemListForm : BaseForm
@@ -24,17 +25,21 @@ public partial class ItemListForm : BaseForm
     // Keys (in first-seen order) of any type-specific detail columns (e.g. TaskSchedulerPath) to add for this item set.
     private readonly List<string> _extraColumnKeys = new List<string>();
 
-    // Italic variant of the list font, for admin-only items this (non-elevated) run couldn't verify.
+    // Italic variant of the list font, for admin-only startupItems this (non-elevated) run couldn't verify.
     private Font? _unverifiedItemFont;
 
-    public ItemListForm(string title, IEnumerable<IStartupItem> items)
+    // Unfiltered original list
+    private readonly ListViewItemCollection _unfilteredItemList;
+    private readonly ListView _dummyListView = new ListView();
+
+    public ItemListForm(string title, IEnumerable<IStartupItem> startupItems)
     {
         InitializeComponent();
 
         this.Text = title;
         labelTitle.Text = title;
 
-        List<IStartupItem> itemList = items.ToList();
+        List<IStartupItem> itemList = startupItems.ToList();
         AddTypeSpecificColumns(itemList); // Extract out the "special" type specific data to add as extra columns if applicable
 
         _baseHeaderText = new string[listView.Columns.Count];
@@ -52,6 +57,16 @@ public partial class ItemListForm : BaseForm
 
         // The list starts sorted by the first column ascending; show that.
         UpdateSortIndicators();
+
+        ListViewItemCollection unfilteredList = new(_dummyListView);
+        foreach (ListViewItem item in listView.Items)
+        {
+            // Add clones rather than the live items themselves: a ListViewItem can only belong
+            // to one ListView.Items collection at a time, and the originals stay in listView.
+            unfilteredList.Add((ListViewItem)item.Clone());
+        }
+
+        _unfilteredItemList = unfilteredList; // Store a copy of the original list. That way we can clear the original without mutating the backup
     }
 
     private int colPadding = 25;
@@ -66,7 +81,7 @@ public partial class ItemListForm : BaseForm
         UiHelpers.AutoResizeColumnToLargerOfHeaderOrContent(listView, colStarts, colPadding, 20);
     }
 
-    // Adds one ListView column per distinct key found across all items' TypeSpecificDetails,
+    // Adds one ListView column per distinct key found across all startupItems' TypeSpecificDetails,
     // inserted between the fixed columns and the Path column.
     private void AddTypeSpecificColumns(IEnumerable<IStartupItem> items)
     {
@@ -122,7 +137,71 @@ public partial class ItemListForm : BaseForm
         }
     }
 
-    private void Populate(IEnumerable<IStartupItem> items)
+    /// <summary>
+    /// Redraws the list view with only rows that contain the given text in the given columns.
+    /// </summary>
+    /// <param name="filterString"></param>
+    /// <param name="columnsToSearch"></param> Which columns to search within. If null, searches all columns.
+    /// <param name="caseSensitive"></param> Whether text comparison is case sensitive.
+    private void FilterListForText(string filterString, ColumnHeader? columnsToSearch = null, bool caseSensitive = false)
+    {
+        // Get a copy of the unfiltered list view items, NOT the live references. The items in
+        // _unfilteredItemList are still owned by _dummyListView, so they can't be added directly
+        // to another ListView's Items collection without first being cloned.
+        List<ListViewItem> filteredItemsList = _unfilteredItemList
+            .Cast<ListViewItem>()
+            .Select(item => (ListViewItem)item.Clone())
+            .ToList();
+
+        listView.BeginUpdate();
+        try
+        {
+            // Start empty and we'll add back the filterred list later.
+            listView.Items.Clear();
+
+            // Only actually filter if there's filter text; otherwise keep the full unfiltered list.
+            if (!string.IsNullOrWhiteSpace(filterString))
+            {
+                StringComparison comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+                filteredItemsList.RemoveAll(row =>
+                {
+                    bool matchFound = false;
+                    if (columnsToSearch != null)
+                    {
+                        // Search only the specified column
+                        int colIndex = columnsToSearch.Index;
+                        if (colIndex >= 0 && colIndex < row.SubItems.Count)
+                        {
+                            string cellText = row.SubItems[colIndex].Text;
+                            matchFound = cellText.IndexOf(filterString, comparison) >= 0;
+                        }
+                    }
+                    else
+                    {
+                        // Search all columns
+                        foreach (ListViewItem.ListViewSubItem subItem in row.SubItems)
+                        {
+                            if (subItem.Text.IndexOf(filterString, comparison) >= 0)
+                            {
+                                matchFound = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    return !matchFound;
+                });
+            }
+
+            listView.Items.AddRange(filteredItemsList.ToArray());
+        }
+        finally
+        {
+            listView.EndUpdate();
+        }
+    }
+
+    private void Populate(IEnumerable<IStartupItem> startupItems)
     {
         int unverifiedCount = 0;
 
@@ -131,7 +210,7 @@ public partial class ItemListForm : BaseForm
         {
             listView.Items.Clear();
 
-            foreach (IStartupItem item in items.OrderBy(i => UiHelpers.GetDisplayName(i), StringComparer.OrdinalIgnoreCase))
+            foreach (IStartupItem item in startupItems.OrderBy(i => UiHelpers.GetDisplayName(i), StringComparer.OrdinalIgnoreCase))
             {
                 var row = new ListViewItem(UiHelpers.GetDisplayName(item));
                 row.SubItems.Add(UiHelpers.GetDetail(item));
@@ -186,4 +265,16 @@ public partial class ItemListForm : BaseForm
         this.Close();
     }
 
+    private void textBoxListFilter_TextChanged(object sender, EventArgs e)
+    {
+        if (sender is TextBox textBox)
+        {
+            FilterListForText(textBox.Text);
+        }
     }
+
+    private void buttonClearFilter_Click(object sender, EventArgs e)
+    {
+        textBoxListFilter.Text = "";
+    }
+}

@@ -84,7 +84,7 @@ partial class WindowsNotifyInfoForm
             this.buttonEnable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonEnable.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.buttonEnable.Location = new System.Drawing.Point(18, 383);
-            this.buttonEnable.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonEnable.Margin = new System.Windows.Forms.Padding(2);
             this.buttonEnable.Name = "buttonEnable";
             this.buttonEnable.Size = new System.Drawing.Size(167, 36);
             this.buttonEnable.TabIndex = 4;
@@ -96,7 +96,7 @@ partial class WindowsNotifyInfoForm
             // 
             this.buttonOpenSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOpenSettings.Location = new System.Drawing.Point(343, 383);
-            this.buttonOpenSettings.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonOpenSettings.Margin = new System.Windows.Forms.Padding(2);
             this.buttonOpenSettings.Name = "buttonOpenSettings";
             this.buttonOpenSettings.Size = new System.Drawing.Size(150, 36);
             this.buttonOpenSettings.TabIndex = 5;
@@ -116,7 +116,7 @@ partial class WindowsNotifyInfoForm
             this.Controls.Add(this.labelBody);
             this.Controls.Add(this.labelTitle);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "WindowsNotifyInfoForm";

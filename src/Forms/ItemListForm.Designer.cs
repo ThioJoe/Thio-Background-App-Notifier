@@ -24,8 +24,8 @@ partial class ItemListForm
     private void InitializeComponent()
     {
             this.components = new System.ComponentModel.Container();
-            this.labelTitle = new TrueTransparentLabel();
-            this.labelElevationNote = new TrueTransparentLabel();
+            this.labelTitle = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
+            this.labelElevationNote = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.listView = new Thio_Background_App_Notifier.BufferedListView();
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colStarts = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -33,7 +33,7 @@ partial class ItemListForm
             this.colFirstDetected = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.textBoxListFilter = new System.Windows.Forms.TextBox();
-            this.labelFilter = new TrueTransparentLabel();
+            this.labelFilter = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.buttonClearFilter = new System.Windows.Forms.Button();
             this.radioButtonFilterAll = new System.Windows.Forms.RadioButton();
             this.radioButtonFilterName = new System.Windows.Forms.RadioButton();
@@ -41,29 +41,31 @@ partial class ItemListForm
             this.buttonToggleCaseSensitivity = new Thio_Background_App_Notifier.ToggleButton(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.flowLayoutPanelFilterRadios = new System.Windows.Forms.FlowLayoutPanel();
-            this.labelFilterColumnRadios = new TrueTransparentLabel();
+            this.labelFilterColumnRadios = new Thio_Background_App_Notifier.TrueTransparentLabel(this.components);
             this.flowLayoutPanelFilterRadios.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelTitle
             // 
-            this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.labelTitle.Location = new System.Drawing.Point(16, 14);
             this.labelTitle.BackColor = System.Drawing.Color.Transparent;
+            this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.labelTitle.Location = new System.Drawing.Point(11, 9);
+            this.labelTitle.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelTitle.Name = "labelTitle";
-            this.labelTitle.Size = new System.Drawing.Size(1000, 34);
+            this.labelTitle.Size = new System.Drawing.Size(667, 23);
             this.labelTitle.TabIndex = 0;
             // 
             // labelElevationNote
             // 
             this.labelElevationNote.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelElevationNote.AutoSize = true;
+            this.labelElevationNote.BackColor = System.Drawing.Color.Transparent;
             this.labelElevationNote.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelElevationNote.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.labelElevationNote.BackColor = System.Drawing.Color.Transparent;
-            this.labelElevationNote.Location = new System.Drawing.Point(1275, 20);
+            this.labelElevationNote.Location = new System.Drawing.Point(850, 13);
+            this.labelElevationNote.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelElevationNote.Name = "labelElevationNote";
-            this.labelElevationNote.Size = new System.Drawing.Size(542, 25);
+            this.labelElevationNote.Size = new System.Drawing.Size(363, 15);
             this.labelElevationNote.TabIndex = 3;
             this.labelElevationNote.Text = "*Grayed-out items are only updated when running as Administrator";
             this.labelElevationNote.TextAlign = System.Drawing.ContentAlignment.BottomRight;
@@ -84,9 +86,10 @@ partial class ItemListForm
             this.listView.FullRowSelect = true;
             this.listView.GridLines = true;
             this.listView.HideSelection = false;
-            this.listView.Location = new System.Drawing.Point(16, 58);
+            this.listView.Location = new System.Drawing.Point(11, 39);
+            this.listView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1801, 828);
+            this.listView.Size = new System.Drawing.Size(1202, 553);
             this.listView.TabIndex = 1;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -120,9 +123,10 @@ partial class ItemListForm
             // 
             this.textBoxListFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBoxListFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.textBoxListFilter.Location = new System.Drawing.Point(85, 908);
+            this.textBoxListFilter.Location = new System.Drawing.Point(57, 605);
+            this.textBoxListFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxListFilter.Name = "textBoxListFilter";
-            this.textBoxListFilter.Size = new System.Drawing.Size(442, 35);
+            this.textBoxListFilter.Size = new System.Drawing.Size(296, 26);
             this.textBoxListFilter.TabIndex = 4;
             this.textBoxListFilter.TextChanged += new System.EventHandler(this.textBoxListFilter_TextChanged);
             // 
@@ -132,9 +136,10 @@ partial class ItemListForm
             this.labelFilter.AutoSize = true;
             this.labelFilter.BackColor = System.Drawing.Color.Transparent;
             this.labelFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.labelFilter.Location = new System.Drawing.Point(14, 908);
+            this.labelFilter.Location = new System.Drawing.Point(9, 605);
+            this.labelFilter.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelFilter.Name = "labelFilter";
-            this.labelFilter.Size = new System.Drawing.Size(74, 29);
+            this.labelFilter.Size = new System.Drawing.Size(48, 20);
             this.labelFilter.TabIndex = 5;
             this.labelFilter.Text = "Filter:";
             // 
@@ -143,9 +148,10 @@ partial class ItemListForm
             this.buttonClearFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonClearFilter.BackColor = System.Drawing.SystemColors.Window;
             this.buttonClearFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.5F);
-            this.buttonClearFilter.Location = new System.Drawing.Point(85, 949);
+            this.buttonClearFilter.Location = new System.Drawing.Point(57, 633);
+            this.buttonClearFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonClearFilter.Name = "buttonClearFilter";
-            this.buttonClearFilter.Size = new System.Drawing.Size(64, 28);
+            this.buttonClearFilter.Size = new System.Drawing.Size(43, 19);
             this.buttonClearFilter.TabIndex = 6;
             this.buttonClearFilter.Text = "Clear";
             this.buttonClearFilter.UseCompatibleTextRendering = true;
@@ -157,9 +163,10 @@ partial class ItemListForm
             this.radioButtonFilterAll.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.radioButtonFilterAll.AutoSize = true;
             this.radioButtonFilterAll.Checked = true;
-            this.radioButtonFilterAll.Location = new System.Drawing.Point(3, 3);
+            this.radioButtonFilterAll.Location = new System.Drawing.Point(2, 2);
+            this.radioButtonFilterAll.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonFilterAll.Name = "radioButtonFilterAll";
-            this.radioButtonFilterAll.Size = new System.Drawing.Size(55, 26);
+            this.radioButtonFilterAll.Size = new System.Drawing.Size(38, 19);
             this.radioButtonFilterAll.TabIndex = 0;
             this.radioButtonFilterAll.TabStop = true;
             this.radioButtonFilterAll.Text = "All";
@@ -170,9 +177,10 @@ partial class ItemListForm
             // 
             this.radioButtonFilterName.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.radioButtonFilterName.AutoSize = true;
-            this.radioButtonFilterName.Location = new System.Drawing.Point(64, 3);
+            this.radioButtonFilterName.Location = new System.Drawing.Point(44, 2);
+            this.radioButtonFilterName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonFilterName.Name = "radioButtonFilterName";
-            this.radioButtonFilterName.Size = new System.Drawing.Size(82, 26);
+            this.radioButtonFilterName.Size = new System.Drawing.Size(59, 19);
             this.radioButtonFilterName.TabIndex = 1;
             this.radioButtonFilterName.Tag = this.colName;
             this.radioButtonFilterName.Text = "Name";
@@ -183,9 +191,10 @@ partial class ItemListForm
             // 
             this.radioButtonFilterPath.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.radioButtonFilterPath.AutoSize = true;
-            this.radioButtonFilterPath.Location = new System.Drawing.Point(152, 3);
+            this.radioButtonFilterPath.Location = new System.Drawing.Point(107, 2);
+            this.radioButtonFilterPath.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonFilterPath.Name = "radioButtonFilterPath";
-            this.radioButtonFilterPath.Size = new System.Drawing.Size(72, 26);
+            this.radioButtonFilterPath.Size = new System.Drawing.Size(50, 19);
             this.radioButtonFilterPath.TabIndex = 2;
             this.radioButtonFilterPath.Tag = this.colPath;
             this.radioButtonFilterPath.Text = "Path";
@@ -196,10 +205,11 @@ partial class ItemListForm
             // 
             this.buttonToggleCaseSensitivity.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonToggleCaseSensitivity.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.buttonToggleCaseSensitivity.Location = new System.Drawing.Point(533, 910);
+            this.buttonToggleCaseSensitivity.Location = new System.Drawing.Point(355, 607);
+            this.buttonToggleCaseSensitivity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonToggleCaseSensitivity.Name = "buttonToggleCaseSensitivity";
-            this.buttonToggleCaseSensitivity.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
-            this.buttonToggleCaseSensitivity.Size = new System.Drawing.Size(43, 35);
+            this.buttonToggleCaseSensitivity.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.buttonToggleCaseSensitivity.Size = new System.Drawing.Size(29, 23);
             this.buttonToggleCaseSensitivity.TabIndex = 8;
             this.buttonToggleCaseSensitivity.Text = "Aa";
             this.buttonToggleCaseSensitivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -215,10 +225,10 @@ partial class ItemListForm
             this.flowLayoutPanelFilterRadios.Controls.Add(this.radioButtonFilterName);
             this.flowLayoutPanelFilterRadios.Controls.Add(this.radioButtonFilterPath);
             this.flowLayoutPanelFilterRadios.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.flowLayoutPanelFilterRadios.Location = new System.Drawing.Point(610, 926);
+            this.flowLayoutPanelFilterRadios.Location = new System.Drawing.Point(407, 617);
             this.flowLayoutPanelFilterRadios.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanelFilterRadios.Name = "flowLayoutPanelFilterRadios";
-            this.flowLayoutPanelFilterRadios.Size = new System.Drawing.Size(1207, 66);
+            this.flowLayoutPanelFilterRadios.Size = new System.Drawing.Size(805, 44);
             this.flowLayoutPanelFilterRadios.TabIndex = 0;
             // 
             // labelFilterColumnRadios
@@ -228,17 +238,18 @@ partial class ItemListForm
             this.labelFilterColumnRadios.AutoSize = true;
             this.labelFilterColumnRadios.BackColor = System.Drawing.Color.Transparent;
             this.labelFilterColumnRadios.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.labelFilterColumnRadios.Location = new System.Drawing.Point(609, 901);
+            this.labelFilterColumnRadios.Location = new System.Drawing.Point(406, 601);
+            this.labelFilterColumnRadios.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelFilterColumnRadios.Name = "labelFilterColumnRadios";
-            this.labelFilterColumnRadios.Size = new System.Drawing.Size(142, 22);
+            this.labelFilterColumnRadios.Size = new System.Drawing.Size(96, 15);
             this.labelFilterColumnRadios.TabIndex = 9;
             this.labelFilterColumnRadios.Text = "Filter By Column";
             // 
             // ItemListForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(1833, 996);
+            this.ClientSize = new System.Drawing.Size(1222, 664);
             this.Controls.Add(this.labelFilterColumnRadios);
             this.Controls.Add(this.flowLayoutPanelFilterRadios);
             this.Controls.Add(this.buttonToggleCaseSensitivity);
@@ -248,7 +259,8 @@ partial class ItemListForm
             this.Controls.Add(this.listView);
             this.Controls.Add(this.labelTitle);
             this.Controls.Add(this.labelElevationNote);
-            this.MinimumSize = new System.Drawing.Size(697, 412);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MinimumSize = new System.Drawing.Size(470, 288);
             this.Name = "ItemListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Startup Items";
